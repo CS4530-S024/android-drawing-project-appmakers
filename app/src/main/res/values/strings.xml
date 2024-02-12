@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Drawable</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="back">Back</string>
+    <string name="palette">Palette</string>
+    <string name="paint_brush">Paintbrush</string>
+    <string name="paint_can">Paintcan</string>
+    <string name="spray_can">Spraycan</string>
+    <string name="eraser">Eraser</string>
 </resources>
