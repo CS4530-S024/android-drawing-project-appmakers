@@ -77,11 +77,11 @@
 
             />
         <ImageButton
-            android:id="@+id/sprayCan"
+            android:id="@+id/paintBucket"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/paintcan"
+            android:src="@drawable/paintbucket"
             android:layout_margin="10dp"
             android:contentDescription="@string/paint_can"
             />
