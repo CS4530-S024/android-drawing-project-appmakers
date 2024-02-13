@@ -14,6 +14,9 @@ import androidx.constraintlayout.widget.ConstraintSet.Motion
 import com.example.drawable.MainActivity.Companion.paintbrush
 import com.example.drawable.MainActivity.Companion.path
 
+/**
+ *
+ */
 class CanvasView : View {
 
     var lParams: ViewGroup.LayoutParams? = null
@@ -50,6 +53,9 @@ class CanvasView : View {
     private var previousMap: HashMap<Int, Path> = HashMap<Int, Path>()
 
 
+    /**
+     *  Initializes the variables and set
+     */
     private fun init() {
         //lParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lParams = ViewGroup.LayoutParams(
@@ -62,8 +68,10 @@ class CanvasView : View {
         // Initializing the initial brush size
         paintbrush.isAntiAlias = true
         paintbrush.color = currentBrush.color
-        paintbrush.strokeWidth = 7F
+        paintbrush.strokeWidth = 8F
         paintbrush.strokeCap = Paint.Cap.ROUND
+        paintbrush.style = Paint.Style.STROKE
+        paintbrush.strokeJoin = Paint.Join.ROUND
 
 
     }

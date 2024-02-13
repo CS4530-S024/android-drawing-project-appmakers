@@ -54,6 +54,8 @@
         app:layout_constraintBottom_toTopOf="@id/toolbar"
         >
 
+        <include layout="@layout/canvas_view"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
