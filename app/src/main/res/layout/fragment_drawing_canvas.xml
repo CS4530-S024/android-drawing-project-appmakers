@@ -13,7 +13,7 @@
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/label_gray"
+        android:background="@drawable/label"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/canvas"
@@ -50,6 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/canvas"
+        android:background="@drawable/label"
         app:layout_constraintTop_toBottomOf="@id/top_bar"
         app:layout_constraintBottom_toTopOf="@id/toolbar"
         >
@@ -65,7 +66,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/canvas"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@color/label_gray"
+        android:background="@drawable/label"
         android:orientation="horizontal"
         android:gravity="center">
         <ImageButton

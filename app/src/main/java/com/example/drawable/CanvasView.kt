@@ -110,7 +110,5 @@ class CanvasView : View {
         }
         postInvalidate()
         return false
-
-
     }
 }
