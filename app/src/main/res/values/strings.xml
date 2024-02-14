@@ -6,4 +6,9 @@
     <string name="paint_can">Paintcan</string>
     <string name="spray_can">Spraycan</string>
     <string name="eraser">Eraser</string>
+    <string name="drawing">Drawing Image</string>
+    <string name="drawingName">Drawing</string>
+    <string name="drawingHint">Drawing Name</string>
+
+
 </resources>

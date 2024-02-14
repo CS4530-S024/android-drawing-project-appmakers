@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/drawingsList">
+
+    <fragment
+        android:id="@+id/drawingsList"
+        android:name="com.example.drawable.DrawingsList"
+        android:label="fragment_drawings_list"
+        tools:layout="@layout/fragment_drawings_list" >
+        <action
+            android:id="@+id/action_drawingsList_to_drawingCanvas"
+            app:destination="@id/drawingCanvas" />
+    </fragment>
+    <fragment
+        android:id="@+id/drawingCanvas"
+        android:name="com.example.drawable.DrawingCanvas"
+        android:label="fragment_drawing_canvas"
+        tools:layout="@layout/fragment_drawing_canvas" >
+        <action
+            android:id="@+id/action_drawingCanvas_to_drawingsList"
+            app:destination="@id/drawingsList" />
+    </fragment>
+</navigation>

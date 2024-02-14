@@ -1,5 +1,4 @@
 package com.example.drawable
-
 import android.graphics.Paint
 import android.graphics.Path
 import androidx.appcompat.app.AppCompatActivity
