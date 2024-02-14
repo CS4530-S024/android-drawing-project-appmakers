@@ -74,9 +74,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/paintbrush"
             android:layout_margin="10dp"
-            android:contentDescription="@string/paint_brush"
-
-            />
+            android:contentDescription="@string/paint_brush" />
         <ImageButton
             android:id="@+id/paintBucket"
             android:layout_width="60dp"
@@ -84,8 +82,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/paintbucket"
             android:layout_margin="10dp"
-            android:contentDescription="@string/paint_can"
-            />
+            android:contentDescription="@string/paint_can" />
 
         <ImageButton
             android:id="@+id/spraycan"
@@ -94,8 +91,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/spraycan"
             android:layout_margin="10dp"
-            android:contentDescription="@string/spray_can"
-            />
+            android:contentDescription="@string/spray_can" />
 
         <ImageButton
             android:id="@+id/eraser"

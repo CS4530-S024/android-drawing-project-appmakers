@@ -1,9 +1,14 @@
 package com.example.drawable
+
+import android.app.Dialog
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import com.example.drawable.databinding.FragmentDrawingCanvasBinding
 import yuku.ambilwarna.AmbilWarnaDialog
@@ -13,12 +18,9 @@ import yuku.ambilwarna.AmbilWarnaDialog
  * status bar and navigation/system bar) with user interaction.
  */
 class DrawingCanvas : Fragment() {
-
     private var _binding: FragmentDrawingCanvasBinding? = null
     private val binding by lazy { _binding!! }
     private var currColor: Int = Color.BLACK
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +30,6 @@ class DrawingCanvas : Fragment() {
 
         _binding = FragmentDrawingCanvasBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -36,9 +37,13 @@ class DrawingCanvas : Fragment() {
         binding.pallete.setOnClickListener {
             loadColorPicker()
         }
+
+        binding.paintBrush.setOnClickListener {
+            showPopUp()
+        }
     }
 
-    private fun loadColorPicker(){
+    private fun loadColorPicker() {
         AmbilWarnaDialog(requireActivity(), currColor,
             object : AmbilWarnaDialog.OnAmbilWarnaListener {
                 override fun onCancel(dialog: AmbilWarnaDialog?) {
@@ -49,14 +54,38 @@ class DrawingCanvas : Fragment() {
             }).show()
     }
 
+    private fun showPopUp() {
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.custom_dialog_layout)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
+        val thinPen: ImageButton = dialog.findViewById<ImageButton>(R.id.thinPen)
+        val medPen: ImageButton = dialog.findViewById<ImageButton>(R.id.medPen)
+        val thickPen: ImageButton = dialog.findViewById<ImageButton>(R.id.thickPen)
 
+        thinPen.setOnClickListener {
+            // emit signal to change pen size to thin
+            dialog.hide()
+        }
+
+        medPen.setOnClickListener {
+            // emit signal to change pen size to medium
+            dialog.hide()
+        }
+
+        thickPen.setOnClickListener {
+            // emit signal to change pen size to thick
+            dialog.hide()
+        }
+
+        dialog.show()
+    }
 
 //    override fun onDestroy() {
 //        super.onDestroy()
 //    }
-
-
 
     companion object {
         /**
