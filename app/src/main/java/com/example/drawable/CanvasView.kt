@@ -20,7 +20,6 @@ import com.example.drawable.MainActivity.Companion.path
 class CanvasView : View {
 
     var lParams: ViewGroup.LayoutParams? = null
-
     var paintScreen: Paint = Paint()
 
     companion object {
@@ -106,9 +105,13 @@ class CanvasView : View {
 
                 return true
             }
-
         }
         postInvalidate()
         return false
     }
+    //todo(set bitmap function)
+    //todo(set color function)
+    //todo(set current brush function)
+    //todo(set size of brush function)
+    //todo(set shape of brush function)
 }
