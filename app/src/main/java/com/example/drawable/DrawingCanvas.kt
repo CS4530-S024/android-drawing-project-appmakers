@@ -28,6 +28,9 @@ class DrawingCanvas : Fragment() {
     private var canvas: CanvasView? = null
     private lateinit var gestureDetector: GestureDetector
 
+    /**
+     *
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,16 +50,15 @@ class DrawingCanvas : Fragment() {
         title = requireArguments().getString("title")
         binding.Title.setText(title)
 
+        //Displays color picker
         binding.paintBrush.setOnClickListener {
             showPopUp()
         }
-
         canvas = binding.canvas
 
-
+        //Handles double tap on title
         gestureDetector = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
-                // Handle double tap
                 binding.Title.isFocusableInTouchMode = true
                 binding.Title.requestFocus()
                 val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -64,26 +66,28 @@ class DrawingCanvas : Fragment() {
                 return true
             }
         })
-
         binding.Title.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
 
 
+        //Handles when user is done editing title
         binding.Title.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                // User has finished editing
-                v.clearFocus() // Remove focus from EditText
+                v.clearFocus()
                 val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(v.windowToken, 0) // Hide the keyboard
-                binding.Title.isFocusable = false // Make EditText not focusable again
-                true // Consume the action
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
+                binding.Title.isFocusable = false
+                true
             } else {
-                false // Do not consume the action
+                false
             }
         }
-
-
+        //Moves back to list fragment and saves drawing
+        binding.backButton.setOnClickListener { onBackClicked()  }
     }
 
+    /**
+     *
+     */
     private fun loadColorPicker() {
         AmbilWarnaDialog(requireActivity(), currColor,
             object : AmbilWarnaDialog.OnAmbilWarnaListener {
@@ -96,6 +100,9 @@ class DrawingCanvas : Fragment() {
             }).show()
     }
 
+    /**
+     *
+     */
     private fun showPopUp() {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -110,28 +117,31 @@ class DrawingCanvas : Fragment() {
             // emit signal to change pen size to thin
             dialog.hide()
         }
-
         medPen.setOnClickListener {
             // emit signal to change pen size to medium
             dialog.hide()
         }
-
         thickPen.setOnClickListener {
             // emit signal to change pen size to thick
             dialog.hide()
         }
-
         dialog.show()
     }
 
+    /**
+     *
+     */
     fun onBackClicked() {
         //save drawing to viewmodel
         //go back to list
         findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
     }
+
+    /**
+     *
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
 }

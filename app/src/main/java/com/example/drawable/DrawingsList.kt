@@ -18,6 +18,9 @@ class DrawingsList : Fragment() {
     private lateinit var myAdapter: DrawingAdapter
     private  val myViewModel : DrawableViewModel by activityViewModels()
 
+    /**
+     *
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,6 +35,9 @@ class DrawingsList : Fragment() {
 
     }
 
+    /**
+     *
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recycler = binding.recycler
@@ -45,6 +51,9 @@ class DrawingsList : Fragment() {
         }
     }
 
+    /**
+     *
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

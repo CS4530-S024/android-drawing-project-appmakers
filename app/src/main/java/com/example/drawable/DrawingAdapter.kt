@@ -8,7 +8,9 @@ import com.example.drawable.databinding.DrawingItemBinding
 class DrawingAdapter(private var drawings: List<Drawing>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     //todo(add necesssary callbacks)
 
-
+    /**
+     *
+     */
     fun updateDrawings(newDrawings: List<Drawing>){
         drawings = newDrawings
         notifyDataSetChanged()
@@ -18,6 +20,9 @@ class DrawingAdapter(private var drawings: List<Drawing>): RecyclerView.Adapter<
         return DrawingViewHolder(DrawingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
+    /**
+     *
+     */
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = drawings[position]
         //add date and title
