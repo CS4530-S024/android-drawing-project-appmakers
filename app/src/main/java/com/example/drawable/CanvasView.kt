@@ -117,6 +117,7 @@ class CanvasView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         canvas.drawBitmap(bitmap, 0f, 0f, paintScreen)
+        invalidate()
         for (paintedPath in pathList) {
             paintbrush.color = paintedPath.paint
             canvas.drawPath(paintedPath.path, paintbrush)
