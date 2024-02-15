@@ -45,7 +45,9 @@
             android:textColor="@color/black"
             android:focusable="false"
             android:background="@android:color/transparent"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:imeOptions="actionDone"
+            android:singleLine="true"/>
 
         <ImageButton
             android:id="@+id/pallete"
