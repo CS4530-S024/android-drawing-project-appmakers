@@ -10,27 +10,29 @@ import android.graphics.Path
 import android.graphics.Paint
 import android.view.MotionEvent
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintSet.Motion
-//import com.example.drawable.MainActivity.Companion.paintbrush
-//import com.example.drawable.MainActivity.Companion.path
+
 
 /**
  *
  */
+data class PaintedPath(val path: Path, val paint: Int)
+
 class CanvasView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    private var currentBrush = Paint()
     private var pathMap: HashMap<Int, Path> = HashMap()
     private var previousMap: HashMap<Int, Path> = HashMap()
     private var paintScreen: Paint = Paint()
     private var paintbrush = Paint()
-    private var pathList = ArrayList<Path>()
-    private var currentBrush = Paint()
+    private var currColor: Int = Color.BLACK
+    private var pathList = ArrayList<PaintedPath>()
     private lateinit var bitmap: Bitmap
     private lateinit var canvas: Canvas
+    private var width = 8F
     var path = Path()
     var lParams: ViewGroup.LayoutParams? = null
 
@@ -41,26 +43,22 @@ class CanvasView @JvmOverloads constructor(
         )
 
         initBrushes()
-        initCanvas()
+//        initCanvas()
     }
 
     private fun initBrushes() {
         paintbrush.isAntiAlias = true
-        paintbrush.color = Color.BLACK // Default color
-        paintbrush.strokeWidth = 8F // Default stroke width
+        paintbrush.color = currColor
+        paintbrush.strokeWidth = width
         paintbrush.style = Paint.Style.STROKE
         paintbrush.strokeJoin = Paint.Join.ROUND
         paintbrush.strokeCap = Paint.Cap.ROUND
     }
 
-    private fun initCanvas() {
-        // Placeholder for canvas initialization logic
-        // You'll adjust this part based on your onSizeChanged implementation
-    }
-
-
-
-//
+//    private fun initCanvas() {
+//        // Placeholder for canvas initialization logic
+//        // You'll adjust this part based on your onSizeChanged implementation
+//    }
 //    var lParams: ViewGroup.LayoutParams? = null
 //    var paintScreen: Paint = Paint()
 //    var pathList = ArrayList<Path>()
@@ -69,7 +67,6 @@ class CanvasView @JvmOverloads constructor(
 //    var bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888)
 //    var canvas = Canvas(bitmap)
 //    var path = Path()
-//
 ////    companion object {
 ////        var pathList = ArrayList<Path>()
 ////        var currentBrush = Paint(Color.BLACK)
@@ -97,8 +94,6 @@ class CanvasView @JvmOverloads constructor(
 //    // var - can change
 //    private var pathMap: HashMap<Int, Path> = HashMap<Int, Path>()
 //    private var previousMap: HashMap<Int, Path> = HashMap<Int, Path>()
-//
-//
 //    /**
 //     *  Initializes the variables and set
 //     */
@@ -119,17 +114,16 @@ class CanvasView @JvmOverloads constructor(
 //        paintbrush.style = Paint.Style.STROKE
 //        paintbrush.strokeJoin = Paint.Join.ROUND
 //    }
-//
-
 
     override fun onDraw(canvas: Canvas) {
         canvas.drawBitmap(bitmap, 0f, 0f, paintScreen)
-        for (i in pathList.indices) {
-            canvas.drawPath(pathList[i], paintbrush);
+        for (paintedPath in pathList) {
+            paintbrush.color = paintedPath.paint
+            canvas.drawPath(paintedPath.path, paintbrush)
             invalidate()
         }
+        paintbrush.color = currColor
     }
-
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
         bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888)
@@ -149,17 +143,19 @@ class CanvasView @JvmOverloads constructor(
 
             MotionEvent.ACTION_MOVE -> {
                 path.lineTo(x, y)
-                pathList.add(path);
-
+                pathList.add(PaintedPath(path, paintbrush.color));
                 return true
             }
         }
         postInvalidate()
         return false
     }
-    //todo(set bitmap function)
-    fun setColor(){
 
+    //todo(set bitmap function)
+    fun setColor(color: Int){
+        currentBrush.color = color
+        currColor = currentBrush.color
+        path = Path()
     }
     //todo(set color function)
     //todo(set current brush function)

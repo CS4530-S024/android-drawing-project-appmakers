@@ -3,7 +3,6 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.GestureDetector
@@ -14,9 +13,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.ImageButton
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.drawable.databinding.FragmentDrawingCanvasBinding
@@ -55,7 +52,7 @@ class DrawingCanvas : Fragment() {
         }
 
         canvas = binding.canvas
-        
+
 
         gestureDetector = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
@@ -94,6 +91,7 @@ class DrawingCanvas : Fragment() {
                 }
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
                     currColor = color
+                    binding.canvas.setColor(color)
                 }
             }).show()
     }
