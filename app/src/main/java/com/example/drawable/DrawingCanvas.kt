@@ -1,5 +1,4 @@
 package com.example.drawable
-
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -20,6 +19,7 @@ class DrawingCanvas : Fragment() {
     private val binding by lazy { _binding!! }
     private var currColor: Int = Color.BLACK
     private var title: String? = null
+    private var canvas: CanvasView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,6 +42,10 @@ class DrawingCanvas : Fragment() {
         binding.paintBrush.setOnClickListener {
             showPopUp()
         }
+
+        canvas = binding.canvas
+
+
     }
 
     private fun loadColorPicker() {
