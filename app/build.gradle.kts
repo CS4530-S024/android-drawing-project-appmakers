@@ -55,4 +55,5 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation ("androidx.core:core-splashscreen:1.0.1")
     implementation ("com.github.yukuku:ambilwarna:2.0.1")
+    implementation("it.xabaras.android:recyclerview-swipedecorator:1.4")
 }

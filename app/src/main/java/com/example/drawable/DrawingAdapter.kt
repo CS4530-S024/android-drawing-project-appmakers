@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.drawable.databinding.DrawingItemBinding
 
 class DrawingAdapter(private var drawings: List<Drawing>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    //todo(add necesssary callbacks)
 
     /**
      *
@@ -32,4 +31,5 @@ class DrawingAdapter(private var drawings: List<Drawing>): RecyclerView.Adapter<
      *Gets the count of the items in the list
      */
     override fun getItemCount(): Int = drawings.size
+
 }

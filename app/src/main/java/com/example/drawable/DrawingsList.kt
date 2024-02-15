@@ -1,4 +1,5 @@
 package com.example.drawable
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,15 +9,30 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.drawable.databinding.FragmentDrawingsListBinding
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 
 
-class DrawingsList : Fragment() {
+class DrawingsList() : Fragment() {
     private var _binding: FragmentDrawingsListBinding? = null
     private val binding by lazy { _binding!! }
     private lateinit var recycler: RecyclerView
     private lateinit var myAdapter: DrawingAdapter
     private  val myViewModel : DrawableViewModel by activityViewModels()
+
+//    val swipe = object: Swiper(requireContext()){
+//        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+//            when(direction){
+//                ItemTouchHelper.LEFT->{
+//                    myViewModel.removeDrawing(viewHolder.adapterPosition)
+//
+//                }
+//            }
+//        }
+//    }
+//
+//    val touchy = ItemTouchHelper(swipe)
+
 
     /**
      *
@@ -41,6 +57,7 @@ class DrawingsList : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recycler = binding.recycler
+//        touchy.attachToRecyclerView(recycler)
         recycler.layoutManager = LinearLayoutManager(context)
         myAdapter = DrawingAdapter(listOf())
         recycler.adapter = myAdapter

@@ -30,8 +30,8 @@ class DrawableViewModel: ViewModel(){
      * Removes drawing from list
      * @param drawing The drawing we are removing from the List
      */
-    fun removeDrawing(drawing: Drawing){
-        drawings.value?.remove(drawing)
+    fun removeDrawing(index: Int){
+        drawings.value?.removeAt(index)
         drawings.value = drawings.value
     }
 }

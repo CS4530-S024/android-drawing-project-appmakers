@@ -28,6 +28,7 @@ class DrawingCanvas : Fragment() {
     private var canvas: CanvasView? = null
     private lateinit var gestureDetector: GestureDetector
 
+
     /**
      *
      */
@@ -41,6 +42,9 @@ class DrawingCanvas : Fragment() {
         return binding.root
     }
 
+    /**
+     *
+     */
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
