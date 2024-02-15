@@ -61,11 +61,6 @@ class DrawingCanvas : Fragment() {
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.custom_dialog_layout)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-    private fun onBackClicked(){
-        //save drawing to viewmodel
-        //go back to list
-        findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
         val thinPen: ImageButton = dialog.findViewById<ImageButton>(R.id.thinPen)
         val medPen: ImageButton = dialog.findViewById<ImageButton>(R.id.medPen)
         val thickPen: ImageButton = dialog.findViewById<ImageButton>(R.id.thickPen)
@@ -88,32 +83,14 @@ class DrawingCanvas : Fragment() {
         dialog.show()
     }
 
-//    override fun onDestroy() {
-//        super.onDestroy()
-//    }
-
-    companion object {
-        /**
-         * Whether or not the system UI should be auto-hidden after
-         * [AUTO_HIDE_DELAY_MILLIS] milliseconds.
-         */
-        private const val AUTO_HIDE = true
-
-        /**
-         * If [AUTO_HIDE] is set, the number of milliseconds to wait after
-         * user interaction before hiding the system UI.
-         */
-        private const val AUTO_HIDE_DELAY_MILLIS = 3000
-
-        /**
-         * Some older devices needs a small delay between UI widget updates
-         * and a change of the status and navigation bar.
-         */
-
+    fun onBackClicked() {
+        //save drawing to viewmodel
+        //go back to list
+        findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
 }
