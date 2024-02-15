@@ -61,6 +61,7 @@
             android:id="@+id/trianglePen"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:background="@android:color/transparent"
             android:src="@drawable/triangle"
             android:layout_margin="10dp"
             android:contentDescription="@string/triangle" />
@@ -69,6 +70,7 @@
             android:id="@+id/squarePen"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:background="@android:color/transparent"
             android:src="@drawable/square"
             android:layout_margin="10dp"
             android:contentDescription="@string/square" />
@@ -77,6 +79,7 @@
             android:id="@+id/roundPen"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:background="@android:color/transparent"
             android:src="@drawable/circle"
             android:layout_margin="10dp"
             android:contentDescription="@string/round" />
