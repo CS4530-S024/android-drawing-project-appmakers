@@ -12,6 +12,9 @@
     <string name="thin_pen">Thin Pen</string>
     <string name="med_pen">Medium Pen</string>
     <string name="thick_pen">Thick Pen</string>
+    <string name="triangle">Triangle</string>
+    <string name="square">Square</string>
+    <string name="round">Round</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

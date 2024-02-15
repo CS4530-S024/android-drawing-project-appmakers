@@ -23,12 +23,17 @@ class CanvasView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    private val medWidth: Float = 10F
     private var currentBrush = Paint()
     private var pathMap: HashMap<Int, Path> = HashMap()
     private var previousMap: HashMap<Int, Path> = HashMap()
     private var paintScreen: Paint = Paint()
     private var paintbrush = Paint()
+
     private var currColor: Int = Color.BLACK
+    private var currPenSize: Float = medWidth;
+    private var currPenShape: Paint.Cap = Paint.Cap.ROUND
+
     private var pathList = ArrayList<PaintedPath>()
     private lateinit var bitmap: Bitmap
     private lateinit var canvas: Canvas
@@ -49,71 +54,11 @@ class CanvasView @JvmOverloads constructor(
     private fun initBrushes() {
         paintbrush.isAntiAlias = true
         paintbrush.color = currColor
-        paintbrush.strokeWidth = width
+        paintbrush.strokeWidth = currPenSize
         paintbrush.style = Paint.Style.STROKE
         paintbrush.strokeJoin = Paint.Join.ROUND
         paintbrush.strokeCap = Paint.Cap.ROUND
     }
-
-//    private fun initCanvas() {
-//        // Placeholder for canvas initialization logic
-//        // You'll adjust this part based on your onSizeChanged implementation
-//    }
-//    var lParams: ViewGroup.LayoutParams? = null
-//    var paintScreen: Paint = Paint()
-//    var pathList = ArrayList<Path>()
-//    var currentBrush = Paint(Color.BLACK)
-//    var paintbrush = Paint(Color.BLACK)
-//    var bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888)
-//    var canvas = Canvas(bitmap)
-//    var path = Path()
-////    companion object {
-////        var pathList = ArrayList<Path>()
-////        var currentBrush = Paint(Color.BLACK)
-////        var bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888)
-////        var canvas = Canvas(bitmap)
-////    }
-//
-//    constructor(context: Context) : this(context, null) {
-//        init()
-//    }
-//
-//    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-//        init()
-//    }
-//
-//    constructor(context: Context, attrs: AttributeSet?, defStyleAttribute: Int) : super(
-//        context,
-//        attrs,
-//        defStyleAttribute
-//    ) {
-//        init()
-//    }
-//
-//    // val - constant
-//    // var - can change
-//    private var pathMap: HashMap<Int, Path> = HashMap<Int, Path>()
-//    private var previousMap: HashMap<Int, Path> = HashMap<Int, Path>()
-//    /**
-//     *  Initializes the variables and set
-//     */
-//    private fun init() {
-//        //lParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-//        lParams = ViewGroup.LayoutParams(
-//            ViewGroup.LayoutParams.MATCH_PARENT,
-//            ViewGroup.LayoutParams.MATCH_PARENT
-//        )
-////        bitmap = Bitmap.createBitmap(lParams!!.width, lParams!!.height, Bitmap.Config.ARGB_8888)
-////        canvas = Canvas(bitmap)
-//
-//        // Initializing the initial brush size
-//        paintbrush.isAntiAlias = true
-//        paintbrush.color = currentBrush.color
-//        paintbrush.strokeWidth = 8F
-//        paintbrush.strokeCap = Paint.Cap.ROUND
-//        paintbrush.style = Paint.Style.STROKE
-//        paintbrush.strokeJoin = Paint.Join.ROUND
-//    }
 
     override fun onDraw(canvas: Canvas) {
         canvas.drawBitmap(bitmap, 0f, 0f, paintScreen)
@@ -123,6 +68,7 @@ class CanvasView @JvmOverloads constructor(
             canvas.drawPath(paintedPath.path, paintbrush)
             invalidate()
         }
+        paintbrush.strokeWidth = currPenSize
         paintbrush.color = currColor
     }
 
@@ -153,13 +99,24 @@ class CanvasView @JvmOverloads constructor(
     }
 
     //todo(set bitmap function)
-    fun setColor(color: Int){
+    fun setColor(color: Int) {
         currentBrush.color = color
         currColor = currentBrush.color
         path = Path()
     }
+
+    fun setPenSize(penSize: Float) {
+        currentBrush.strokeWidth = penSize
+        currPenSize = currentBrush.strokeWidth
+        path = Path()
+    }
+
+    fun setPenShape(penShape: Paint.Cap) {
+        currentBrush.strokeCap = penShape
+        currPenShape = currentBrush.strokeCap
+        path = Path()
+    }
+
     //todo(set color function)
     //todo(set current brush function)
-    //todo(set size of brush function)
-    //todo(set shape of brush function)
 }

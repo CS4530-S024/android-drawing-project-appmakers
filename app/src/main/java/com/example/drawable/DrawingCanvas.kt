@@ -3,6 +3,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.GestureDetector
@@ -21,13 +22,19 @@ import yuku.ambilwarna.AmbilWarnaDialog
 
 
 class DrawingCanvas : Fragment() {
+    private val thinWidth: Float = 2F
+    private val medWidth: Float = 10F
+    private val thickWidth: Float = 25F
+
     private var _binding: FragmentDrawingCanvasBinding? = null
     private val binding by lazy { _binding!! }
+    private var currPenSize: Float = medWidth
+    private var currPenShape: Paint.Cap = Paint.Cap.ROUND
+
     private var currColor: Int = Color.BLACK
     private var title: String? = null
     private var canvas: CanvasView? = null
     private lateinit var gestureDetector: GestureDetector
-
 
     /**
      *
@@ -48,13 +55,15 @@ class DrawingCanvas : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // displays color picker
         binding.pallete.setOnClickListener {
             loadColorPicker()
         }
         title = requireArguments().getString("title")
         binding.Title.setText(title)
 
-        //Displays color picker
+        // displays pen size / shape popup
         binding.paintBrush.setOnClickListener {
             showPopUp()
         }
@@ -113,22 +122,49 @@ class DrawingCanvas : Fragment() {
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.custom_dialog_layout)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
         val thinPen: ImageButton = dialog.findViewById<ImageButton>(R.id.thinPen)
         val medPen: ImageButton = dialog.findViewById<ImageButton>(R.id.medPen)
         val thickPen: ImageButton = dialog.findViewById<ImageButton>(R.id.thickPen)
 
+        val trianglePen: ImageButton = dialog.findViewById<ImageButton>(R.id.trianglePen)
+        val squarePen: ImageButton = dialog.findViewById<ImageButton>(R.id.squarePen)
+        val roundPen: ImageButton = dialog.findViewById<ImageButton>(R.id.roundPen)
+
+        // size listeners //
         thinPen.setOnClickListener {
-            // emit signal to change pen size to thin
+            currPenSize = thinWidth
+            binding.canvas.setPenSize(currPenSize)
             dialog.hide()
         }
         medPen.setOnClickListener {
-            // emit signal to change pen size to medium
+            currPenSize = medWidth
+            binding.canvas.setPenSize(currPenSize)
             dialog.hide()
         }
         thickPen.setOnClickListener {
-            // emit signal to change pen size to thick
+            currPenSize = thickWidth
+            binding.canvas.setPenSize(currPenSize)
             dialog.hide()
         }
+
+        // shape listeners //
+        trianglePen.setOnClickListener {
+            currPenShape = Paint.Cap.BUTT
+            binding.canvas.setPenShape(currPenShape)
+            dialog.hide()
+        }
+        squarePen.setOnClickListener {
+            currPenShape = Paint.Cap.SQUARE
+            binding.canvas.setPenShape(currPenShape)
+            dialog.hide()
+        }
+        roundPen.setOnClickListener {
+            currPenShape = Paint.Cap.ROUND
+            binding.canvas.setPenShape(currPenShape)
+            dialog.hide()
+        }
+
         dialog.show()
     }
 

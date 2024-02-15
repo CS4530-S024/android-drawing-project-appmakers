@@ -9,6 +9,13 @@
 
     <LinearLayout
         android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp" >
+
+        <LinearLayout
+        android:gravity="center"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,6 +47,40 @@
             android:src="@drawable/thickpen"
             android:layout_margin="10dp"
             android:contentDescription="@string/thick_pen" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp" >
+
+        <ImageButton
+            android:id="@+id/trianglePen"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/triangle"
+            android:layout_margin="10dp"
+            android:contentDescription="@string/triangle" />
+
+        <ImageButton
+            android:id="@+id/squarePen"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/square"
+            android:layout_margin="10dp"
+            android:contentDescription="@string/square" />
+
+        <ImageButton
+            android:id="@+id/roundPen"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/circle"
+            android:layout_margin="10dp"
+            android:contentDescription="@string/round" />
+    </LinearLayout>
 
     </LinearLayout>
 
