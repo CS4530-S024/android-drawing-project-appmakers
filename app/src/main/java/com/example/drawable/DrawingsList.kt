@@ -19,19 +19,8 @@ class DrawingsList() : Fragment() {
     private lateinit var recycler: RecyclerView
     private lateinit var myAdapter: DrawingAdapter
     private  val myViewModel : DrawableViewModel by activityViewModels()
-
-//    val swipe = object: Swiper(requireContext()){
-//        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-//            when(direction){
-//                ItemTouchHelper.LEFT->{
-//                    myViewModel.removeDrawing(viewHolder.adapterPosition)
-//
-//                }
-//            }
-//        }
-//    }
-//
-//    val touchy = ItemTouchHelper(swipe)
+    private lateinit var swipe: Swiper
+    private lateinit var touchy: ItemTouchHelper
 
 
     /**
@@ -57,7 +46,19 @@ class DrawingsList() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recycler = binding.recycler
-//        touchy.attachToRecyclerView(recycler)
+        swipe = object: Swiper(requireContext()){
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                when(direction){
+                    ItemTouchHelper.LEFT->{
+                        myViewModel.removeDrawing(viewHolder.adapterPosition)
+
+                    }
+                }
+            }
+        }
+
+        touchy = ItemTouchHelper(swipe)
+        touchy.attachToRecyclerView(recycler)
         recycler.layoutManager = LinearLayoutManager(context)
         myAdapter = DrawingAdapter(listOf())
         recycler.adapter = myAdapter
