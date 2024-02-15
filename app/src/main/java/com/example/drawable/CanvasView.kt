@@ -15,7 +15,7 @@ import android.view.ViewGroup
 /**
  *
  */
-data class PaintedPath(val path: Path, val paint: Int)
+data class PaintedPath(val path: Path, val paint: Int, val size: Float, val shape: Paint.Cap)
 
 class CanvasView @JvmOverloads constructor(
     context: Context,
@@ -57,7 +57,7 @@ class CanvasView @JvmOverloads constructor(
         paintbrush.strokeWidth = currPenSize
         paintbrush.style = Paint.Style.STROKE
         paintbrush.strokeJoin = Paint.Join.ROUND
-        paintbrush.strokeCap = Paint.Cap.ROUND
+        paintbrush.strokeCap = currPenShape
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -65,9 +65,12 @@ class CanvasView @JvmOverloads constructor(
         invalidate()
         for (paintedPath in pathList) {
             paintbrush.color = paintedPath.paint
+            paintbrush.strokeWidth = paintedPath.size
+            paintbrush.strokeCap = paintedPath.shape
             canvas.drawPath(paintedPath.path, paintbrush)
             invalidate()
         }
+        paintbrush.strokeCap = currPenShape
         paintbrush.strokeWidth = currPenSize
         paintbrush.color = currColor
     }
@@ -90,7 +93,8 @@ class CanvasView @JvmOverloads constructor(
 
             MotionEvent.ACTION_MOVE -> {
                 path.lineTo(x, y)
-                pathList.add(PaintedPath(path, paintbrush.color));
+                pathList.add(PaintedPath(path, paintbrush.color, paintbrush.strokeWidth,
+                    paintbrush.strokeCap));
                 return true
             }
         }
