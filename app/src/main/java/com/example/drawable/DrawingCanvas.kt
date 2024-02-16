@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.GestureDetector
@@ -25,15 +26,11 @@ import yuku.ambilwarna.AmbilWarnaDialog
 import kotlin.math.min
 
 class DrawingCanvas : Fragment() {
-    private val thinWidth: Float = 2F
-    private val medWidth: Float = 10F
-    private val thickWidth: Float = 25F
+
 
     data class PaintedPath(val path: Path, val color: Int, val width: Float, val shape: Paint.Cap)
     private var _binding: FragmentDrawingCanvasBinding? = null
     private val binding by lazy { _binding!! }
-    private var currPenSize: Float = medWidth
-    private var currPenShape: Paint.Cap = Paint.Cap.ROUND
 
     private var currColor: Int = Color.BLACK
     private var title: String? = null
@@ -45,7 +42,11 @@ class DrawingCanvas : Fragment() {
     private var myBitmap : Bitmap? = null
     private var offsetX: Float? = null
     private var offsetY: Float? = null
-//    private var currentBrush = Paint()
+    private val medWidth: Float = 10F
+    private val thinWidth: Float = 2F
+    private val thickWidth: Float = 25F
+    private var currPenSize: Float = medWidth;
+    private var currPenShape: Paint.Cap = Paint.Cap.ROUND
     private var paintbrush = Paint()
     private var pathList = ArrayList<PaintedPath>()
     var bitmapWidth: Int? = null
@@ -208,6 +209,8 @@ class DrawingCanvas : Fragment() {
             }).show()
     }
 
+
+
     /**
      *
      */
@@ -229,39 +232,53 @@ class DrawingCanvas : Fragment() {
         // size listeners //
         thinPen.setOnClickListener {
             currPenSize = thinWidth
-            binding.canvas.setPenSize(currPenSize)
+            setPenSize(currPenSize)
             dialog.hide()
         }
         medPen.setOnClickListener {
             currPenSize = medWidth
-            binding.canvas.setPenSize(currPenSize)
+            setPenSize(currPenSize)
             dialog.hide()
         }
         thickPen.setOnClickListener {
             currPenSize = thickWidth
-            binding.canvas.setPenSize(currPenSize)
+            setPenSize(currPenSize)
             dialog.hide()
         }
 
         // shape listeners //
         trianglePen.setOnClickListener {
             currPenShape = Paint.Cap.BUTT
-            binding.canvas.setPenShape(currPenShape)
+            setPenShape(currPenShape)
             dialog.hide()
         }
         squarePen.setOnClickListener {
             currPenShape = Paint.Cap.SQUARE
-            binding.canvas.setPenShape(currPenShape)
+            setPenShape(currPenShape)
             dialog.hide()
         }
         roundPen.setOnClickListener {
             currPenShape = Paint.Cap.ROUND
-            binding.canvas.setPenShape(currPenShape)
+            setPenShape(currPenShape)
             dialog.hide()
         }
 
         dialog.show()
     }
+
+    fun setPenSize(penSize: Float) {
+        paintbrush.strokeWidth = penSize
+        currPenSize = paintbrush.strokeWidth
+        currentPath = Path()
+    }
+
+    fun setPenShape(penShape: Paint.Cap) {
+        paintbrush.strokeCap = penShape
+        currPenShape = paintbrush.strokeCap
+        currentPath = Path()
+    }
+
+    
 
     /**
      *
