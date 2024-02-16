@@ -10,6 +10,8 @@ class DrawableViewModel: ViewModel(){
     private val drawings = MutableLiveData<MutableList<Drawing>>()
     val drawingsList = drawings as LiveData<out List<Drawing>>
     val name = "Drawings"
+    var currBitmap : Bitmap? = null
+    var currColor : Int? = null
 
     private var currDrawing: Drawing? = null
 
@@ -34,4 +36,16 @@ class DrawableViewModel: ViewModel(){
         drawings.value?.removeAt(index)
         drawings.value = drawings.value
     }
+
+    //create bitmap here
+    fun newBitmap(): Bitmap {
+        currBitmap = Bitmap.createBitmap(1024, 1024, Bitmap.Config.ARGB_8888)
+        return currBitmap!!
+    }
+
+    fun setColor(color: Int){
+        currColor = color
+    }
+
+    //remove, then puyt at top for chnaged bitmwp
 }

@@ -9,7 +9,7 @@
 
     <ImageView
         android:id="@+id/myImageView"
-        android:layout_width="60dp"
+        android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_margin="10dp"
         android:contentDescription="@string/drawing"

@@ -2,6 +2,8 @@ package com.example.drawable
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
@@ -16,16 +18,18 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.drawable.databinding.FragmentDrawingCanvasBinding
 import yuku.ambilwarna.AmbilWarnaDialog
-
+import kotlin.math.min
 
 class DrawingCanvas : Fragment() {
     private val thinWidth: Float = 2F
     private val medWidth: Float = 10F
     private val thickWidth: Float = 25F
 
+    data class PaintedPath(val path: Path, val color: Int, val width: Float, val shape: Paint.Cap)
     private var _binding: FragmentDrawingCanvasBinding? = null
     private val binding by lazy { _binding!! }
     private var currPenSize: Float = medWidth
@@ -33,8 +37,25 @@ class DrawingCanvas : Fragment() {
 
     private var currColor: Int = Color.BLACK
     private var title: String? = null
-    private var canvas: CanvasView? = null
+    private var canvasView: CanvasView? = null
     private lateinit var gestureDetector: GestureDetector
+    private  val myViewModel : DrawableViewModel by activityViewModels()
+
+    //bitmap drawing vars
+    private var myBitmap : Bitmap? = null
+    private var offsetX: Float? = null
+    private var offsetY: Float? = null
+//    private var currentBrush = Paint()
+    private var paintbrush = Paint()
+    private var pathList = ArrayList<PaintedPath>()
+    var bitmapWidth: Int? = null
+    var bitmapHeight: Int? = null
+    var scaleFactor: Float? = null
+    var viewWidth: Float? = null
+    var viewHeight: Float? = null
+    private var width = 8F
+    private var currentPath = Path()
+
 
     /**
      *
@@ -67,7 +88,12 @@ class DrawingCanvas : Fragment() {
         binding.paintBrush.setOnClickListener {
             showPopUp()
         }
-        canvas = binding.canvas
+        canvasView = binding.canvas
+        //Creates a new bitmap, saves it
+        myBitmap = myViewModel.newBitmap()
+        binding.canvas.setBitmap(myBitmap!!)
+        bitmapHeight = myBitmap!!.height
+        bitmapWidth = myBitmap!!.width
 
         //Handles double tap on title
         gestureDetector = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
@@ -81,7 +107,6 @@ class DrawingCanvas : Fragment() {
         })
         binding.Title.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
 
-
         //Handles when user is done editing title
         binding.Title.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -94,8 +119,77 @@ class DrawingCanvas : Fragment() {
                 false
             }
         }
+
         //Moves back to list fragment and saves drawing
         binding.backButton.setOnClickListener { onBackClicked()  }
+        initBrush()
+        initVars()
+        canvasView!!.setOnTouchListener{_, event-> onCanvasTouch(event)}
+    }
+
+    private fun initBrush() {
+        paintbrush.isAntiAlias = true
+        paintbrush.color = currColor
+        paintbrush.strokeWidth = width
+        paintbrush.style = Paint.Style.STROKE
+        paintbrush.strokeJoin = Paint.Join.ROUND
+        paintbrush.strokeCap = Paint.Cap.ROUND
+    }
+
+    private fun initVars(){
+        viewWidth = canvasView!!.width.toFloat()
+        viewHeight = canvasView!!.height.toFloat()
+        scaleFactor = min(viewWidth!! / bitmapWidth!!, viewHeight!! / bitmapHeight!!)
+        offsetX = (viewWidth!! - bitmapWidth!! * scaleFactor!!) / 2
+        offsetY = (viewHeight!! - bitmapHeight!! * scaleFactor!!) / 2
+    }
+
+    fun onCanvasTouch(event: MotionEvent): Boolean {
+        val (bX, bY) = translatecoords(event.x, event.y)
+
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                currentPath.moveTo(bX, bY)
+//                drawOnBitmap()
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                currentPath.lineTo(bX, bY)
+                pathList.add(PaintedPath(currentPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+                drawOnBitmap()
+            }
+
+            MotionEvent.ACTION_UP -> {
+                pathList.add(PaintedPath(currentPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+                currentPath.reset()
+                drawOnBitmap()
+
+            }
+        }
+        return true
+    }
+
+    private fun drawOnBitmap() {
+        var canvas = Canvas(myBitmap!!)
+        var tempBrush = Paint()
+        for (path in pathList){
+            tempBrush.color = path.color
+            tempBrush.strokeWidth = path.width
+            tempBrush.strokeCap = path.shape
+            canvas.drawPath(path.path, tempBrush)
+        }
+        updateCanvasView()
+    }
+
+
+    private fun updateCanvasView() {
+        canvasView!!.setBitmap(myBitmap!!)
+    }
+
+    private fun translatecoords(touchX: Float, touchY: Float): Pair<Float, Float> {
+        val bitmapX = (touchX - offsetX!!) / scaleFactor!!
+        val bitmapY = (touchY - offsetY!!) / scaleFactor!!
+        return Pair(bitmapX, bitmapY)
     }
 
     /**
@@ -108,7 +202,8 @@ class DrawingCanvas : Fragment() {
                 }
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
                     currColor = color
-                    binding.canvas.setColor(color)
+                    myViewModel.setColor(color)
+                    paintbrush.color = color
                 }
             }).show()
     }
