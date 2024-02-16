@@ -5,7 +5,7 @@
     android:layout_height="100dp"
     android:orientation="horizontal"
     android:background="@drawable/label"
-    android:id="@+id/drawing_layout">
+    android:id="@+id/drawingItem">
 
     <ImageView
         android:id="@+id/drawing"

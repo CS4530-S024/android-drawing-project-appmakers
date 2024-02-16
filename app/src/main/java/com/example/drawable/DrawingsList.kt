@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 
 
-class DrawingsList() : Fragment() {
+class DrawingsList : Fragment() {
     private var _binding: FragmentDrawingsListBinding? = null
     private val binding by lazy { _binding!! }
     private lateinit var recycler: RecyclerView
@@ -49,7 +49,7 @@ class DrawingsList() : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 when(direction){
                     ItemTouchHelper.LEFT->{
-                        myViewModel.removeDrawing(viewHolder.adapterPosition)
+                        myViewModel.removeDrawing(viewHolder.bindingAdapterPosition)
 
                     }
                 }
@@ -59,13 +59,27 @@ class DrawingsList() : Fragment() {
         touchy = ItemTouchHelper(swipe)
         touchy.attachToRecyclerView(recycler)
         recycler.layoutManager = LinearLayoutManager(context)
-        myAdapter = DrawingAdapter(listOf())
+
+        myAdapter = DrawingAdapter(listOf(), sendClick = {
+            sendClick(it)
+        })
+
         recycler.adapter = myAdapter
         binding.add.setOnClickListener{
             findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
-                putString("title", "Drawing " + (myAdapter.itemCount + 1))
+                putString("New", "Drawing " + (myAdapter.itemCount + 1))
             })
         }
+    }
+
+    /**
+     *
+     */
+    private fun sendClick(pos: Int){
+        myViewModel.setCurrBitmap(pos)
+        findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
+            putString("Title", myViewModel.getDrawingTitle(pos))
+        })
     }
 
     /**

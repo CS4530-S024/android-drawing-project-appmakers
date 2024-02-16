@@ -32,9 +32,9 @@ class DrawingCanvas : Fragment() {
     data class PaintedPath(val path: Path, val color: Int, val width: Float, val shape: Paint.Cap)
     private var _binding: FragmentDrawingCanvasBinding? = null
     private val binding by lazy { _binding!! }
-
     private var currColor: Int = Color.BLACK
     private var title: String? = null
+    private var state: String? = null
     private var canvasView: CanvasView? = null
     private lateinit var gestureDetector: GestureDetector
     private  val myViewModel : DrawableViewModel by activityViewModels()
@@ -58,7 +58,7 @@ class DrawingCanvas : Fragment() {
     private var currentPath = Path()
     @SuppressLint("SimpleDateFormat")
     val dateFormat = SimpleDateFormat("MM-dd-yyyy")
-    var currentDate: Date? = null
+    private var currentDate: Date? = null
 
 
     /**
@@ -85,17 +85,33 @@ class DrawingCanvas : Fragment() {
         binding.pallete.setOnClickListener {
             loadColorPicker()
         }
-        title = requireArguments().getString("title")
+        //
+        state = requireArguments().getString("New")
+        if(state != null){
+            title = state
+            val bitmap = createNewBitmap()
+            myViewModel.updateBitmap(bitmap)
+        }else{
+
+            title = requireArguments().getString("Title")
+        }
+
         binding.Title.setText(title)
+        myBitmap = myViewModel.currBitmap.value
+
+        //observe changes on bitmap
+        myViewModel.currBitmap.observe(viewLifecycleOwner) { bitmap ->
+            myBitmap = bitmap // Assign it to fragment's bitmap variable
+            binding.canvas.setBitmap(myBitmap!!)
+        }
+
 
         // displays pen size / shape popup
         binding.paintBrush.setOnClickListener {
             showPopUp()
         }
+
         canvasView = binding.canvas
-        //Creates a new bitmap, saves it
-        myBitmap = myViewModel.newBitmap()
-        binding.canvas.setBitmap(myBitmap!!)
         bitmapHeight = myBitmap!!.height
         bitmapWidth = myBitmap!!.width
 
@@ -131,6 +147,9 @@ class DrawingCanvas : Fragment() {
         canvasView!!.setOnTouchListener{_, event-> onCanvasTouch(event)}
     }
 
+    /**
+     *
+     */
     private fun initBrush() {
         paintbrush.isAntiAlias = true
         paintbrush.color = currColor
@@ -140,6 +159,9 @@ class DrawingCanvas : Fragment() {
         paintbrush.strokeCap = Paint.Cap.ROUND
     }
 
+    /**
+     *
+     */
     private fun initVars(){
         viewWidth = canvasView!!.width.toFloat()
         viewHeight = canvasView!!.height.toFloat()
@@ -149,6 +171,9 @@ class DrawingCanvas : Fragment() {
         offsetY = (viewHeight!! - bitmapHeight!! * sheight) / 2
     }
 
+    /**
+     *
+     */
     private fun onCanvasTouch(event: MotionEvent): Boolean {
         val (bX, bY) = translatecoords(event.x, event.y)
 
@@ -173,6 +198,16 @@ class DrawingCanvas : Fragment() {
         return true
     }
 
+    /**
+     *
+     */
+    private fun createNewBitmap(): Bitmap {
+        return Bitmap.createBitmap(1500, 1500, Bitmap.Config.ARGB_8888)
+    }
+
+    /**
+     *
+     */
     private fun drawOnBitmap() {
         val canvas = Canvas(myBitmap!!)
         val tempBrush = Paint()
@@ -186,16 +221,22 @@ class DrawingCanvas : Fragment() {
         updateCanvasView()
     }
 
-
+    /**
+     *
+     */
     private fun updateCanvasView() {
         canvasView!!.setBitmap(myBitmap!!)
     }
 
+    /**
+     *
+     */
     private fun translatecoords(touchX: Float, touchY: Float): Pair<Float, Float> {
         val bitmapX = touchX - offsetX!!
         val bitmapY = touchY - offsetY!!
         return Pair(bitmapX, bitmapY)
     }
+
 
     /**
      *
@@ -212,7 +253,6 @@ class DrawingCanvas : Fragment() {
                 }
             }).show()
     }
-
 
 
     /**
@@ -270,12 +310,18 @@ class DrawingCanvas : Fragment() {
         dialog.show()
     }
 
+    /**
+     *
+     */
     private fun setPenSize(penSize: Float) {
         paintbrush.strokeWidth = penSize
         currPenSize = paintbrush.strokeWidth
         currentPath = Path()
     }
 
+    /**
+     *
+     */
     private fun setPenShape(penShape: Paint.Cap) {
         paintbrush.strokeCap = penShape
         currPenShape = paintbrush.strokeCap
@@ -283,19 +329,20 @@ class DrawingCanvas : Fragment() {
     }
 
 
-
     /**
      *
      */
     private fun onBackClicked() {
-        //add drawing to viewmodel
-        if(pathList.size > 0){
+        if (pathList.size > 0) {
             currentDate = Date()
             val dateString = dateFormat.format(currentDate)
             val d = Drawing(binding.Title.text.toString(), myBitmap!!, dateString)
-            myViewModel.add(d)
+            if (state != null) {
+                myViewModel.add(d)
+            } else {
+                myViewModel.fixOrder(d)
+            }
         }
-        //go back to list
         findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
     }
 

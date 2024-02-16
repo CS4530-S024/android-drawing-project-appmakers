@@ -16,7 +16,7 @@
         android:background="@drawable/label"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@id/canvas"
+        app:layout_constraintBottom_toTopOf="@id/space"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="-36dp">
 
@@ -61,13 +61,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <Space
+        android:id="@+id/space"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"/>
 
     <com.example.drawable.CanvasView
         android:id="@+id/canvas"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toBottomOf="@id/space"
         app:layout_constraintBottom_toTopOf="@id/toolbar"/>
 
     <LinearLayout
@@ -103,6 +108,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/spraycan"
             android:layout_margin="10dp"
+            android:scaleX="-1"
             android:contentDescription="@string/spray_can" />
 
         <ImageButton
@@ -112,6 +118,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/eraser"
             android:layout_margin="10dp"
+            android:rotation="180"
             android:contentDescription="@string/eraser"
             />
     </LinearLayout>

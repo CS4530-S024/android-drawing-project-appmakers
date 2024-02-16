@@ -10,9 +10,11 @@ class DrawableViewModel: ViewModel(){
     private val drawings = MutableLiveData<MutableList<Drawing>>()
     val drawingsList = drawings as LiveData<out List<Drawing>>
     val name = "Drawings"
-    private var currBitmap : Bitmap? = null
+    private val bitmapLiveData = MutableLiveData<Bitmap>()
+    var currBitmap = bitmapLiveData as LiveData<out Bitmap>
     private var currColor : Int? = null
-    private var currDrawing: Drawing? = null
+    private var currIndex : Int? = null
+
 
 
     /**
@@ -20,10 +22,9 @@ class DrawableViewModel: ViewModel(){
      * @param drawing The drawing we are inserting into the List
      */
     fun add(drawing: Drawing){
-//        drawings.value!!.add(0, drawing)
-//        drawings.value = drawings.value
         val currentList = drawings.value?.toMutableList() ?: mutableListOf()
         currentList.add(0, drawing)
+        currIndex = 0
         drawings.value = currentList
     }
 
@@ -36,14 +37,6 @@ class DrawableViewModel: ViewModel(){
         drawings.value = drawings.value
     }
 
-    /**
-     * create bitmap here
-     *
-     */
-    fun newBitmap(): Bitmap {
-        currBitmap = Bitmap.createBitmap(1024, 1024, Bitmap.Config.ARGB_8888)
-        return currBitmap!!
-    }
 
     /**
      *
@@ -51,4 +44,37 @@ class DrawableViewModel: ViewModel(){
     fun setColor(color: Int){
         currColor = color
     }
+
+    /**
+     *
+     */
+    fun updateBitmap(bitmap: Bitmap) {
+        bitmapLiveData.value = bitmap
+        bitmapLiveData.value = bitmapLiveData.value
+    }
+
+    /**
+     *
+     */
+    fun setCurrBitmap(index: Int){
+        currIndex = index
+        bitmapLiveData.value = drawings.value!![index].bitmap
+        bitmapLiveData.value = bitmapLiveData.value
+    }
+
+    /**
+     *
+     */
+    fun fixOrder(drawing: Drawing){
+        drawings.value!!.removeAt(currIndex!!)
+        add(drawing)
+    }
+
+    /**
+     *
+     */
+    fun getDrawingTitle(index: Int): String {
+        return drawings.value!![index].name
+    }
+
 }
