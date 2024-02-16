@@ -141,8 +141,10 @@ class DrawingCanvas : Fragment() {
         viewWidth = canvasView!!.width.toFloat()
         viewHeight = canvasView!!.height.toFloat()
 //        scaleFactor = min(viewWidth!! / bitmapWidth!!, viewHeight!! / bitmapHeight!!)
-        offsetX = (viewWidth!! - bitmapWidth!!) / 2
-        offsetY = (viewHeight!! - bitmapHeight!!) / 2
+        val swidth = viewWidth!! / bitmapWidth!!
+        val sheight = viewHeight!! / bitmapHeight!!
+        offsetX = (viewWidth!! - bitmapWidth!! * swidth) / 2
+        offsetY = (viewHeight!! - bitmapHeight!! * sheight) / 2
     }
 
     fun onCanvasTouch(event: MotionEvent): Boolean {
@@ -151,7 +153,7 @@ class DrawingCanvas : Fragment() {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 currentPath.moveTo(bX, bY)
-//                drawOnBitmap()
+                drawOnBitmap()
             }
 
             MotionEvent.ACTION_MOVE -> {
