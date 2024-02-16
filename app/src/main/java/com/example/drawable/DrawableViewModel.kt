@@ -9,16 +9,15 @@ data class Drawing(val name: String, val bitmap: Bitmap, val date: String)
 class DrawableViewModel: ViewModel(){
     private val drawings = MutableLiveData<MutableList<Drawing>>()
     val drawingsList = drawings as LiveData<out List<Drawing>>
-    val name = "Drawings"
     private val bitmapLiveData = MutableLiveData<Bitmap>()
     var currBitmap = bitmapLiveData as LiveData<out Bitmap>
-    private var currColor : Int? = null
+    private val saveColor =  MutableLiveData<Int>()
+    var currColor = saveColor as LiveData<out Int>
     private var currIndex : Int? = null
 
 
-
     /**
-     * Adds drawing from list
+     * Adds drawing to list
      * @param drawing The drawing we are inserting into the List
      */
     fun add(drawing: Drawing){
@@ -42,7 +41,8 @@ class DrawableViewModel: ViewModel(){
      *
      */
     fun setColor(color: Int){
-        currColor = color
+        saveColor.value = color
+        saveColor.value = saveColor.value
     }
 
     /**
@@ -76,5 +76,4 @@ class DrawableViewModel: ViewModel(){
     fun getDrawingTitle(index: Int): String {
         return drawings.value!![index].name
     }
-
 }

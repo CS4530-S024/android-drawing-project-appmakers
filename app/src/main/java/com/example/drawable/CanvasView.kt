@@ -1,17 +1,11 @@
 package com.example.drawable
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.graphics.Canvas
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.Path
-import android.graphics.Paint
-import android.view.MotionEvent
 import android.view.ViewGroup
-import kotlin.math.min
 
 
 
@@ -23,7 +17,7 @@ class CanvasView @JvmOverloads constructor(
 
 
     private var myBitmap : Bitmap? = null
-    var lParams: ViewGroup.LayoutParams? = null
+    private var lParams: ViewGroup.LayoutParams? = null
 
     init {
         lParams = ViewGroup.LayoutParams(

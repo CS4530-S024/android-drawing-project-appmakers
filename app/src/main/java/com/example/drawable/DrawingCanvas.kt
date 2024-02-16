@@ -32,7 +32,7 @@ class DrawingCanvas : Fragment() {
     data class PaintedPath(val path: Path, val color: Int, val width: Float, val shape: Paint.Cap)
     private var _binding: FragmentDrawingCanvasBinding? = null
     private val binding by lazy { _binding!! }
-    private var currColor: Int = Color.BLACK
+    private var currColor: Int? = null
     private var title: String? = null
     private var state: String? = null
     private var canvasView: CanvasView? = null
@@ -85,26 +85,35 @@ class DrawingCanvas : Fragment() {
         binding.pallete.setOnClickListener {
             loadColorPicker()
         }
+
         //
         state = requireArguments().getString("New")
         if(state != null){
             title = state
-            val bitmap = createNewBitmap()
-            myViewModel.updateBitmap(bitmap)
+            if(myViewModel.currBitmap.value == null){
+                val bitmap = createNewBitmap()
+                myViewModel.updateBitmap(bitmap)
+                currColor = Color.BLACK
+                myViewModel.setColor(currColor!!)
+            }
         }else{
-
             title = requireArguments().getString("Title")
         }
 
-        binding.Title.setText(title)
         myBitmap = myViewModel.currBitmap.value
+        currColor = myViewModel.currColor.value
+        binding.Title.setText(title)
+        
+        myViewModel.currColor.observe(viewLifecycleOwner) { color ->
+            currColor = color
+            paintbrush.color = color
+        }
 
         //observe changes on bitmap
         myViewModel.currBitmap.observe(viewLifecycleOwner) { bitmap ->
             myBitmap = bitmap // Assign it to fragment's bitmap variable
-            binding.canvas.setBitmap(myBitmap!!)
+            binding.canvas.setBitmap(bitmap)
         }
-
 
         // displays pen size / shape popup
         binding.paintBrush.setOnClickListener {
@@ -142,9 +151,12 @@ class DrawingCanvas : Fragment() {
 
         //Moves back to list fragment and saves drawing
         binding.backButton.setOnClickListener { onBackClicked()  }
+        //Handles drawing on canvas
+        canvasView!!.setOnTouchListener{_, event-> onCanvasTouch(event)}
+
+        //Initializes things to draw
         initBrush()
         initVars()
-        canvasView!!.setOnTouchListener{_, event-> onCanvasTouch(event)}
     }
 
     /**
@@ -152,7 +164,7 @@ class DrawingCanvas : Fragment() {
      */
     private fun initBrush() {
         paintbrush.isAntiAlias = true
-        paintbrush.color = currColor
+        paintbrush.color = currColor!!
         paintbrush.strokeWidth = width
         paintbrush.style = Paint.Style.STROKE
         paintbrush.strokeJoin = Paint.Join.ROUND
@@ -218,6 +230,7 @@ class DrawingCanvas : Fragment() {
             tempBrush.strokeCap = path.shape
             canvas.drawPath(path.path, tempBrush)
         }
+        myViewModel.updateBitmap(myBitmap!!)
         updateCanvasView()
     }
 
@@ -242,14 +255,14 @@ class DrawingCanvas : Fragment() {
      *
      */
     private fun loadColorPicker() {
-        AmbilWarnaDialog(requireActivity(), currColor,
+        AmbilWarnaDialog(requireActivity(), currColor!!,
             object : AmbilWarnaDialog.OnAmbilWarnaListener {
                 override fun onCancel(dialog: AmbilWarnaDialog?) {
                 }
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
-                    currColor = color
+//                    currColor = color
                     myViewModel.setColor(color)
-                    paintbrush.color = color
+//                    paintbrush.color = color
                 }
             }).show()
     }
