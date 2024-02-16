@@ -8,7 +8,7 @@
     android:id="@+id/drawing_layout">
 
     <ImageView
-        android:id="@+id/myImageView"
+        android:id="@+id/drawing"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_margin="10dp"
@@ -22,7 +22,7 @@
         android:orientation="vertical"
         android:background="@drawable/label">
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Drawing 1"

@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.drawable.ColorDrawable
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.LayoutInflater
@@ -23,7 +24,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.drawable.databinding.FragmentDrawingCanvasBinding
 import yuku.ambilwarna.AmbilWarnaDialog
-import kotlin.math.min
+import java.util.Date
 
 class DrawingCanvas : Fragment() {
 
@@ -45,17 +46,19 @@ class DrawingCanvas : Fragment() {
     private val medWidth: Float = 10F
     private val thinWidth: Float = 2F
     private val thickWidth: Float = 25F
-    private var currPenSize: Float = medWidth;
+    private var currPenSize: Float = medWidth
     private var currPenShape: Paint.Cap = Paint.Cap.ROUND
     private var paintbrush = Paint()
     private var pathList = ArrayList<PaintedPath>()
-    var bitmapWidth: Int? = null
-    var bitmapHeight: Int? = null
-    var scaleFactor: Float? = null
-    var viewWidth: Float? = null
-    var viewHeight: Float? = null
+    private var bitmapWidth: Int? = null
+    private var bitmapHeight: Int? = null
+    private var viewWidth: Float? = null
+    private var viewHeight: Float? = null
     private var width = 8F
     private var currentPath = Path()
+    @SuppressLint("SimpleDateFormat")
+    val dateFormat = SimpleDateFormat("MM-dd-yyyy")
+    var currentDate: Date? = null
 
 
     /**
@@ -146,7 +149,7 @@ class DrawingCanvas : Fragment() {
         offsetY = (viewHeight!! - bitmapHeight!! * sheight) / 2
     }
 
-    fun onCanvasTouch(event: MotionEvent): Boolean {
+    private fun onCanvasTouch(event: MotionEvent): Boolean {
         val (bX, bY) = translatecoords(event.x, event.y)
 
         when (event.action) {
@@ -267,13 +270,13 @@ class DrawingCanvas : Fragment() {
         dialog.show()
     }
 
-    fun setPenSize(penSize: Float) {
+    private fun setPenSize(penSize: Float) {
         paintbrush.strokeWidth = penSize
         currPenSize = paintbrush.strokeWidth
         currentPath = Path()
     }
 
-    fun setPenShape(penShape: Paint.Cap) {
+    private fun setPenShape(penShape: Paint.Cap) {
         paintbrush.strokeCap = penShape
         currPenShape = paintbrush.strokeCap
         currentPath = Path()
@@ -284,8 +287,14 @@ class DrawingCanvas : Fragment() {
     /**
      *
      */
-    fun onBackClicked() {
-        //save drawing to viewmodel
+    private fun onBackClicked() {
+        //add drawing to viewmodel
+        if(pathList.size > 0){
+            currentDate = Date()
+            val dateString = dateFormat.format(currentDate)
+            val d = Drawing(binding.Title.text.toString(), myBitmap!!, dateString)
+            myViewModel.add(d)
+        }
         //go back to list
         findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
     }

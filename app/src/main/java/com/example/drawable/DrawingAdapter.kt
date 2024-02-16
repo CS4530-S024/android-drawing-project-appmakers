@@ -1,11 +1,12 @@
 package com.example.drawable
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.drawable.databinding.DrawingItemBinding
 
-class DrawingAdapter(private var drawings: List<Drawing>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class DrawingAdapter(private var drawings: List<Drawing>): RecyclerView.Adapter<DrawingAdapter.DrawingViewHolder>() {
 
     /**
      *
@@ -14,17 +15,20 @@ class DrawingAdapter(private var drawings: List<Drawing>): RecyclerView.Adapter<
         drawings = newDrawings
         notifyDataSetChanged()
     }
+
     inner class DrawingViewHolder(val binding: DrawingItemBinding): RecyclerView.ViewHolder(binding.root)
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrawingViewHolder {
         return DrawingViewHolder(DrawingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
     /**
      *
      */
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: DrawingViewHolder, position: Int) {
         val item = drawings[position]
-        //add date and title
+        holder.binding.dateView.text = item.date
+        holder.binding.title.text = item.name
+        holder.binding.drawing.setImageBitmap(item.bitmap)
     }
 
     /**
