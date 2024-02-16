@@ -140,7 +140,6 @@ class DrawingCanvas : Fragment() {
     private fun initVars(){
         viewWidth = canvasView!!.width.toFloat()
         viewHeight = canvasView!!.height.toFloat()
-//        scaleFactor = min(viewWidth!! / bitmapWidth!!, viewHeight!! / bitmapHeight!!)
         val swidth = viewWidth!! / bitmapWidth!!
         val sheight = viewHeight!! / bitmapHeight!!
         offsetX = (viewWidth!! - bitmapWidth!! * swidth) / 2
@@ -166,15 +165,15 @@ class DrawingCanvas : Fragment() {
                 pathList.add(PaintedPath(currentPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
                 currentPath.reset()
                 drawOnBitmap()
-
             }
         }
         return true
     }
 
     private fun drawOnBitmap() {
-        var canvas = Canvas(myBitmap!!)
-        var tempBrush = Paint()
+        val canvas = Canvas(myBitmap!!)
+        val tempBrush = Paint()
+        tempBrush.style = Paint.Style.STROKE
         for (path in pathList){
             tempBrush.color = path.color
             tempBrush.strokeWidth = path.width
