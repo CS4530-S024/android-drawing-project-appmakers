@@ -5,6 +5,18 @@
       <entry key="app">
         <State />
       </entry>
+      <entry key="testBackButton()">
+        <State />
+      </entry>
+      <entry key="testColorPicker()">
+        <State />
+      </entry>
+      <entry key="testPaintBrushButton()">
+        <State />
+      </entry>
+      <entry key="testPaintBrushFunctionality()">
+        <State />
+      </entry>
       <entry key="ui-tests">
         <State />
       </entry>
