@@ -25,6 +25,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.drawable.databinding.FragmentDrawingCanvasBinding
 import yuku.ambilwarna.AmbilWarnaDialog
 import java.util.Date
+import java.util.LinkedList
 
 class DrawingCanvas : Fragment() {
 
@@ -43,11 +44,14 @@ class DrawingCanvas : Fragment() {
     private var myBitmap : Bitmap? = null
     private var isDrag = false
     private var isSquare = false
+    private var isFill = false
+    private var isErase = false
     private var offsetX: Float? = null
     private var offsetY: Float? = null
     private val medWidth: Float = 10F
     private val thinWidth: Float = 2F
     private val thickWidth: Float = 25F
+    private val eraseWidth: Float = 15F
     private var currPenSize: Float = medWidth
     private var currPenShape: Paint.Cap = Paint.Cap.ROUND
     private var paintbrush = Paint()
@@ -119,6 +123,8 @@ class DrawingCanvas : Fragment() {
 
         // displays pen size / shape popup
         binding.paintBrush.setOnClickListener {
+            isFill = false
+            isErase = false
             showPopUp()
         }
 
@@ -156,6 +162,11 @@ class DrawingCanvas : Fragment() {
         //Handles drawing on canvas
         canvasView!!.setOnTouchListener{_, event-> onCanvasTouch(event)}
 
+        binding.paintBucket.setOnClickListener { isFill = true }
+        binding.eraser.setOnClickListener { isErase = true }
+
+
+
         //Initializes things to draw
         initBrush()
         initVars()
@@ -192,9 +203,15 @@ class DrawingCanvas : Fragment() {
         val (bX, bY) = translatecoords(event.x, event.y)
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                currentPath.moveTo(bX, bY)
-                isDrag = false
-                drawOnBitmap()
+                if(isFill){
+                    val targetColor = myBitmap!!.getPixel(bX.toInt(), bY.toInt())
+                    applyFloodFill(bX.toInt(), bY.toInt(), targetColor, paintbrush.color)
+                }else{
+                    currentPath.moveTo(bX, bY)
+                    isDrag = false
+                    drawOnBitmap()
+                }
+
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -202,14 +219,23 @@ class DrawingCanvas : Fragment() {
                 currentPath.lineTo(bX, bY)
                 // Add to pathList only when significant movement has occurred to avoid duplicate paths
                 if (!pathList.contains(PaintedPath(currentPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))) {
-                    pathList.add(PaintedPath(Path(currentPath), paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+                    if(isErase){
+                        pathList.add(PaintedPath(Path(currentPath), Color.WHITE, eraseWidth, paintbrush.strokeCap))
+                    }else{
+                        pathList.add(PaintedPath(Path(currentPath), paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+                    }
                 }
                 drawOnBitmap()
             }
 
             MotionEvent.ACTION_UP -> {
                 if (isDrag) {
+                    if(isErase){
+                    pathList.add(PaintedPath(Path(currentPath), Color.WHITE, eraseWidth, paintbrush.strokeCap))
+                }else{
                     pathList.add(PaintedPath(Path(currentPath), paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+                }
+
                     currentPath.reset()
                 } else {
                     drawDot(bX, bY)
@@ -218,6 +244,24 @@ class DrawingCanvas : Fragment() {
             }
         }
         return true
+    }
+
+    private fun applyFloodFill(startX: Int, startY: Int, targetColor: Int, replacementColor: Int) {
+        val queue = LinkedList<Pair<Int, Int>>()
+        queue.add(Pair(startX, startY))
+
+        while (queue.isNotEmpty()) {
+            val (x, y) = queue.poll()!!
+            if (x < 0 || x >= myBitmap!!.width || y < 0 || y >= myBitmap!!.height) continue
+            if (myBitmap!!.getPixel(x, y) != targetColor) continue
+            if (myBitmap!!.getPixel(x, y) == replacementColor) continue
+
+            myBitmap!!.setPixel(x, y, replacementColor)
+            queue.add(Pair(x + 1, y))
+            queue.add(Pair(x - 1, y))
+            queue.add(Pair(x, y + 1))
+            queue.add(Pair(x, y - 1))
+        }
     }
 
     /**

@@ -7,12 +7,19 @@
     app:cardCornerRadius="20dp"
     android:layout_marginHorizontal="20dp">
 
+
     <LinearLayout
         android:gravity="center"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="20dp" >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sizes"
+            android:textSize="20sp"
+            android:gravity="center"/>
 
         <LinearLayout
         android:gravity="center"
@@ -49,6 +56,12 @@
             android:contentDescription="@string/thick_pen" />
 
     </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Shapes"
+            android:textSize="20sp"
+            android:gravity="center"/>
 
     <LinearLayout
         android:gravity="center"
@@ -56,6 +69,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="20dp" >
+
 
         <ImageButton
             android:id="@+id/trianglePen"
