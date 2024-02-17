@@ -42,6 +42,7 @@ class DrawingCanvas : Fragment() {
     //bitmap drawing vars
     private var myBitmap : Bitmap? = null
     private var isDrag = false
+    private var isSquare = false
     private var offsetX: Float? = null
     private var offsetY: Float? = null
     private val medWidth: Float = 10F
@@ -197,9 +198,6 @@ class DrawingCanvas : Fragment() {
             }
 
             MotionEvent.ACTION_MOVE -> {
-//                currentPath.lineTo(bX, bY)
-//                pathList.add(PaintedPath(currentPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
-//                drawOnBitmap()
                 isDrag = true // Set flag to indicate dragging
                 currentPath.lineTo(bX, bY)
                 // Add to pathList only when significant movement has occurred to avoid duplicate paths
@@ -246,11 +244,25 @@ class DrawingCanvas : Fragment() {
         updateCanvasView()
     }
 
+    /**
+     * Allows the user to draw dots
+     * @param x the x coordinate
+     * @param y the y coordinate
+     */
     private fun drawDot(x: Float, y: Float) {
         val dotPath = Path()
-        dotPath.addCircle(x, y, paintbrush.strokeWidth / 2, Path.Direction.CW)
+        val halfStrokeWidth = paintbrush.strokeWidth / 2
+
+        if(isSquare){
+            dotPath.moveTo(x - halfStrokeWidth, y - halfStrokeWidth) // Top-left
+            dotPath.lineTo(x + halfStrokeWidth, y - halfStrokeWidth) // Top-right
+            dotPath.lineTo(x + halfStrokeWidth, y + halfStrokeWidth) // Bottom-right
+            dotPath.lineTo(x - halfStrokeWidth, y + halfStrokeWidth) // Bottom-left
+            dotPath.close()
+        }else{
+            dotPath.addCircle(x, y, halfStrokeWidth, Path.Direction.CW)
+        }
         pathList.add(PaintedPath(dotPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
-        
     }
 
     /**
@@ -330,11 +342,13 @@ class DrawingCanvas : Fragment() {
         }
         squarePen.setOnClickListener {
             currPenShape = Paint.Cap.SQUARE
+            isSquare = true
             setPenShape(currPenShape)
             dialog.hide()
         }
         roundPen.setOnClickListener {
             currPenShape = Paint.Cap.ROUND
+            isSquare = false
             setPenShape(currPenShape)
             dialog.hide()
         }
