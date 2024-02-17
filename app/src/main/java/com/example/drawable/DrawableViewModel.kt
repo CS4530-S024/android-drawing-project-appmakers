@@ -25,6 +25,7 @@ class DrawableViewModel: ViewModel(){
         currentList.add(0, drawing)
         currIndex = 0
         drawings.value = currentList
+        drawings.value = drawings.value
     }
 
     /**

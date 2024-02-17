@@ -162,10 +162,10 @@ class DrawingCanvas : Fragment() {
         //Handles drawing on canvas
         canvasView!!.setOnTouchListener{_, event-> onCanvasTouch(event)}
 
-        binding.paintBucket.setOnClickListener { isFill = true }
-        binding.eraser.setOnClickListener { isErase = true }
-
-
+        binding.paintBucket.setOnClickListener { isFill = true
+        isErase = false}
+        binding.eraser.setOnClickListener { isErase = true
+        isFill = false}
 
         //Initializes things to draw
         initBrush()
@@ -246,6 +246,9 @@ class DrawingCanvas : Fragment() {
         return true
     }
 
+    /**
+     * Applies fill to the canvas
+      */
     private fun applyFloodFill(startX: Int, startY: Int, targetColor: Int, replacementColor: Int) {
         val queue = LinkedList<Pair<Int, Int>>()
         queue.add(Pair(startX, startY))
