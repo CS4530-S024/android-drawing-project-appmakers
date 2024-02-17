@@ -1,4 +1,5 @@
 package com.example.drawable
+
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
@@ -26,11 +27,16 @@ import com.example.drawable.databinding.FragmentDrawingCanvasBinding
 import yuku.ambilwarna.AmbilWarnaDialog
 import java.util.Date
 import java.util.LinkedList
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.random.Random
 
 class DrawingCanvas : Fragment() {
 
 
     data class PaintedPath(val path: Path, val color: Int, val width: Float, val shape: Paint.Cap)
+    data class Circles(val x: Double, val y: Double, val radius: Float, val paint: Paint)
+
     private var _binding: FragmentDrawingCanvasBinding? = null
     private val binding by lazy { _binding!! }
     private var currColor: Int? = null
@@ -38,14 +44,15 @@ class DrawingCanvas : Fragment() {
     private var state: String? = null
     private var canvasView: CanvasView? = null
     private lateinit var gestureDetector: GestureDetector
-    private  val myViewModel : DrawableViewModel by activityViewModels()
+    private val myViewModel: DrawableViewModel by activityViewModels()
 
     //bitmap drawing vars
-    private var myBitmap : Bitmap? = null
+    private var myBitmap: Bitmap? = null
     private var isDrag = false
     private var isSquare = false
     private var isFill = false
     private var isErase = false
+    private var isSpray = false
     private var offsetX: Float? = null
     private var offsetY: Float? = null
     private val medWidth: Float = 10F
@@ -56,12 +63,14 @@ class DrawingCanvas : Fragment() {
     private var currPenShape: Paint.Cap = Paint.Cap.ROUND
     private var paintbrush = Paint()
     private var pathList = ArrayList<PaintedPath>()
+    private var circles = ArrayList<Circles>()
     private var bitmapWidth: Int? = null
     private var bitmapHeight: Int? = null
     private var viewWidth: Float? = null
     private var viewHeight: Float? = null
     private var width = 8F
     private var currentPath = Path()
+
     @SuppressLint("SimpleDateFormat")
     val dateFormat = SimpleDateFormat("MM-dd-yyyy")
     private var currentDate: Date? = null
@@ -74,7 +83,7 @@ class DrawingCanvas : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View{
+    ): View {
 
         _binding = FragmentDrawingCanvasBinding.inflate(inflater, container, false)
         return binding.root
@@ -94,15 +103,15 @@ class DrawingCanvas : Fragment() {
 
         //Evaluates the drawing state and sets the title and other vars accordingly
         state = requireArguments().getString("New")
-        if(state != null){
+        if (state != null) {
             title = state
-            if(myViewModel.currBitmap.value == null){
+            if (myViewModel.currBitmap.value == null) {
                 val bitmap = createNewBitmap()
                 myViewModel.updateBitmap(bitmap)
                 currColor = Color.BLACK
                 myViewModel.updateColor(currColor!!)
             }
-        }else{
+        } else {
             title = requireArguments().getString("Title")
         }
 
@@ -123,6 +132,7 @@ class DrawingCanvas : Fragment() {
 
         // displays pen size / shape popup
         binding.paintBrush.setOnClickListener {
+            isSpray = false
             isFill = false
             isErase = false
             showPopUp()
@@ -133,22 +143,25 @@ class DrawingCanvas : Fragment() {
         bitmapWidth = myBitmap!!.width
 
         //Handles double tap on title
-        gestureDetector = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
-            override fun onDoubleTap(e: MotionEvent): Boolean {
-                binding.Title.isFocusableInTouchMode = true
-                binding.Title.requestFocus()
-                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.showSoftInput(binding.Title, InputMethodManager.SHOW_IMPLICIT)
-                return true
-            }
-        })
+        gestureDetector =
+            GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
+                override fun onDoubleTap(e: MotionEvent): Boolean {
+                    binding.Title.isFocusableInTouchMode = true
+                    binding.Title.requestFocus()
+                    val imm =
+                        requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showSoftInput(binding.Title, InputMethodManager.SHOW_IMPLICIT)
+                    return true
+                }
+            })
         binding.Title.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
 
         //Handles when user is done editing title
         binding.Title.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 v.clearFocus()
-                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(v.windowToken, 0)
                 binding.Title.isFocusable = false
                 true
@@ -158,14 +171,26 @@ class DrawingCanvas : Fragment() {
         }
 
         //Moves back to list fragment and saves drawing
-        binding.backButton.setOnClickListener { onBackClicked()  }
+        binding.backButton.setOnClickListener { onBackClicked() }
         //Handles drawing on canvas
-        canvasView!!.setOnTouchListener{_, event-> onCanvasTouch(event)}
+        canvasView!!.setOnTouchListener { _, event -> onCanvasTouch(event) }
 
-        binding.paintBucket.setOnClickListener { isFill = true
-        isErase = false}
-        binding.eraser.setOnClickListener { isErase = true
-        isFill = false}
+        binding.paintBucket.setOnClickListener {
+            isSpray = false
+            isFill = true
+            isErase = false
+        }
+        binding.eraser.setOnClickListener {
+            isSpray = false
+            isErase = true
+            isFill = false
+        }
+
+        binding.spraycan.setOnClickListener {
+            isSpray = true
+            isErase = false
+            isFill = false
+        }
 
         //Initializes things to draw
         initBrush()
@@ -187,7 +212,7 @@ class DrawingCanvas : Fragment() {
     /**
      * Initializes variables for drawing
      */
-    private fun initVars(){
+    private fun initVars() {
         viewWidth = canvasView!!.width.toFloat()
         viewHeight = canvasView!!.height.toFloat()
         val swidth = viewWidth!! / bitmapWidth!!
@@ -203,10 +228,12 @@ class DrawingCanvas : Fragment() {
         val (bX, bY) = translatecoords(event.x, event.y)
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                if(isFill){
+                if (isFill) {
                     val targetColor = myBitmap!!.getPixel(bX.toInt(), bY.toInt())
                     applyFloodFill(bX.toInt(), bY.toInt(), targetColor, paintbrush.color)
-                }else{
+                } else if (isSpray) {
+                    getCircles(bX, bY, paintbrush.color, paintbrush.strokeWidth * 4, 1F)
+                } else {
                     currentPath.moveTo(bX, bY)
                     isDrag = false
                     drawOnBitmap()
@@ -218,11 +245,35 @@ class DrawingCanvas : Fragment() {
                 isDrag = true // Set flag to indicate dragging
                 currentPath.lineTo(bX, bY)
                 // Add to pathList only when significant movement has occurred to avoid duplicate paths
-                if (!pathList.contains(PaintedPath(currentPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))) {
-                    if(isErase){
-                        pathList.add(PaintedPath(Path(currentPath), Color.WHITE, eraseWidth, paintbrush.strokeCap))
-                    }else{
-                        pathList.add(PaintedPath(Path(currentPath), paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+                if (!pathList.contains(
+                        PaintedPath(
+                            currentPath,
+                            paintbrush.color,
+                            paintbrush.strokeWidth,
+                            paintbrush.strokeCap
+                        )
+                    )
+                ) {
+                    if (isErase) {
+                        pathList.add(
+                            PaintedPath(
+                                Path(currentPath),
+                                Color.WHITE,
+                                eraseWidth,
+                                paintbrush.strokeCap
+                            )
+                        )
+                    }else if(isSpray){
+                        getCircles(bX, bY, paintbrush.color, paintbrush.strokeWidth * 4, 1F)
+                    } else {
+                        pathList.add(
+                            PaintedPath(
+                                Path(currentPath),
+                                paintbrush.color,
+                                paintbrush.strokeWidth,
+                                paintbrush.strokeCap
+                            )
+                        )
                     }
                 }
                 drawOnBitmap()
@@ -230,11 +281,27 @@ class DrawingCanvas : Fragment() {
 
             MotionEvent.ACTION_UP -> {
                 if (isDrag) {
-                    if(isErase){
-                    pathList.add(PaintedPath(Path(currentPath), Color.WHITE, eraseWidth, paintbrush.strokeCap))
-                }else{
-                    pathList.add(PaintedPath(Path(currentPath), paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
-                }
+                    if (isErase) {
+                        pathList.add(
+                            PaintedPath(
+                                Path(currentPath),
+                                Color.WHITE,
+                                eraseWidth,
+                                paintbrush.strokeCap
+                            )
+                        )
+                    } else if(isSpray){
+                        getCircles(bX, bY, paintbrush.color, paintbrush.strokeWidth * 4, 1F)
+                    }else {
+                        pathList.add(
+                            PaintedPath(
+                                Path(currentPath),
+                                paintbrush.color,
+                                paintbrush.strokeWidth,
+                                paintbrush.strokeCap
+                            )
+                        )
+                    }
 
                     currentPath.reset()
                 } else {
@@ -248,7 +315,7 @@ class DrawingCanvas : Fragment() {
 
     /**
      * Applies fill to the canvas
-      */
+     */
     private fun applyFloodFill(startX: Int, startY: Int, targetColor: Int, replacementColor: Int) {
         val queue = LinkedList<Pair<Int, Int>>()
         queue.add(Pair(startX, startY))
@@ -281,12 +348,16 @@ class DrawingCanvas : Fragment() {
         val canvas = Canvas(myBitmap!!)
         val tempBrush = Paint()
         tempBrush.style = Paint.Style.STROKE
-        for (path in pathList){
+        for (path in pathList) {
             tempBrush.color = path.color
             tempBrush.strokeWidth = path.width
             tempBrush.strokeCap = path.shape
             canvas.drawPath(path.path, tempBrush)
         }
+        for(c in circles){
+            canvas.drawCircle(c.x.toFloat(), c.y.toFloat(), c.radius, c.paint)
+        }
+
         myViewModel.updateBitmap(myBitmap!!)
         updateCanvasView()
     }
@@ -300,16 +371,23 @@ class DrawingCanvas : Fragment() {
         val dotPath = Path()
         val halfStrokeWidth = paintbrush.strokeWidth / 2
 
-        if(isSquare){
+        if (isSquare) {
             dotPath.moveTo(x - halfStrokeWidth, y - halfStrokeWidth) // Top-left
             dotPath.lineTo(x + halfStrokeWidth, y - halfStrokeWidth) // Top-right
             dotPath.lineTo(x + halfStrokeWidth, y + halfStrokeWidth) // Bottom-right
             dotPath.lineTo(x - halfStrokeWidth, y + halfStrokeWidth) // Bottom-left
             dotPath.close()
-        }else{
+        } else {
             dotPath.addCircle(x, y, halfStrokeWidth, Path.Direction.CW)
         }
-        pathList.add(PaintedPath(dotPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+        pathList.add(
+            PaintedPath(
+                dotPath,
+                paintbrush.color,
+                paintbrush.strokeWidth,
+                paintbrush.strokeCap
+            )
+        )
     }
 
     /**
@@ -339,6 +417,7 @@ class DrawingCanvas : Fragment() {
             object : AmbilWarnaDialog.OnAmbilWarnaListener {
                 override fun onCancel(dialog: AmbilWarnaDialog?) {
                 }
+
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
                     myViewModel.updateColor(color)
                 }
@@ -440,6 +519,42 @@ class DrawingCanvas : Fragment() {
         }
         findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
     }
+
+    fun getCircles(
+        centerX: Float,
+        centerY: Float,
+        brushColor: Int,
+        brushWidth: Float,
+        airBrushDensity: Float,
+        spreadMultiplier: Float = 1.7f, // Controls the spread of the dots 1.2
+        dotSize: Float = 0.2f // Controls the size of the dots .2
+    ) {
+        val paint = Paint().apply {
+            color = brushColor
+            isAntiAlias = true
+        }
+
+        val radius = brushWidth / 2f * spreadMultiplier // Increased spread
+        val rng = Random.Default
+
+        val pixelCount: Int = if (brushWidth == 1F) {
+            rng.nextInt(2) // Either 0 or 1, simulating a round() call
+        } else {
+            kotlin.math.ceil(Math.PI * radius * radius * airBrushDensity).toInt()
+        }
+
+        for (i in 0 until pixelCount) {
+            val angle = rng.nextDouble() * 2 * Math.PI
+            val distance = rng.nextDouble() * radius
+            val x = centerX + distance * sin(angle).toFloat()
+            val y = centerY + distance * cos(angle).toFloat()
+            val alpha = rng.nextFloat() * 0.9f
+            paint.alpha = (alpha * 255).toInt()
+            circles.add(Circles(x, y, dotSize, paint)) // Using dotSize for the dot's radius
+        }
+    }
+
+
 
     /**
      * Destroys the view
