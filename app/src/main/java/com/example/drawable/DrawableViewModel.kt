@@ -38,15 +38,17 @@ class DrawableViewModel: ViewModel(){
 
 
     /**
-     *
+     * Updates the color when its changed
+     * @param color the new color
      */
-    fun setColor(color: Int){
+    fun updateColor(color: Int){
         saveColor.value = color
         saveColor.value = saveColor.value
     }
 
     /**
-     *
+     * Updates the current bitmap when changes happen
+     * @param bitmap the changed bitmap
      */
     fun updateBitmap(bitmap: Bitmap) {
         bitmapLiveData.value = bitmap
@@ -54,7 +56,8 @@ class DrawableViewModel: ViewModel(){
     }
 
     /**
-     *
+     * Sets the current bitmap
+     * @param index the position of the drawing with the bitmap
      */
     fun setCurrBitmap(index: Int){
         currIndex = index
@@ -63,7 +66,8 @@ class DrawableViewModel: ViewModel(){
     }
 
     /**
-     *
+     * Fixes the ordering of the drawings by putting the new drawing at the top
+     * @param drawing the changed drawing to put at the top
      */
     fun fixOrder(drawing: Drawing){
         drawings.value!!.removeAt(currIndex!!)
@@ -71,7 +75,8 @@ class DrawableViewModel: ViewModel(){
     }
 
     /**
-     *
+     * Gets the title of the drawing
+     * @param index the position of the drawing
      */
     fun getDrawingTitle(index: Int): String {
         return drawings.value!![index].name

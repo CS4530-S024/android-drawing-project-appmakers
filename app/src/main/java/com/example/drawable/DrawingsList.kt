@@ -23,7 +23,7 @@ class DrawingsList : Fragment() {
 
 
     /**
-     *
+     * Creates the view
      */
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +40,7 @@ class DrawingsList : Fragment() {
     }
 
     /**
-     *
+     * Attaches listeners and restores saved items such as the list of drawings
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,7 +73,8 @@ class DrawingsList : Fragment() {
     }
 
     /**
-     *
+     * Sets the current bitmap, then goes to the canvas
+     * @param pos the position of the clicked drawing
      */
     private fun sendClick(pos: Int){
         myViewModel.setCurrBitmap(pos)
@@ -83,7 +84,7 @@ class DrawingsList : Fragment() {
     }
 
     /**
-     *
+     * Destroys the view
      */
     override fun onDestroyView() {
         super.onDestroyView()

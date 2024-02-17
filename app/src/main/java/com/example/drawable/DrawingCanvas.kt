@@ -41,6 +41,7 @@ class DrawingCanvas : Fragment() {
 
     //bitmap drawing vars
     private var myBitmap : Bitmap? = null
+    private var isDrag = false
     private var offsetX: Float? = null
     private var offsetY: Float? = null
     private val medWidth: Float = 10F
@@ -62,7 +63,7 @@ class DrawingCanvas : Fragment() {
 
 
     /**
-     *
+     * Creates the view
      */
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,7 +76,7 @@ class DrawingCanvas : Fragment() {
     }
 
     /**
-     *
+     * Attaches listeners and restores saved items such as the bitmap or color
      */
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -86,7 +87,7 @@ class DrawingCanvas : Fragment() {
             loadColorPicker()
         }
 
-        //
+        //Evaluates the drawing state and sets the title and other vars accordingly
         state = requireArguments().getString("New")
         if(state != null){
             title = state
@@ -94,7 +95,7 @@ class DrawingCanvas : Fragment() {
                 val bitmap = createNewBitmap()
                 myViewModel.updateBitmap(bitmap)
                 currColor = Color.BLACK
-                myViewModel.setColor(currColor!!)
+                myViewModel.updateColor(currColor!!)
             }
         }else{
             title = requireArguments().getString("Title")
@@ -103,7 +104,7 @@ class DrawingCanvas : Fragment() {
         myBitmap = myViewModel.currBitmap.value
         currColor = myViewModel.currColor.value
         binding.Title.setText(title)
-        
+
         myViewModel.currColor.observe(viewLifecycleOwner) { color ->
             currColor = color
             paintbrush.color = color
@@ -160,7 +161,7 @@ class DrawingCanvas : Fragment() {
     }
 
     /**
-     *
+     * Initializes brush properties
      */
     private fun initBrush() {
         paintbrush.isAntiAlias = true
@@ -172,7 +173,7 @@ class DrawingCanvas : Fragment() {
     }
 
     /**
-     *
+     * Initializes variables for drawing
      */
     private fun initVars(){
         viewWidth = canvasView!!.width.toFloat()
@@ -184,26 +185,37 @@ class DrawingCanvas : Fragment() {
     }
 
     /**
-     *
+     * Handles touch events on the canvas
      */
     private fun onCanvasTouch(event: MotionEvent): Boolean {
         val (bX, bY) = translatecoords(event.x, event.y)
-
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 currentPath.moveTo(bX, bY)
+                isDrag = false
                 drawOnBitmap()
             }
 
             MotionEvent.ACTION_MOVE -> {
+//                currentPath.lineTo(bX, bY)
+//                pathList.add(PaintedPath(currentPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+//                drawOnBitmap()
+                isDrag = true // Set flag to indicate dragging
                 currentPath.lineTo(bX, bY)
-                pathList.add(PaintedPath(currentPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+                // Add to pathList only when significant movement has occurred to avoid duplicate paths
+                if (!pathList.contains(PaintedPath(currentPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))) {
+                    pathList.add(PaintedPath(Path(currentPath), paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+                }
                 drawOnBitmap()
             }
 
             MotionEvent.ACTION_UP -> {
-                pathList.add(PaintedPath(currentPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
-                currentPath.reset()
+                if (isDrag) {
+                    pathList.add(PaintedPath(Path(currentPath), paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+                    currentPath.reset()
+                } else {
+                    drawDot(bX, bY)
+                }
                 drawOnBitmap()
             }
         }
@@ -211,14 +223,14 @@ class DrawingCanvas : Fragment() {
     }
 
     /**
-     *
+     * Creates a new white bitmap
      */
     private fun createNewBitmap(): Bitmap {
-        return Bitmap.createBitmap(1500, 1500, Bitmap.Config.ARGB_8888)
+        return Bitmap.createBitmap(2000, 2000, Bitmap.Config.ARGB_8888)
     }
 
     /**
-     *
+     * Handles drawing on the bitmap
      */
     private fun drawOnBitmap() {
         val canvas = Canvas(myBitmap!!)
@@ -234,15 +246,24 @@ class DrawingCanvas : Fragment() {
         updateCanvasView()
     }
 
+    private fun drawDot(x: Float, y: Float) {
+        val dotPath = Path()
+        dotPath.addCircle(x, y, paintbrush.strokeWidth / 2, Path.Direction.CW)
+        pathList.add(PaintedPath(dotPath, paintbrush.color, paintbrush.strokeWidth, paintbrush.strokeCap))
+        
+    }
+
     /**
-     *
+     * Updates the canvas with the bitmap
      */
     private fun updateCanvasView() {
         canvasView!!.setBitmap(myBitmap!!)
     }
 
     /**
-     *
+     * Translates view coordinates to bitmap coordinates
+     * @param touchX x coordinate in the view
+     * @param touchY y coordinate in the view
      */
     private fun translatecoords(touchX: Float, touchY: Float): Pair<Float, Float> {
         val bitmapX = touchX - offsetX!!
@@ -252,7 +273,7 @@ class DrawingCanvas : Fragment() {
 
 
     /**
-     *
+     * Displays the color picker
      */
     private fun loadColorPicker() {
         AmbilWarnaDialog(requireActivity(), currColor!!,
@@ -260,16 +281,14 @@ class DrawingCanvas : Fragment() {
                 override fun onCancel(dialog: AmbilWarnaDialog?) {
                 }
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
-//                    currColor = color
-                    myViewModel.setColor(color)
-//                    paintbrush.color = color
+                    myViewModel.updateColor(color)
                 }
             }).show()
     }
 
 
     /**
-     *
+     * Displays the pop up for changing sizes and shape
      */
     private fun showPopUp() {
         val dialog = Dialog(requireContext())
@@ -324,7 +343,8 @@ class DrawingCanvas : Fragment() {
     }
 
     /**
-     *
+     * Sets the size of the pen
+     * @param penSize the new pen size
      */
     private fun setPenSize(penSize: Float) {
         paintbrush.strokeWidth = penSize
@@ -333,7 +353,8 @@ class DrawingCanvas : Fragment() {
     }
 
     /**
-     *
+     * Sets the shape of the pen
+     * @param penShape the new pen shape
      */
     private fun setPenShape(penShape: Paint.Cap) {
         paintbrush.strokeCap = penShape
@@ -343,7 +364,7 @@ class DrawingCanvas : Fragment() {
 
 
     /**
-     *
+     * Saves the drawing when back is clicked, then goes back to the list of drawings
      */
     private fun onBackClicked() {
         if (pathList.size > 0) {
@@ -360,7 +381,7 @@ class DrawingCanvas : Fragment() {
     }
 
     /**
-     *
+     * Destroys the view
      */
     override fun onDestroyView() {
         super.onDestroyView()

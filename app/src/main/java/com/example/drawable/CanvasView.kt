@@ -26,11 +26,17 @@ class CanvasView @JvmOverloads constructor(
         )
     }
 
+    /**
+     * Sets the new bitmap, and triggers a redraw
+     */
     fun setBitmap(bitmap: Bitmap) {
         myBitmap = bitmap
         invalidate() // Trigger redraw
     }
 
+    /**
+     * Redraws the bitmap when invalidate is called
+     */
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         myBitmap?.let {

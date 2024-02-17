@@ -62,6 +62,8 @@
             android:hint="@string/drawingHint"
             android:imeOptions="actionDone"
             android:singleLine="true"
+            android:inputType="text"
+            android:autofillHints="Title"
             android:text="@string/drawingName"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/black"

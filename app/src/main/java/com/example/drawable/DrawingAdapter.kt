@@ -10,7 +10,8 @@ class DrawingAdapter(private var drawings: List<Drawing>, private val sendClick:
 ): RecyclerView.Adapter<DrawingAdapter.DrawingViewHolder>() {
 
     /**
-     *
+     * Updates the list of drawings
+     * @param newDrawings the new list of drawings
      */
     @SuppressLint("NotifyDataSetChanged")
     fun updateDrawings(newDrawings: List<Drawing>){
@@ -24,7 +25,7 @@ class DrawingAdapter(private var drawings: List<Drawing>, private val sendClick:
     }
 
     /**
-     *
+     * Binds the drawing item with its required values
      */
     override fun onBindViewHolder(holder: DrawingViewHolder, position: Int) {
         val item = drawings[position]
