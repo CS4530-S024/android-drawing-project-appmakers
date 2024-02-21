@@ -13,4 +13,9 @@
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_A200">#FF40C4FF</color>
     <color name="light_blue_A400">#FF00B0FF</color>
+
+<!--    Dark Theme Colors   -->
+    <color name="DT_background">#18171C</color>
+    <color name="DT_foreground">#23252A</color>
+    <color name="DT_primary">#1C1C1E</color>
 </resources>

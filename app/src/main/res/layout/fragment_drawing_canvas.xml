@@ -87,16 +87,20 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/paintbrush"
+            android:src="@drawable/paintbrush_svgrepo_com"
             android:layout_margin="10dp"
+            android:paddingTop="12dp"
+            android:paddingLeft="12dp"
             android:contentDescription="@string/paint_brush" />
         <ImageButton
             android:id="@+id/paintBucket"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/paintbucket"
+            android:src="@drawable/fill_svgrepo_com"
             android:layout_margin="10dp"
+            android:paddingTop="12dp"
+            android:paddingLeft="12dp"
             android:contentDescription="@string/paint_can" />
 
         <ImageButton
@@ -104,8 +108,10 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/spraycan"
+            android:src="@drawable/spray_svgrepo_com"
             android:layout_margin="10dp"
+            android:paddingTop="12dp"
+            android:paddingLeft="12dp"
             android:scaleX="-1"
             android:contentDescription="@string/spray_can" />
 
@@ -114,9 +120,10 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/eraser"
+            android:src="@drawable/eraser_svgrepo_com"
             android:layout_margin="10dp"
-            android:rotation="180"
+            android:paddingTop="12dp"
+            android:paddingLeft="12dp"
             android:contentDescription="@string/eraser"
             />
     </LinearLayout>
