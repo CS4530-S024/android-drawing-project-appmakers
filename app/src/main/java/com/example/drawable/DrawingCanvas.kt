@@ -105,12 +105,10 @@ class DrawingCanvas : Fragment() {
         state = requireArguments().getString("New")
         if (state != null) {
             title = state
-            if (myViewModel.currBitmap.value == null) {
-                val bitmap = createNewBitmap()
-                myViewModel.updateBitmap(bitmap)
-                currColor = Color.BLACK
-                myViewModel.updateColor(currColor!!)
-            }
+            val bitmap = createNewBitmap()
+            myViewModel.updateBitmap(bitmap)
+            currColor = Color.BLACK
+            myViewModel.updateColor(currColor!!)
         } else {
             title = requireArguments().getString("Title")
         }
