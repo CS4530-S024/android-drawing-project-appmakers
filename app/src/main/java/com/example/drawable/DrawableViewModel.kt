@@ -1,14 +1,51 @@
 package com.example.drawable
 
+import android.content.Context
+import android.app.Application
+
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+
+import java.io.File
+import java.util.Date
 
 data class Drawing(val name: String, val bitmap: Bitmap, val date: String)
-class DrawableViewModel: ViewModel(){
+class DrawableViewModel(private val repository: DrawingRepository) : ViewModel(){
+
     private val drawings = MutableLiveData<MutableList<Drawing>>()
     val drawingsList = drawings as LiveData<out List<Drawing>>
+
+
+    //new implementation
+    val dPaths : Flow<List<DrawingPath>> = repository.paths
+    val drawingss: Flow<List<Drawing>> = repository.drawings
+
+
+
+    class Factory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(DrawableViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return DrawableViewModel(repository) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
+    }
+    ///
+
+
     private val bitmapLiveData = MutableLiveData<Bitmap>()
     var currBitmap = bitmapLiveData as LiveData<out Bitmap>
     private val saveColor =  MutableLiveData<Int>()
@@ -29,16 +66,6 @@ class DrawableViewModel: ViewModel(){
     }
 
     /**
-     * Removes drawing from list
-     * @param index The index of the drawing we are removing from the List
-     */
-    fun removeDrawing(index: Int){
-        drawings.value!!.removeAt(index)
-        drawings.value = drawings.value
-    }
-
-
-    /**
      * Updates the color when its changed
      * @param color the new color
      */
@@ -57,6 +84,16 @@ class DrawableViewModel: ViewModel(){
     }
 
     /**
+     * Fixes the ordering of the drawings by putting the new drawing at the top
+     * @param drawing the changed drawing to put at the top
+     */
+    fun fixOrder(drawing: Drawing){
+        drawings.value!!.removeAt(currIndex!!)
+        add(drawing)
+    }
+
+    // index dependent things
+    /**
      * Sets the current bitmap
      * @param index the position of the drawing with the bitmap
      */
@@ -67,12 +104,12 @@ class DrawableViewModel: ViewModel(){
     }
 
     /**
-     * Fixes the ordering of the drawings by putting the new drawing at the top
-     * @param drawing the changed drawing to put at the top
+     * Removes drawing from list
+     * @param index The index of the drawing we are removing from the List
      */
-    fun fixOrder(drawing: Drawing){
-        drawings.value!!.removeAt(currIndex!!)
-        add(drawing)
+    fun removeDrawing(index: Int){
+        drawings.value!!.removeAt(index)
+        drawings.value = drawings.value
     }
 
     /**
@@ -82,4 +119,10 @@ class DrawableViewModel: ViewModel(){
     fun getDrawingTitle(index: Int): String {
         return drawings.value!![index].name
     }
+
+    fun onDrawingClicked(fileName: String) {
+
+    }
+
+
 }
