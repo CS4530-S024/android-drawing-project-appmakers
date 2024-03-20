@@ -120,5 +120,5 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.compose.bom2))
-
+    implementation(libs.androidx.material)
 }

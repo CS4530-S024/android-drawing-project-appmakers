@@ -15,6 +15,7 @@ lifecycleViewmodelCompose = "2.7.0"
 material = "1.11.0"
 activity = "1.8.2"
 constraintlayout = "2.1.4"
+materialVersion = "1.6.3"
 recyclerviewSwipedecorator = "1.4"
 roomKtx = "2.6.1"
 runtimeLivedata = "1.6.3"
@@ -34,6 +35,7 @@ androidx-lifecycle-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecy
 androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleViewmodelCompose" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelCompose" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "materialVersion" }
 androidx-navigation-common-ktx = { module = "androidx.navigation:navigation-common-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationFragmentKtx" }
 androidx-room-common = { module = "androidx.room:room-common", version.ref = "roomKtx" }
