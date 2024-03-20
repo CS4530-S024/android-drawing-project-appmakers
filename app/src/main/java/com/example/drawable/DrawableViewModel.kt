@@ -37,7 +37,6 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     private val saveColor =  MutableLiveData<Int>()
     var currColor = saveColor as LiveData<out Int>
 
-
     /**
      * Adds drawing to list
      * @param drawing The drawing we are inserting into the List
@@ -100,7 +99,7 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     }
 }
 
-class Factory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
+class DrawingVMFactory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DrawableViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
