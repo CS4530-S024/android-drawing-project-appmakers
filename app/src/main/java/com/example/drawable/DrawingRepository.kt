@@ -27,9 +27,7 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
     //updated when the DB is modified
     val paths : Flow<List<DrawingPath>> = dao.getAllPaths()
     val drawings = paths.map { it.map { drawingPath ->
-        val file = File(context.filesDir, drawingPath.filePath)
-        val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-        return@map Drawing(drawingPath.filePath, bitmap, dateFormat.format(file.lastModified()))
+        return@map loadDrawing(drawingPath.filePath)
         }
     }
 
@@ -37,12 +35,18 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
 
 
     //should be strings for file paths to internal storage
-    suspend fun saveDrawingPath(bitmap: Bitmap, filename: String) {
-        val (filePath, date) = saveBitmapToFile(bitmap, filename)
+    suspend fun saveDrawing(drawing: Drawing) {
+        val (filePath, date) = saveBitmapToFile(drawing.bitmap, drawing.name)
         val imageEntity = DrawingPath(filePath = filePath, modDate = date)
         scope.launch {
             dao.insertImage(imageEntity)
         }
+    }
+
+    fun loadDrawing(filename: String): Drawing {
+        val file = File(context.filesDir, filename)
+        val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+        return Drawing(filename, bitmap, dateFormat.format(file.lastModified()))
     }
 
     private fun saveBitmapToFile(bmp: Bitmap, filename: String): Pair<String, Long>{
@@ -60,7 +64,7 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
         }
     }
 
-    fun deleteDrawingFromIS(filename: String): Boolean {
+    fun deleteDrawing(filename: String): Boolean {
         return try {
             context.deleteFile(filename)
         }catch (e: Exception){
