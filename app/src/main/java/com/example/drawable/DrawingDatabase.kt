@@ -2,6 +2,7 @@ package com.example.drawable
 
 import androidx.room.Dao
 import androidx.room.Database
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -24,4 +25,7 @@ interface DrawingDAO {
     //marked as suspend so the thread can yield in case the DB update is slow
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertImage(path: DrawingPath)
+
+    @Delete
+    suspend fun deleteDrawing(path: DrawingPath)
 }

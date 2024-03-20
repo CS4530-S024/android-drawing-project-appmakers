@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
     //for room
     id("com.google.devtools.ksp")
+    id("AndroidXComposePlugin")
 }
 
 android {
@@ -105,4 +106,6 @@ dependencies {
 
     //VM + JPC
     implementation("androidx.compose.runtime:runtime-livedata:1.6.3")
+
+
 }

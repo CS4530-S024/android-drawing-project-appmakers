@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Date
 
-data class Drawing(val name: String, val bitmap: Bitmap, val date: String)
+data class Drawing(val bitmap: Bitmap, val dPath: DrawingPath)
 class DrawableViewModel(private val repository: DrawingRepository) : ViewModel(){
 
     //new implementation
@@ -102,7 +102,7 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
      */
     fun getDrawingTitle(filename: String): String {
         val drawing = repository.loadDrawing(filename)
-        return drawing.name
+        return drawing.dPath.filePath
     }
 
     fun onDrawingClicked(fileName: String) {
