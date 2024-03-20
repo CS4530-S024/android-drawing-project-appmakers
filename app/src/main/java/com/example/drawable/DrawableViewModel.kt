@@ -24,15 +24,9 @@ import java.util.Date
 data class Drawing(val name: String, val bitmap: Bitmap, val date: String)
 class DrawableViewModel(private val repository: DrawingRepository) : ViewModel(){
 
-    private val drawings = MutableLiveData<MutableList<Drawing>>()
-    val drawingsList = drawings as LiveData<out List<Drawing>>
-
-
     //new implementation
     val dPaths : Flow<List<DrawingPath>> = repository.paths
-    val drawingss: Flow<List<Drawing>> = repository.drawings
-
-
+    val drawings: Flow<List<Drawing>> = repository.drawings
 
     class Factory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -43,14 +37,15 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
             throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
-    ///
-
 
     private val bitmapLiveData = MutableLiveData<Bitmap>()
     var currBitmap = bitmapLiveData as LiveData<out Bitmap>
+
+//    private val _bitmapFlow = MutableStateFlow<Bitmap?>(null) // Assuming bitmap can be initially null
+//    val bitmapFlow: StateFlow<Bitmap?> = _bitmapFlow.asStateFlow()
+
     private val saveColor =  MutableLiveData<Int>()
     var currColor = saveColor as LiveData<out Int>
-    private var currIndex : Int? = null
 
 
     /**
@@ -58,11 +53,10 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
      * @param drawing The drawing we are inserting into the List
      */
     fun add(drawing: Drawing){
-        val currentList = drawings.value?.toMutableList() ?: mutableListOf()
-        currentList.add(0, drawing)
-        currIndex = 0
-        drawings.value = currentList
-        drawings.value = drawings.value
+        viewModelScope.launch {
+            // This is now within a coroutine scope, and you can call suspend functions
+            repository.saveDrawing(drawing)
+        }
     }
 
     /**
@@ -83,46 +77,35 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         bitmapLiveData.value = bitmapLiveData.value
     }
 
-    /**
-     * Fixes the ordering of the drawings by putting the new drawing at the top
-     * @param drawing the changed drawing to put at the top
-     */
-    fun fixOrder(drawing: Drawing){
-        drawings.value!!.removeAt(currIndex!!)
-        add(drawing)
-    }
-
     // index dependent things
     /**
      * Sets the current bitmap
-     * @param index the position of the drawing with the bitmap
+     * @param filename The name of the file to set as current bitmap
      */
-    fun setCurrBitmap(index: Int){
-        currIndex = index
-        bitmapLiveData.value = drawings.value!![index].bitmap
+  fun setCurrBitmap(filename: String){
+        val drawing = repository.loadDrawing(filename)
+        bitmapLiveData.value = drawing.bitmap
         bitmapLiveData.value = bitmapLiveData.value
     }
 
     /**
      * Removes drawing from list
-     * @param index The index of the drawing we are removing from the List
+     * @param filename The name of the file to delete
      */
-    fun removeDrawing(index: Int){
-        drawings.value!!.removeAt(index)
-        drawings.value = drawings.value
+    fun removeDrawing(filename: String){
+        repository.deleteDrawing(filename)
     }
 
     /**
      * Gets the title of the drawing
-     * @param index the position of the drawing
+     * @param filename The name of the file to get title of
      */
-    fun getDrawingTitle(index: Int): String {
-        return drawings.value!![index].name
+    fun getDrawingTitle(filename: String): String {
+        val drawing = repository.loadDrawing(filename)
+        return drawing.name
     }
 
     fun onDrawingClicked(fileName: String) {
 
     }
-
-
 }

@@ -128,6 +128,8 @@ class DrawingCanvas : Fragment() {
             binding.canvas.setBitmap(bitmap)
         }
 
+
+
         // displays pen size / shape popup
         binding.paintBrush.setOnClickListener {
             isSpray = false
@@ -512,7 +514,7 @@ class DrawingCanvas : Fragment() {
             if (state != null) {
                 myViewModel.add(d)
             } else {
-                myViewModel.fixOrder(d)
+//                myViewModel.fixOrder(d)
             }
         }
         findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)

@@ -18,7 +18,7 @@ abstract class  DrawingDatabase  : RoomDatabase(){
 @Dao
 interface DrawingDAO {
     //Gets a list of drawing paths from the repo
-    @Query("SELECT * FROM drawings ORDER BY modDate DESC")
+    @Query("SELECT * FROM drawingpaths ORDER BY modDate DESC")
     fun getAllPaths(): Flow<List<DrawingPath>>
 
     //marked as suspend so the thread can yield in case the DB update is slow

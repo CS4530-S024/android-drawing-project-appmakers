@@ -5,7 +5,7 @@ import androidx.room.Room
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
-class DrawingApplication  : Application() {
+class DrawableApplication  : Application() {
     //coroutine scope tied to the application lifetime which we can run suspend functions in
     val scope = CoroutineScope(SupervisorJob())
 
@@ -19,7 +19,7 @@ class DrawingApplication  : Application() {
         ).build()}
 
     //create our repository singleton, using lazy to access the DB when we need it
-    val funFactsRepository by lazy {DrawingRepository(scope, db.drawingDao(), applicationContext)}
+    val drawingRepository by lazy {DrawingRepository(scope, db.drawingDao(), applicationContext)}
 }
 
 
