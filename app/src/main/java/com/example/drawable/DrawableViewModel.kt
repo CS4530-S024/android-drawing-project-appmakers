@@ -28,16 +28,6 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     val dPaths : Flow<List<DrawingPath>> = repository.paths
     val drawings: Flow<List<Drawing>> = repository.drawings
 
-    class Factory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(DrawableViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return DrawableViewModel(repository) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
-        }
-    }
-
     private val bitmapLiveData = MutableLiveData<Bitmap>()
     var currBitmap = bitmapLiveData as LiveData<out Bitmap>
 
@@ -107,5 +97,19 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
 
     fun onDrawingClicked(fileName: String) {
 
+    }
+
+    fun fetchDrawing(): Drawing {
+        repository.getDrawing()
+    }
+}
+
+class Factory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(DrawableViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return DrawableViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

@@ -1,4 +1,5 @@
 package com.example.drawable
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -68,19 +70,12 @@ import androidx.compose.ui.unit.dp
 class DrawingsList : Fragment() {
     private var _binding: FragmentDrawingsListBinding? = null
     private val binding by lazy { _binding!! }
-    private lateinit var recycler: RecyclerView
-    private lateinit var myAdapter: DrawingAdapter
-//    private  val myViewModel : DrawableViewModel by activityViewModels()
-//    private val myViewModel: DrawableViewModel by activityViewModels{
-//        DrawableViewModel.Factory((application as DrawableApplication).drawingRepository)
-//    }
-    private val myViewModel: DrawableViewModel by activityViewModels {
+/*    private val myViewModel: DrawableViewModel by activityViewModels {
         val application = requireActivity().application as DrawableApplication
         DrawableViewModel.Factory(application.drawingRepository)
-    }
+    }*/
     private lateinit var swipe: Swiper
     private lateinit var touchy: ItemTouchHelper
-
 
     /**
      * Creates the view
@@ -90,7 +85,6 @@ class DrawingsList : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentDrawingsListBinding.inflate(inflater, container, false)
 //        myViewModel.drawingsList.observe(viewLifecycleOwner){
 //            (recycler.adapter as DrawingAdapter).updateDrawings(it)
@@ -111,39 +105,19 @@ class DrawingsList : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recycler = binding.recycler
-
-//        swipe = object: Swiper(requireContext()){
-//            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-//                when(direction){
-//                    ItemTouchHelper.LEFT->{
-//                        myViewModel.removeDrawing(viewHolder.bindingAdapterPosition)
-//
-//                    }
-//                }
-//            }
-//        }
-//
-//        touchy = ItemTouchHelper(swipe)
-//
-//        touchy.attachToRecyclerView(recycler)
-
+        /*recycler = binding.recycler
         recycler.layoutManager = LinearLayoutManager(context)
-
-//        myAdapter = DrawingAdapter(listOf(), sendClick = {
-//            sendClick(it)
-//        })
-
-        recycler.adapter = myAdapter
-
+        recycler.adapter = myAdapter*/
         binding.add.setOnClickListener{
             findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
-                putString("New", "Drawing " + (myAdapter.itemCount + 1))
+                putString("New Drawing", "1")
             })
         }
     }
 
+    @SuppressLint("NotConstructor")
     @Composable
+<<<<<<< Updated upstream
     @OptIn(ExperimentalMaterialApi::class)
     fun drawingsList(onDrawingClick: (String) -> Unit) {
 //        // Collect the list of drawings from the Flow
@@ -180,6 +154,17 @@ class DrawingsList : Fragment() {
                         DrawingItem(drawing = drawing, onItemClicked = onDrawingClick)
                     }
                 )
+=======
+    fun DrawingsList() {
+        // Collect the Flow<List<Drawing>> and convert it to a state
+        val drawings by myViewModel.drawings.collectAsState(listOf())
+        LazyColumn {
+            items(drawings) { drawing ->
+                // Pass a lambda that calls the ViewModel's function
+                DrawingItem(drawing, { fileName ->
+                    myViewModel.onDrawingClicked(fileName)
+                })
+>>>>>>> Stashed changes
             }
         }
     }

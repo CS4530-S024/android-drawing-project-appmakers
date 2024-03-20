@@ -11,13 +11,13 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.graphics.BitmapFactory
 import android.graphics.DiscretePathEffect
-import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -31,7 +31,6 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
         }
     }
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-
 
     //should be strings for file paths to internal storage
     suspend fun saveDrawing(drawing: Drawing) {
