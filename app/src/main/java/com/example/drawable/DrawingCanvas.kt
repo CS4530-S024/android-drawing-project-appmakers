@@ -507,16 +507,16 @@ class DrawingCanvas : Fragment() {
      * Saves the drawing when back is clicked, then goes back to the list of drawings
      */
     private fun onBackClicked() {
-        if (pathList.size > 0) {
+      /*  if (pathList.size > 0) {
             currentDate = Date()
             val dateString = dateFormat.format(currentDate)
-            val d = Drawing(binding.Title.text.toString(), myBitmap!!, dateString)
+            val d = Drawing(myBitmap!!, (fileName, dateString))
             if (state != null) {
                 myViewModel.add(d)
             } else {
 //                myViewModel.fixOrder(d)
             }
-        }
+        }*/
         findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
     }
 
