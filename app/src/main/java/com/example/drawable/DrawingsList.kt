@@ -29,8 +29,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
-import androidx.annotation.Sampled
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -38,31 +40,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
-import androidx.compose.material.DismissDirection.EndToStart
-import androidx.compose.material.DismissDirection.StartToEnd
-import androidx.compose.material.DismissValue.Default
-import androidx.compose.material.DismissValue.DismissedToEnd
-import androidx.compose.material.DismissValue.DismissedToStart
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.ListItem
-import androidx.compose.material.SwipeToDismiss
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.rememberDismissState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.ui.platform.LocalDensity
 
 
 class DrawingsList : Fragment() {
@@ -80,7 +62,6 @@ class DrawingsList : Fragment() {
     }
     private lateinit var swipe: Swiper
     private lateinit var touchy: ItemTouchHelper
-
 
     /**
      * Creates the view
@@ -144,45 +125,45 @@ class DrawingsList : Fragment() {
     }
 
     @Composable
-    @OptIn(ExperimentalMaterialApi::class)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
     fun drawingsList(onDrawingClick: (String) -> Unit) {
-//        // Collect the list of drawings from the Flow
-//        val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
-//        LazyColumn {
-//
-//            items(drawings){drawing ->
-//                DrawingItem(drawing = drawing, onItemClicked = onDrawingClick)
-//            }
-//        }
+
         val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(items = drawings, key = { drawing ->
                 drawing.dPath.filePath // Assuming this is a unique key for each item
-            }) { drawing ->
-                val dismissState = rememberDismissState(
-                    confirmStateChange = {
-                        if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
-                            // Perform the delete action on swipe. Adjust this as needed.
-                            // For example, using a ViewModel function:
-                            myViewModel.removeDrawing(drawing)
+            }) {
+                drawing ->
+                val density = LocalDensity.current
+                val swipeState = remember {
+                    SwipeToDismissBoxState(
+                        initialValue = SwipeToDismissBoxValue.EndToStart, // Assuming an enum or similar for state values
+                        density =  density,
+                        confirmValueChange = { _ ->
+                            true
+                        },
+                        positionalThreshold = { totalDistance ->
+                            totalDistance / 4
                         }
-                        true
-                    }
-                )
-                SwipeToDismiss(
-                    state = dismissState,
-                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                    background = {
+                    )
+                }
+
+                SwipeToDismissBox(
+                    state = swipeState,
+                    enableDismissFromStartToEnd = true,
+                    backgroundContent = {
                         // Background content goes here - e.g., an icon indicating swipe action
-                    },
-                    dismissContent = {
-                        DrawingItem(drawing = drawing, onItemClicked = onDrawingClick)
+                    }, content ={
+                        DrawingItem(drawing, onItemClicked = {
+                            myViewModel.onDrawingClicked(drawing.dPath.filePath)
+                        })
                     }
                 )
             }
         }
     }
+
 
 
 
@@ -201,6 +182,8 @@ class DrawingsList : Fragment() {
         // Add more UI elements as needed
     }
     }
+
+
 
 
 
