@@ -30,7 +30,6 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
         return@map loadDrawing(drawingPath.filePath)
         }
     }
-
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
 
@@ -67,6 +66,7 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
     fun deleteDrawing(filename: String): Boolean {
         return try {
             context.deleteFile(filename)
+
         }catch (e: Exception){
             e.printStackTrace()
             false

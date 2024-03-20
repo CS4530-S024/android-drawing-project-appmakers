@@ -21,8 +21,48 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.ComposeView
+import androidx.annotation.Sampled
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Card
+import androidx.compose.material.DismissDirection.EndToStart
+import androidx.compose.material.DismissDirection.StartToEnd
+import androidx.compose.material.DismissValue.Default
+import androidx.compose.material.DismissValue.DismissedToEnd
+import androidx.compose.material.DismissValue.DismissedToStart
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.ListItem
+import androidx.compose.material.SwipeToDismiss
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.rememberDismissState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 
 
 class DrawingsList : Fragment() {
@@ -55,6 +95,13 @@ class DrawingsList : Fragment() {
 //        myViewModel.drawingsList.observe(viewLifecycleOwner){
 //            (recycler.adapter as DrawingAdapter).updateDrawings(it)
 //        }
+        return ComposeView(requireContext()).apply {
+            setContent {
+                drawingsList(onDrawingClick = { drawingName ->
+                    // Handle the click event, e.g., navigate with the drawing name
+                })
+            }
+        }
         return binding.root
 
     }
@@ -94,41 +141,68 @@ class DrawingsList : Fragment() {
                 putString("New", "Drawing " + (myAdapter.itemCount + 1))
             })
         }
-
-
-
     }
 
     @Composable
-    fun DrawingsList() {
-        // Collect the Flow<List<Drawing>> and convert it to a state
-        val drawings by myViewModel.drawings.collectAsState(listOf())
-        LazyColumn {
-            items(drawings.size) { index ->
-                val drawing = drawings[index]
-                // Pass a lambda that calls the ViewModel's function
-                DrawingItem(drawing = drawing, onItemClicked = { fileName ->
-                    myViewModel.onDrawingClicked(fileName)
-                })
+    @OptIn(ExperimentalMaterialApi::class)
+    fun drawingsList(onDrawingClick: (String) -> Unit) {
+//        // Collect the list of drawings from the Flow
+//        val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
+//        LazyColumn {
+//
+//            items(drawings){drawing ->
+//                DrawingItem(drawing = drawing, onItemClicked = onDrawingClick)
+//            }
+//        }
+        val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
+
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(items = drawings, key = { drawing ->
+                drawing.dPath.filePath // Assuming this is a unique key for each item
+            }) { drawing ->
+                val dismissState = rememberDismissState(
+                    confirmStateChange = {
+                        if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
+                            // Perform the delete action on swipe. Adjust this as needed.
+                            // For example, using a ViewModel function:
+                            myViewModel.removeDrawing(drawing)
+                        }
+                        true
+                    }
+                )
+                SwipeToDismiss(
+                    state = dismissState,
+                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+                    background = {
+                        // Background content goes here - e.g., an icon indicating swipe action
+                    },
+                    dismissContent = {
+                        DrawingItem(drawing = drawing, onItemClicked = onDrawingClick)
+                    }
+                )
             }
         }
     }
 
+
+
     @Composable
     fun DrawingItem(drawing: Drawing, onItemClicked: (String) -> Unit, modifier: Modifier = Modifier) {
         Column(
-            modifier = modifier
-                .padding(16.dp)
-                .clickable { onItemClicked(drawing.name) }
-        ) {
-            Image(
-                bitmap = drawing.bitmap.asImageBitmap(),
-                contentDescription = "Drawing image",
-                // Here, you want to apply additional padding specific to the Image, not reuse the modifier parameter
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
+        modifier = Modifier
+            .padding(16.dp)
+            .clickable { onItemClicked(drawing.dPath.filePath) }
+    ) {
+        Image(
+            bitmap = drawing.bitmap.asImageBitmap(),
+            contentDescription = "Drawing image",
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        // Add more UI elements as needed
     }
+    }
+
+
 
 //    /**
 //     * Sets the current bitmap, then goes to the canvas
