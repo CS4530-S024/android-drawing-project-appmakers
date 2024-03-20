@@ -83,32 +83,30 @@ import androidx.compose.ui.unit.dp
 
 
 class DrawingsList : Fragment() {
-    private var _binding: FragmentDrawingsListBinding? = null
-    private val binding by lazy { _binding!! }
+//    private var _binding: FragmentDrawingsListBinding? = null
+//    private val binding by lazy { _binding!! }
     private lateinit var swipe: Swiper
     private lateinit var touchy: ItemTouchHelper
-    val myViewModel: DrawableViewModel by activityViewModels {
-        val application = requireActivity().application as DrawableApplication
-        DrawableViewModel.Factory(application.drawingRepository)
-    }
+
 
     /**
      * Creates the view
      */
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        val myViewModel: DrawableViewModel by activityViewModels {
-//            val application = requireActivity().application as DrawableApplication
-//            DrawableViewModel.Factory(application.drawingRepository)
-//        }
-        // Inflate the layout for this fragment
+
         val binding = FragmentDrawingsListBinding.inflate(layoutInflater)
+        val myViewModel: DrawableViewModel by activityViewModels {
+            val application = requireActivity().application as DrawableApplication
+            DrawableViewModel.Factory(application.drawingRepository)
+        }
         //ComposeView gives us a `Composable` context to run functions in
         binding.composeView1.setContent {
-            DrawingsList()
+            DrawingsListContent(viewModel = myViewModel)
         }
 
         return binding.root
@@ -122,49 +120,49 @@ class DrawingsList : Fragment() {
 
 //        binding.add.setOnClickListener {
 //            findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
-//                putString("New", "Drawing " + (myAdapter.itemCount + 1))
+//                putString("New", "Drawing ")
 //            })
 //        }
 
 
+
     }
 
-    @SuppressLint("NotConstructor")
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
-    fun DrawingsList(myViewModel: DrawableViewModel) {
-        val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
+    fun DrawingsListContent(viewModel: DrawableViewModel) {
+        val drawings by viewModel.drawings.collectAsState(initial = emptyList())
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-
             items(items = drawings, key = { drawing ->
                 drawing.dPath.filePath // Assuming this is a unique key for each item
             }
             ) { drawing ->
-                val density = LocalDensity.current
-                val swipeState = remember {
-                    SwipeToDismissBoxState(
-                        initialValue = SwipeToDismissBoxValue.EndToStart, // Assuming an enum or similar for state values
-                        density = density,
-                        confirmValueChange = { _ ->
-                            true
-                        },
-                        positionalThreshold = { totalDistance ->
-                            totalDistance / 4
-                        }
-                    )
-                }
-
-                SwipeToDismissBox(
-                    state = swipeState,
-                    enableDismissFromStartToEnd = true,
-                    backgroundContent = {
-                        // Background content goes here - e.g., an icon indicating swipe action
-                    }, content = {
-//                        DrawingItem(drawing, onItemClicked = {
-//                            myViewModel.onDrawingClicked(drawing.dPath.filePath)
-//                        })
-                    }
-                )
+//                val density = LocalDensity.current
+//                val swipeState = remember {
+//                    SwipeToDismissBoxState(
+//                        initialValue = SwipeToDismissBoxValue.EndToStart, // Assuming an enum or similar for state values
+//                        density = density,
+//                        confirmValueChange = { _ ->
+//                            true
+//                        },
+//                        positionalThreshold = { totalDistance ->
+//                            totalDistance / 4
+//                        }
+//                    )
+//                }
+//
+//                SwipeToDismissBox(
+//                    state = swipeState,
+//                    enableDismissFromStartToEnd = true,
+//                    backgroundContent = {
+//                        // Background content goes here - e.g., an icon indicating swipe action
+//                    }, content = {
+////                        DrawingItem(drawing, onItemClicked = {
+////                            myViewModel.onDrawingClicked(drawing.dPath.filePath)
+////                        })
+//                    }
+//                )
+                DrawingItem(ball = drawing.dPath.name)
             }
         }
     }
@@ -175,7 +173,7 @@ class DrawingsList : Fragment() {
 //        drawing: Drawing,
 //        onItemClicked: (String) -> Unit,
 //        modifier: Modifier = Modifier
-        ball : String
+        ball: String
     ) {
 //        Column(
 //            modifier = modifier
@@ -248,19 +246,20 @@ class DrawingsList : Fragment() {
 //            putString("Title", myViewModel.getDrawingTitle(pos))
 //        })
 //    }
+
     @PreviewLightDark
     @Preview(showBackground = true)
     @Composable
     fun DrawablePreview() {
-//        DrawingsList()
-        DrawingItem("belo")
+        DrawingsList()
+//        DrawingItem("belo")
     }
 
-    /**
-     * Destroys the view
-     */
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+//    /**
+//     * Destroys the view
+//     */
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        _binding = null
+//    }
 }

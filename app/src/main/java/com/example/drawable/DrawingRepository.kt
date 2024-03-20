@@ -35,28 +35,28 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
 
     //should be strings for file paths to internal storage
     suspend fun saveDrawing(drawing: Drawing) {
-        val (filePath, date) = saveBitmapToFile(drawing.bitmap, drawing.dPath.filePath)
-        val imageEntity = DrawingPath(filePath = filePath, modDate = date)
+        val (filePath, date, name) = saveBitmapToFile(drawing.bitmap, drawing.dPath.filePath)
+        val imageEntity = DrawingPath(filePath = filePath, modDate = date, name = name)
         scope.launch {
             dao.insertImage(imageEntity)
         }
     }
 
-    fun loadDrawing(filename: String): Drawing {
-        val file = File(context.filesDir, filename)
+    fun loadDrawing(name: String): Drawing {
+        val file = File(context.filesDir, name)
         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-        return Drawing(bitmap, DrawingPath(filename, file.lastModified()))
+        return Drawing(bitmap, DrawingPath(file.absolutePath, file.lastModified(), name))
     }
 
-    private fun saveBitmapToFile(bmp: Bitmap, filename: String): Pair<String, Long>{
-        val file = File(context.filesDir, filename)
+    private fun saveBitmapToFile(bmp: Bitmap, name: String): Triple<String, Long, String>{
+        val file = File(context.filesDir, name)
         return try {
             context.openFileOutput(file.name, Context.MODE_PRIVATE).use { stream ->
                 if (!bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream)) {
                     throw IOException("Couldn't save bitmap to file.")
                 }
             }
-            Pair(file.absolutePath, file.lastModified())
+            Triple(file.absolutePath, file.lastModified(), name)
         } catch (e: IOException) {
             e.printStackTrace()
             throw e // Re-throw the exception to be handled by the caller or return Result.failure(e)
