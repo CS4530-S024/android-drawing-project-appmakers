@@ -85,15 +85,12 @@ import androidx.compose.ui.unit.dp
 class DrawingsList : Fragment() {
     private var _binding: FragmentDrawingsListBinding? = null
     private val binding by lazy { _binding!! }
-    private lateinit var recycler: RecyclerView
-    private lateinit var myAdapter: DrawingAdapter
-
-    //    private  val myViewModel : DrawableViewModel by activityViewModels()
-//    private val myViewModel: DrawableViewModel by activityViewModels{
-//        DrawableViewModel.Factory((application as DrawableApplication).drawingRepository)
-//    }
     private lateinit var swipe: Swiper
     private lateinit var touchy: ItemTouchHelper
+    val myViewModel: DrawableViewModel by activityViewModels {
+        val application = requireActivity().application as DrawableApplication
+        DrawableViewModel.Factory(application.drawingRepository)
+    }
 
     /**
      * Creates the view
@@ -103,10 +100,10 @@ class DrawingsList : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val myViewModel: DrawableViewModel by activityViewModels {
-            val application = requireActivity().application as DrawableApplication
-            DrawableViewModel.Factory(application.drawingRepository)
-        }
+//        val myViewModel: DrawableViewModel by activityViewModels {
+//            val application = requireActivity().application as DrawableApplication
+//            DrawableViewModel.Factory(application.drawingRepository)
+//        }
         // Inflate the layout for this fragment
         val binding = FragmentDrawingsListBinding.inflate(layoutInflater)
         //ComposeView gives us a `Composable` context to run functions in
@@ -122,36 +119,14 @@ class DrawingsList : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        recycler = binding.recycler
 
-//        swipe = object: Swiper(requireContext()){
-//            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-//                when(direction){
-//                    ItemTouchHelper.LEFT->{
-//                        myViewModel.removeDrawing(viewHolder.bindingAdapterPosition)
-//
-//                    }
-//                }
-//            }
+//        binding.add.setOnClickListener {
+//            findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
+//                putString("New", "Drawing " + (myAdapter.itemCount + 1))
+//            })
 //        }
-//
-//        touchy = ItemTouchHelper(swipe)
-//
-//        touchy.attachToRecyclerView(recycler)
 
-        recycler.layoutManager = LinearLayoutManager(context)
 
-//        myAdapter = DrawingAdapter(listOf(), sendClick = {
-//            sendClick(it)
-//        })
-
-        recycler.adapter = myAdapter
-
-        binding.add.setOnClickListener {
-            findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
-                putString("New", "Drawing " + (myAdapter.itemCount + 1))
-            })
-        }
     }
 
     @SuppressLint("NotConstructor")
