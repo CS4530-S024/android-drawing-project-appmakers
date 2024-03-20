@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,19 +11,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.drawable.databinding.FragmentDrawingsListBinding
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
+<<<<<<< Updated upstream
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -66,9 +62,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+=======
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+>>>>>>> Stashed changes
 
+/**
+ * This class contains methods and functionality for displaying the new
+ * implementation of our DrawingsList.
+ */
 class DrawingsList : Fragment() {
     private var _binding: FragmentDrawingsListBinding? = null
+<<<<<<< Updated upstream
     private val binding by lazy { _binding!! }
 /*    private val myViewModel: DrawableViewModel by activityViewModels {
         val application = requireActivity().application as DrawableApplication
@@ -76,15 +81,19 @@ class DrawingsList : Fragment() {
     }*/
     private lateinit var swipe: Swiper
     private lateinit var touchy: ItemTouchHelper
+=======
+>>>>>>> Stashed changes
 
     /**
-     * Creates the view
+     * Creates the view that contains the DrawingsList/Items. The newer
+     * version of the RecyclerView from our previous implementation.
      */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+<<<<<<< Updated upstream
         _binding = FragmentDrawingsListBinding.inflate(inflater, container, false)
 //        myViewModel.drawingsList.observe(viewLifecycleOwner){
 //            (recycler.adapter as DrawingAdapter).updateDrawings(it)
@@ -96,13 +105,24 @@ class DrawingsList : Fragment() {
                 })
             }
         }
+=======
+        val binding = FragmentDrawingsListBinding.inflate(layoutInflater)
+
+        binding.composeView1.setContent {
+            DrawingsList(Modifier.padding(16.dp)) {
+                findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas)
+            }
+        }
+
+>>>>>>> Stashed changes
         return binding.root
 
     }
 
     /**
-     * Attaches listeners and restores saved items such as the list of drawings
+     * The DrawingsList as a Composable item.
      */
+<<<<<<< Updated upstream
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         /*recycler = binding.recycler
@@ -165,10 +185,33 @@ class DrawingsList : Fragment() {
                     myViewModel.onDrawingClicked(fileName)
                 })
 >>>>>>> Stashed changes
+=======
+    @SuppressLint("NotConstructor")
+    @Composable
+    fun DrawingsList(modifier: Modifier = Modifier,
+                     viewModel: DrawableViewModel = viewModel(
+                         viewModelStoreOwner = LocalContext.current.findActivity()
+                     ),
+                     onClick: () -> Unit)
+    {
+        Column(modifier = modifier.padding(16.dp))
+        {
+            val drawings by viewModel.drawings.collectAsState(initial = emptyList())
+
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.fillMaxSize())
+            {
+                for (drawing in drawings) {
+                    item {
+                        DrawingItem(drawing, onClick = onClick)
+                    }
+                }
+>>>>>>> Stashed changes
             }
         }
     }
 
+<<<<<<< Updated upstream
 
 
     @Composable
@@ -199,6 +242,12 @@ class DrawingsList : Fragment() {
 //            putString("Title", myViewModel.getDrawingTitle(pos))
 //        })
 //    }
+=======
+    @Composable
+    fun DrawingItem(drawing: Drawing, onClick: () -> Unit) {
+
+    }
+>>>>>>> Stashed changes
 
     /**
      * Destroys the view

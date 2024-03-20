@@ -12,6 +12,7 @@ import android.content.Context.MODE_PRIVATE
 import android.graphics.BitmapFactory
 import android.graphics.DiscretePathEffect
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -30,8 +31,12 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
         return@map loadDrawing(drawingPath.filePath)
         }
     }
+
+<<<<<<< Updated upstream
+=======
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
+>>>>>>> Stashed changes
     //should be strings for file paths to internal storage
     suspend fun saveDrawing(drawing: Drawing) {
         val (filePath, date) = saveBitmapToFile(drawing.bitmap, drawing.name)

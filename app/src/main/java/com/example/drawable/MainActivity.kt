@@ -1,5 +1,10 @@
 package com.example.drawable
 
+<<<<<<< Updated upstream
+=======
+import android.content.Context
+import android.content.ContextWrapper
+>>>>>>> Stashed changes
 import android.os.Bundle
 import androidx.compose.material3.Surface
 import androidx.activity.ComponentActivity
@@ -27,13 +32,30 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
+<<<<<<< Updated upstream
 import com.example.drawable.ui.theme.DrawingTheme
 
 class MainActivity : ComponentActivity() {
+=======
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+
+internal fun Context.findActivity(): ComponentActivity {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is ComponentActivity) return context
+        context = context.baseContext
+    }
+    throw IllegalStateException("Permissions should be called in the context of an Activity")
+}
+
+class MainActivity : AppCompatActivity() {
+>>>>>>> Stashed changes
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Thread.sleep(3000)
+        enableEdgeToEdge()
         installSplashScreen()
+<<<<<<< Updated upstream
         var currentDrawing: Drawing
         val vm: DrawableViewModel by viewModels {
             Factory((application as DrawableApplication).drawingRepository)
@@ -77,6 +99,10 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+=======
+        setContentView(R.layout.activity_main)
+        supportActionBar?.hide()
+>>>>>>> Stashed changes
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -85,6 +111,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+<<<<<<< Updated upstream
 @Composable
 fun Drawing(drawing: Drawing, modifier: Modifier = Modifier) {
     Card(modifier = modifier
@@ -125,3 +152,5 @@ fun DrawingPreview() {
 
     }
 }*/
+=======
+>>>>>>> Stashed changes
