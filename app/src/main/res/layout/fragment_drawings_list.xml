@@ -29,14 +29,22 @@
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler"
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/recycler"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/bar"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        android:background="@drawable/label"-->
+<!--         />-->
+
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/composeView1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/bar"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@drawable/label"
-         />
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

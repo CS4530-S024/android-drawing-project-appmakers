@@ -1,4 +1,6 @@
 package com.example.drawable
+
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -45,6 +47,19 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.fragment.findNavController
 
 
 class DrawingsList : Fragment() {
@@ -52,7 +67,8 @@ class DrawingsList : Fragment() {
     private val binding by lazy { _binding!! }
     private lateinit var recycler: RecyclerView
     private lateinit var myAdapter: DrawingAdapter
-//    private  val myViewModel : DrawableViewModel by activityViewModels()
+
+    //    private  val myViewModel : DrawableViewModel by activityViewModels()
 //    private val myViewModel: DrawableViewModel by activityViewModels{
 //        DrawableViewModel.Factory((application as DrawableApplication).drawingRepository)
 //    }
@@ -72,18 +88,24 @@ class DrawingsList : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentDrawingsListBinding.inflate(inflater, container, false)
-//        myViewModel.drawingsList.observe(viewLifecycleOwner){
-//            (recycler.adapter as DrawingAdapter).updateDrawings(it)
-//        }
-        return ComposeView(requireContext()).apply {
-            setContent {
-                drawingsList(onDrawingClick = { drawingName ->
-                    // Handle the click event, e.g., navigate with the drawing name
-                })
-            }
+        // Inflate the layout for this fragment
+        val binding = FragmentDrawingsListBinding.inflate(layoutInflater)
+
+        //ComposeView gives us a `Composable` context to run functions in
+        //ComposeView gives us a `Composable` context to run functions in
+        binding.composeView1.setContent {
+            DrawingsList()
         }
+
         return binding.root
+
+//        return ComposeView(requireContext()).apply {
+//            setContent {
+//                DrawingsList()
+//            }
+//        }
+
+
 
     }
 
@@ -92,7 +114,7 @@ class DrawingsList : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recycler = binding.recycler
+//        recycler = binding.recycler
 
 //        swipe = object: Swiper(requireContext()){
 //            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -117,29 +139,27 @@ class DrawingsList : Fragment() {
 
         recycler.adapter = myAdapter
 
-        binding.add.setOnClickListener{
+        binding.add.setOnClickListener {
             findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
                 putString("New", "Drawing " + (myAdapter.itemCount + 1))
             })
         }
     }
 
+    @SuppressLint("NotConstructor")
     @Composable
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-    fun drawingsList(onDrawingClick: (String) -> Unit) {
-
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun DrawingsList() {
         val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
-
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(items = drawings, key = { drawing ->
                 drawing.dPath.filePath // Assuming this is a unique key for each item
-            }) {
-                drawing ->
+            }) { drawing ->
                 val density = LocalDensity.current
                 val swipeState = remember {
                     SwipeToDismissBoxState(
                         initialValue = SwipeToDismissBoxValue.EndToStart, // Assuming an enum or similar for state values
-                        density =  density,
+                        density = density,
                         confirmValueChange = { _ ->
                             true
                         },
@@ -154,7 +174,7 @@ class DrawingsList : Fragment() {
                     enableDismissFromStartToEnd = true,
                     backgroundContent = {
                         // Background content goes here - e.g., an icon indicating swipe action
-                    }, content ={
+                    }, content = {
                         DrawingItem(drawing, onItemClicked = {
                             myViewModel.onDrawingClicked(drawing.dPath.filePath)
                         })
@@ -165,29 +185,27 @@ class DrawingsList : Fragment() {
     }
 
 
-
-
     @Composable
-    fun DrawingItem(drawing: Drawing, onItemClicked: (String) -> Unit, modifier: Modifier = Modifier) {
-        Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .clickable { onItemClicked(drawing.dPath.filePath) }
+    fun DrawingItem(
+        drawing: Drawing,
+        onItemClicked: (String) -> Unit,
+        modifier: Modifier = Modifier
     ) {
-        Image(
-            bitmap = drawing.bitmap.asImageBitmap(),
-            contentDescription = "Drawing image",
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        // Add more UI elements as needed
+        Column(
+            modifier = modifier
+                .padding(16.dp)
+                .clickable { onItemClicked(drawing.dPath.filePath) }
+        ) {
+            Image(
+                bitmap = drawing.bitmap.asImageBitmap(),
+                contentDescription = "Drawing image",
+                modifier = modifier.padding(bottom = 8.dp)
+            )
+        }
     }
-    }
 
 
-
-
-
-//    /**
+    //    /**
 //     * Sets the current bitmap, then goes to the canvas
 //     * @param pos the position of the clicked drawing
 //     */
@@ -197,6 +215,12 @@ class DrawingsList : Fragment() {
 //            putString("Title", myViewModel.getDrawingTitle(pos))
 //        })
 //    }
+    @PreviewLightDark
+    @Preview(showBackground = true)
+    @Composable
+    fun DrawablePreview() {
+        DrawingsList()
+    }
 
     /**
      * Destroys the view
