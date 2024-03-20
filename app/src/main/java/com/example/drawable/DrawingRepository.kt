@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.graphics.BitmapFactory
 import android.graphics.DiscretePathEffect
+import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.forEach
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -32,14 +32,11 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
         }
     }
 
-<<<<<<< Updated upstream
-=======
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
->>>>>>> Stashed changes
     //should be strings for file paths to internal storage
     suspend fun saveDrawing(drawing: Drawing) {
-        val (filePath, date) = saveBitmapToFile(drawing.bitmap, drawing.name)
+        val (filePath, date) = saveBitmapToFile(drawing.bitmap, drawing.dPath.filePath)
         val imageEntity = DrawingPath(filePath = filePath, modDate = date)
         scope.launch {
             dao.insertImage(imageEntity)
@@ -49,7 +46,7 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
     fun loadDrawing(filename: String): Drawing {
         val file = File(context.filesDir, filename)
         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-        return Drawing(filename, bitmap, dateFormat.format(file.lastModified()))
+        return Drawing(bitmap, DrawingPath(filename, file.lastModified()))
     }
 
     private fun saveBitmapToFile(bmp: Bitmap, filename: String): Pair<String, Long>{

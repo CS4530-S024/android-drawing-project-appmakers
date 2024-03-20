@@ -98,10 +98,6 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     fun onDrawingClicked(fileName: String) {
 
     }
-
-    fun fetchDrawing(): Drawing {
-        repository.getDrawing()
-    }
 }
 
 class Factory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
