@@ -1,5 +1,5 @@
 [versions]
-agp = "8.3.0"
+agp = "8.3.1"
 ambilwarna = "2.0.1"
 androidxComposeBomVersion = "2024.02.02"
 coreSplashscreen = "1.0.1"
