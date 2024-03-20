@@ -29,8 +29,8 @@ class DrawingAdapter(private var drawings: List<Drawing>, private val sendClick:
      */
     override fun onBindViewHolder(holder: DrawingViewHolder, position: Int) {
         val item = drawings[position]
-        holder.binding.dateView.text = item.date
-        holder.binding.title.text = item.name
+//        holder.binding.dateView.text = item.date
+//        holder.binding.title.text = item.name
         holder.binding.drawing.setImageBitmap(item.bitmap)
         holder.binding.drawingItem.setOnClickListener { sendClick(position) }
     }

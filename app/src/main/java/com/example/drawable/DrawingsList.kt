@@ -1,4 +1,6 @@
 package com.example.drawable
+
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,39 +31,54 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
-import androidx.annotation.Sampled
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.fragment.findNavController
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
-import androidx.compose.material.DismissDirection.EndToStart
-import androidx.compose.material.DismissDirection.StartToEnd
-import androidx.compose.material.DismissValue.Default
-import androidx.compose.material.DismissValue.DismissedToEnd
-import androidx.compose.material.DismissValue.DismissedToStart
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.ListItem
-import androidx.compose.material.SwipeToDismiss
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 
@@ -70,17 +87,13 @@ class DrawingsList : Fragment() {
     private val binding by lazy { _binding!! }
     private lateinit var recycler: RecyclerView
     private lateinit var myAdapter: DrawingAdapter
-//    private  val myViewModel : DrawableViewModel by activityViewModels()
+
+    //    private  val myViewModel : DrawableViewModel by activityViewModels()
 //    private val myViewModel: DrawableViewModel by activityViewModels{
 //        DrawableViewModel.Factory((application as DrawableApplication).drawingRepository)
 //    }
-    private val myViewModel: DrawableViewModel by activityViewModels {
-        val application = requireActivity().application as DrawableApplication
-        DrawableViewModel.Factory(application.drawingRepository)
-    }
     private lateinit var swipe: Swiper
     private lateinit var touchy: ItemTouchHelper
-
 
     /**
      * Creates the view
@@ -90,20 +103,18 @@ class DrawingsList : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        _binding = FragmentDrawingsListBinding.inflate(inflater, container, false)
-//        myViewModel.drawingsList.observe(viewLifecycleOwner){
-//            (recycler.adapter as DrawingAdapter).updateDrawings(it)
-//        }
-        return ComposeView(requireContext()).apply {
-            setContent {
-                drawingsList(onDrawingClick = { drawingName ->
-                    // Handle the click event, e.g., navigate with the drawing name
-                })
-            }
+        val myViewModel: DrawableViewModel by activityViewModels {
+            val application = requireActivity().application as DrawableApplication
+            DrawableViewModel.Factory(application.drawingRepository)
         }
-        return binding.root
+        // Inflate the layout for this fragment
+        val binding = FragmentDrawingsListBinding.inflate(layoutInflater)
+        //ComposeView gives us a `Composable` context to run functions in
+        binding.composeView1.setContent {
+            DrawingsList()
+        }
 
+        return binding.root
     }
 
     /**
@@ -111,7 +122,7 @@ class DrawingsList : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recycler = binding.recycler
+//        recycler = binding.recycler
 
 //        swipe = object: Swiper(requireContext()){
 //            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -136,48 +147,47 @@ class DrawingsList : Fragment() {
 
         recycler.adapter = myAdapter
 
-        binding.add.setOnClickListener{
+        binding.add.setOnClickListener {
             findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
                 putString("New", "Drawing " + (myAdapter.itemCount + 1))
             })
         }
     }
 
+    @SuppressLint("NotConstructor")
     @Composable
-    @OptIn(ExperimentalMaterialApi::class)
-    fun drawingsList(onDrawingClick: (String) -> Unit) {
-//        // Collect the list of drawings from the Flow
-//        val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
-//        LazyColumn {
-//
-//            items(drawings){drawing ->
-//                DrawingItem(drawing = drawing, onItemClicked = onDrawingClick)
-//            }
-//        }
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun DrawingsList(myViewModel: DrawableViewModel) {
         val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
-
         LazyColumn(modifier = Modifier.fillMaxSize()) {
+
             items(items = drawings, key = { drawing ->
                 drawing.dPath.filePath // Assuming this is a unique key for each item
-            }) { drawing ->
-                val dismissState = rememberDismissState(
-                    confirmStateChange = {
-                        if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
-                            // Perform the delete action on swipe. Adjust this as needed.
-                            // For example, using a ViewModel function:
-                            myViewModel.removeDrawing(drawing)
+            }
+            ) { drawing ->
+                val density = LocalDensity.current
+                val swipeState = remember {
+                    SwipeToDismissBoxState(
+                        initialValue = SwipeToDismissBoxValue.EndToStart, // Assuming an enum or similar for state values
+                        density = density,
+                        confirmValueChange = { _ ->
+                            true
+                        },
+                        positionalThreshold = { totalDistance ->
+                            totalDistance / 4
                         }
-                        true
-                    }
-                )
-                SwipeToDismiss(
-                    state = dismissState,
-                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                    background = {
+                    )
+                }
+
+                SwipeToDismissBox(
+                    state = swipeState,
+                    enableDismissFromStartToEnd = true,
+                    backgroundContent = {
                         // Background content goes here - e.g., an icon indicating swipe action
-                    },
-                    dismissContent = {
-                        DrawingItem(drawing = drawing, onItemClicked = onDrawingClick)
+                    }, content = {
+//                        DrawingItem(drawing, onItemClicked = {
+//                            myViewModel.onDrawingClicked(drawing.dPath.filePath)
+//                        })
                     }
                 )
             }
@@ -185,26 +195,75 @@ class DrawingsList : Fragment() {
     }
 
 
-
     @Composable
-    fun DrawingItem(drawing: Drawing, onItemClicked: (String) -> Unit, modifier: Modifier = Modifier) {
-        Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .clickable { onItemClicked(drawing.dPath.filePath) }
+    fun DrawingItem(
+//        drawing: Drawing,
+//        onItemClicked: (String) -> Unit,
+//        modifier: Modifier = Modifier
+        ball : String
     ) {
-        Image(
-            bitmap = drawing.bitmap.asImageBitmap(),
-            contentDescription = "Drawing image",
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        // Add more UI elements as needed
+//        Column(
+//            modifier = modifier
+//                .padding(16.dp)
+//                .clickable { onItemClicked(drawing.dPath.filePath) }
+//        ) {
+//            Image(
+//                bitmap = drawing.bitmap.asImageBitmap(),
+//                contentDescription = "Drawing image",
+//                modifier = modifier.padding(bottom = 8.dp)
+//            )
+//        }
+        val expanded = remember { mutableStateOf(false) }
+
+
+        Surface(
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+        ) {
+
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth()
+            ) {
+
+                Row {
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        Text(
+                            text = ball, style = MaterialTheme.typography.bodySmall.copy(
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        )
+                    }
+
+                    OutlinedButton(onClick = { expanded.value = !expanded.value }) {
+                        Text(if (expanded.value) "Show less" else "Show more")
+                    }
+                }
+
+//                if (expanded.value) {
+//
+//                    Column(
+//                        modifier = Modifier.padding(
+//                            bottom = extraPadding.coerceAtLeast(0.dp)
+//                        )
+//                    ) {
+//                        Text(text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
+//                    }
+//
+//                }
+            }
+
+        }
+
     }
-    }
 
 
-
-//    /**
+    //    /**
 //     * Sets the current bitmap, then goes to the canvas
 //     * @param pos the position of the clicked drawing
 //     */
@@ -214,6 +273,13 @@ class DrawingsList : Fragment() {
 //            putString("Title", myViewModel.getDrawingTitle(pos))
 //        })
 //    }
+    @PreviewLightDark
+    @Preview(showBackground = true)
+    @Composable
+    fun DrawablePreview() {
+//        DrawingsList()
+        DrawingItem("belo")
+    }
 
     /**
      * Destroys the view

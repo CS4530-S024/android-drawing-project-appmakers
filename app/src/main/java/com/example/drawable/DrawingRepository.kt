@@ -35,7 +35,7 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
 
     //should be strings for file paths to internal storage
     suspend fun saveDrawing(drawing: Drawing) {
-        val (filePath, date) = saveBitmapToFile(drawing.bitmap, drawing.name)
+        val (filePath, date) = saveBitmapToFile(drawing.bitmap, drawing.dPath.filePath)
         val imageEntity = DrawingPath(filePath = filePath, modDate = date)
         scope.launch {
             dao.insertImage(imageEntity)
@@ -45,7 +45,7 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
     fun loadDrawing(filename: String): Drawing {
         val file = File(context.filesDir, filename)
         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-        return Drawing(filename, bitmap, dateFormat.format(file.lastModified()))
+        return Drawing(bitmap, DrawingPath(filename, file.lastModified()))
     }
 
     private fun saveBitmapToFile(bmp: Bitmap, filename: String): Pair<String, Long>{

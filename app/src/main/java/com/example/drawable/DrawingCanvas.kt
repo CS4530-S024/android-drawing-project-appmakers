@@ -171,7 +171,7 @@ class DrawingCanvas : Fragment() {
         }
 
         //Moves back to list fragment and saves drawing
-        binding.backButton.setOnClickListener { onBackClicked() }
+//        binding.backButton.setOnClickListener { onBackClicked() }
         //Handles drawing on canvas
         canvasView!!.setOnTouchListener { _, event -> onCanvasTouch(event) }
 
@@ -506,19 +506,19 @@ class DrawingCanvas : Fragment() {
     /**
      * Saves the drawing when back is clicked, then goes back to the list of drawings
      */
-    private fun onBackClicked() {
-        if (pathList.size > 0) {
-            currentDate = Date()
-            val dateString = dateFormat.format(currentDate)
-            val d = Drawing(binding.Title.text.toString(), myBitmap!!, dateString)
-            if (state != null) {
-                myViewModel.add(d)
-            } else {
-//                myViewModel.fixOrder(d)
-            }
-        }
-        findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
-    }
+//    private fun onBackClicked() {
+//        if (pathList.size > 0) {
+//            currentDate = Date()
+//            val dateString = dateFormat.format(currentDate)
+//            val d = Drawing(binding.Title.text.toString(), myBitmap!!, dateString)
+//            if (state != null) {
+//                myViewModel.add(d)
+//            } else {
+////                myViewModel.fixOrder(d)
+//            }
+//        }
+//        findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
+//    }
 
     fun getCircles(
         centerX: Float,
