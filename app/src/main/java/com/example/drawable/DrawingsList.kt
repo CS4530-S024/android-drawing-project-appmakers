@@ -83,8 +83,8 @@ import androidx.compose.ui.unit.dp
 
 
 class DrawingsList : Fragment() {
-//    private var _binding: FragmentDrawingsListBinding? = null
-//    private val binding by lazy { _binding!! }
+    private var _binding: FragmentDrawingsListBinding? = null
+    private val binding by lazy { _binding!! }
     private lateinit var swipe: Swiper
     private lateinit var touchy: ItemTouchHelper
 
@@ -99,7 +99,7 @@ class DrawingsList : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val binding = FragmentDrawingsListBinding.inflate(layoutInflater)
+        _binding = FragmentDrawingsListBinding.inflate(layoutInflater)
         val myViewModel: DrawableViewModel by activityViewModels {
             val application = requireActivity().application as DrawableApplication
             DrawableViewModel.Factory(application.drawingRepository)
@@ -117,15 +117,11 @@ class DrawingsList : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-//        binding.add.setOnClickListener {
-//            findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
-//                putString("New", "Drawing ")
-//            })
-//        }
-
-
-
+        binding.add.setOnClickListener {
+            findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
+                putString("New", "Drawing ")
+            })
+        }
     }
 
     @Composable
@@ -255,11 +251,11 @@ class DrawingsList : Fragment() {
 //        DrawingItem("belo")
     }
 
-//    /**
-//     * Destroys the view
-//     */
-//    override fun onDestroyView() {
-//        super.onDestroyView()
-//        _binding = null
-//    }
+    /**
+     * Destroys the view
+     */
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
