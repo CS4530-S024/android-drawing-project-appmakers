@@ -27,42 +27,46 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
     //updated when the DB is modified
     val paths : Flow<List<DrawingPath>> = dao.getAllPaths()
     val drawings = paths.map { it.map { drawingPath ->
-        val file = File(context.filesDir, drawingPath.filePath)
-        val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-        return@map Drawing(drawingPath.filePath, bitmap, dateFormat.format(file.lastModified()))
+        return@map loadDrawing(drawingPath.filePath)
         }
     }
-
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
 
     //should be strings for file paths to internal storage
-    suspend fun saveDrawingPath(bitmap: Bitmap, filename: String) {
-        val (filePath, date) = saveBitmapToFile(bitmap, filename)
-        val imageEntity = DrawingPath(filePath = filePath, modDate = date)
+    suspend fun saveDrawing(drawing: Drawing) {
+        val (filePath, date, name) = saveBitmapToFile(drawing.bitmap, drawing.dPath.filePath)
+        val imageEntity = DrawingPath(filePath = filePath, modDate = date, name = name)
         scope.launch {
             dao.insertImage(imageEntity)
         }
     }
 
-    private fun saveBitmapToFile(bmp: Bitmap, filename: String): Pair<String, Long>{
-        val file = File(context.filesDir, filename)
+    fun loadDrawing(name: String): Drawing {
+        val file = File(context.filesDir, name)
+        val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+        return Drawing(bitmap, DrawingPath(file.absolutePath, file.lastModified(), name))
+    }
+
+    private fun saveBitmapToFile(bmp: Bitmap, name: String): Triple<String, Long, String>{
+        val file = File(context.filesDir, name)
         return try {
             context.openFileOutput(file.name, Context.MODE_PRIVATE).use { stream ->
                 if (!bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream)) {
                     throw IOException("Couldn't save bitmap to file.")
                 }
             }
-            Pair(file.absolutePath, file.lastModified())
+            Triple(file.absolutePath, file.lastModified(), name)
         } catch (e: IOException) {
             e.printStackTrace()
             throw e // Re-throw the exception to be handled by the caller or return Result.failure(e)
         }
     }
 
-    fun deleteDrawingFromIS(filename: String): Boolean {
+    fun deleteDrawing(filename: String): Boolean {
         return try {
             context.deleteFile(filename)
+
         }catch (e: Exception){
             e.printStackTrace()
             false
