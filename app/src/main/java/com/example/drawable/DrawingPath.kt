@@ -1,12 +1,13 @@
 package com.example.drawable
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-@Entity(tableName="drawingpaths")
+@Entity(tableName="drawingpaths",indices = [Index(value = ["name"], unique = true)])
 data class DrawingPath(val modDate: Long, var name: String) {
     @Transient
     @PrimaryKey(autoGenerate = true)

@@ -1,14 +1,12 @@
 package com.example.drawable
 
-import android.annotation.SuppressLint
-import android.graphics.drawable.BitmapDrawable
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,17 +32,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.launch
-import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class DrawingsList : Fragment() {
     private var _binding: FragmentDrawingsListBinding? = null
@@ -53,6 +52,8 @@ class DrawingsList : Fragment() {
     private lateinit var swipe: Swiper
     private lateinit var touchy: ItemTouchHelper
     private var currentCount: Int = 0
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
 
 
 
@@ -91,14 +92,11 @@ class DrawingsList : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Binding and navigation for the + button
         binding.add.setOnClickListener {
             findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
                 putString("New", "Drawing " + (currentCount + 1))
             })
         }
-
-        //
     }
 
     /**
@@ -107,20 +105,20 @@ class DrawingsList : Fragment() {
     @Composable
     fun DrawingsListContent(modifier: Modifier = Modifier,
                      viewModel: DrawableViewModel = viewModel(
-                         viewModelStoreOwner = LocalContext.current.findActivity()
-                     ))
+                         viewModelStoreOwner = LocalContext.current.findActivity()))
     {
-        Column(modifier = modifier.padding(16.dp))
+        Column()
         {
             val drawings by viewModel.drawings.collectAsState(initial = emptyList())
 
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier.fillMaxSize())
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = modifier
+                    .fillMaxSize()
+                    .border(border = BorderStroke(width = 2.dp, color = Color.Black))
+            )
             {
-
                 items(items = drawings){ drawing ->
-                    // * Original
-                    DrawingListItem(drawing, onClick = { onClicked(drawing) }, getModDate(drawing))
+                    DrawingListItem(drawing, onClick = { onClicked(viewModel, drawing.dPath) })
                 }
             }
         }
@@ -130,43 +128,44 @@ class DrawingsList : Fragment() {
     @Composable
     fun DrawingListItem(
         drawing: Drawing,
-        onClick: () -> Unit,
-        date: String)
+        onClick: () -> Unit)
     {
         ElevatedCard(
-            onClick = { onClick() },
+            onClick = { onClick()},
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp
             ),
-            modifier = Modifier.fillMaxWidth()
-                .size(width = 240.dp, height = 100.dp)
+            modifier = Modifier
+                .fillMaxWidth() // This makes the width fill the maximum available space
+                .height(100.dp)
         ) {
             Row(modifier = Modifier.padding(all = 8.dp)){
                 // Add drawing preview
-//                Image(
-//                    bitmap = drawing.bitmap.asImageBitmap(),
-//                    contentDescription = "Drawing Preview",
-//                    modifier = Modifier
-//                        .size(50.dp)
-//                )
                 Image(
-                    painter = BitmapPainter(drawing.bitmap.asImageBitmap()),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = "Drawing Preview" )
+                    bitmap = drawing.bitmap.asImageBitmap(),
+                    contentDescription = "Drawing Preview",
+                    modifier = Modifier
+                        .size(50.dp),
+                    contentScale = ContentScale.Fit)
 
                 //Add horizontal spacer between drawing preview and title column
-                Spacer(modifier = Modifier.width(20.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
                 //Add column for title and the modification date
                 Column {
                     // Add drawing title
-                    Text(text = "[ Drawing Title! ]",
+                    Text(text = drawing.dPath.name,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                     )
                     // Add a vertical space between the drawing title and the modified date
                     Spacer(modifier = Modifier.height(20.dp))
-                    Text(text = "Last modified: $date")
+                    Text(text = dateFormat.format(drawing.dPath.modDate),
+                        style = TextStyle(
+                        color = Color.Gray, // Change the color as needed
+                        fontSize = 20.sp    // Change the size as needed
+                    )
+                    )
                 }
 
             }
@@ -174,17 +173,12 @@ class DrawingsList : Fragment() {
         }
     }
 
-    private fun getModDate(drawing: Drawing): String{
-        val sdf = SimpleDateFormat("MM/dd/yyyy")
-        return sdf.format(drawing.dPath.modDate)
-    }
-
-    private fun onClicked(drawing:Drawing){
+    private fun onClicked(viewModel: DrawableViewModel, dpath: DrawingPath){
+        viewModel.setCurrBitmap(dpath)
         findNavController().navigate(
             R.id.action_drawingsList_to_drawingCanvas,
             Bundle().apply {
-               //putString("New", "Drawing ${currentCount + 1}")
-                putString("Existing","${drawing.dPath.name}");
+                putString("Title", dpath.name)
             }
         )
     }

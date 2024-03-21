@@ -31,45 +31,44 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
         }
     }
     val count : Flow<Int> = dao.getDrawingCount()
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
 
     //should be strings for file paths to internal storage
     suspend fun saveDrawing(drawing: Drawing) {
         val date = saveBitmapToFile(drawing.bitmap, drawing.dPath.name)
         val imageEntity = DrawingPath(modDate = date, name = drawing.dPath.name)
-        scope.launch {
-            dao.insertImage(imageEntity)
-        }
+        dao.insertImage(imageEntity)
     }
 
     fun loadDrawing(path: DrawingPath): Drawing {
         val file = File(context.filesDir, path.name)
         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-        //drawings.
-        return Drawing(bitmap, path)
-        //return drawings.
+        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+        bitmap.recycle()
+        return Drawing(mutableBitmap, path)
     }
 
     private fun saveBitmapToFile(bmp: Bitmap, name: String): Long{
-        val file = File(context.filesDir, name)
-        return try {
-            context.openFileOutput(file.name, Context.MODE_PRIVATE).use { stream ->
-                if (!bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream)) {
-                    throw IOException("Couldn't save bitmap to file.")
-                }
-            }
-            file.lastModified()
+        var fos: FileOutputStream? = null
+        try {
+            fos = context.openFileOutput(name, Context.MODE_PRIVATE)
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, fos)
         } catch (e: IOException) {
             e.printStackTrace()
-            throw e // Re-throw the exception to be handled by the caller or return Result.failure(e)
+        } finally {
+            try {
+                fos?.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
+        val file = File(context.filesDir, name)
+        return file.lastModified()
     }
 
     fun deleteDrawing(filename: String): Boolean {
         return try {
             context.deleteFile(filename)
-
         }catch (e: Exception){
             e.printStackTrace()
             false

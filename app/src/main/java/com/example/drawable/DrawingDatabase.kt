@@ -9,7 +9,7 @@ import androidx.room.Query
 import androidx.room.RoomDatabase
 import kotlinx.coroutines.flow.Flow
 
-@Database(entities= [DrawingPath::class], version = 2, exportSchema = false)
+@Database(entities= [DrawingPath::class], version = 3, exportSchema = false)
 
 abstract class  DrawingDatabase  : RoomDatabase(){
     abstract fun drawingDao(): DrawingDAO
