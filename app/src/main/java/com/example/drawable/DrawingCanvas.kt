@@ -33,10 +33,8 @@ import kotlin.random.Random
 
 class DrawingCanvas : Fragment() {
 
-
     data class PaintedPath(val path: Path, val color: Int, val width: Float, val shape: Paint.Cap)
     data class Circles(val x: Double, val y: Double, val radius: Float, val paint: Paint)
-
     private var _binding: FragmentDrawingCanvasBinding? = null
     private val binding by lazy { _binding!! }
     private var currColor: Int? = null
@@ -48,7 +46,6 @@ class DrawingCanvas : Fragment() {
 
     //bitmap drawing vars
     private var myBitmap: Bitmap? = null
-
     private var isDrag = false
     private var isSquare = false
     private var isFill = false
@@ -405,7 +402,6 @@ class DrawingCanvas : Fragment() {
         return Pair(bitmapX, bitmapY)
     }
 
-
     /**
      * Displays the color picker
      */
@@ -420,7 +416,6 @@ class DrawingCanvas : Fragment() {
                 }
             }).show()
     }
-
 
     /**
      * Displays the pop up for changing sizes and shape
@@ -499,7 +494,6 @@ class DrawingCanvas : Fragment() {
         currentPath = Path()
     }
 
-
     /**
      * Saves the drawing when back is clicked, then goes back to the list of drawings
      */
@@ -508,7 +502,7 @@ class DrawingCanvas : Fragment() {
             val d = Drawing(myBitmap!!, DrawingPath(System.currentTimeMillis(), binding.Title.text.toString()))
             myViewModel.add(d)
         }
-        findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
+        findNavController().popBackStack()
     }
 
     fun getCircles(
@@ -544,8 +538,6 @@ class DrawingCanvas : Fragment() {
             circles.add(Circles(x, y, dotSize, paint)) // Using dotSize for the dot's radius
         }
     }
-
-
 
     /**
      * Destroys the view
