@@ -21,17 +21,6 @@ internal fun Context.findActivity(): ComponentActivity {
 }
 
 class MainActivity : AppCompatActivity() {
-    //Help with the viewModel provider lookup stuff
-//this traces a "context" object up via its parent until it finds
-//the activity
-    internal fun Context.findActivity(): ComponentActivity {
-        var context = this
-        while (context is ContextWrapper) {
-            if (context is ComponentActivity) return context
-            context = context.baseContext
-        }
-        throw IllegalStateException("Permissions should be called in the context of an Activity")
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)

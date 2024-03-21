@@ -7,7 +7,7 @@ import kotlinx.serialization.Transient
 
 @Serializable
 @Entity(tableName="drawingpaths")
-data class DrawingPath(var filePath: String, val modDate: Long) {
+data class DrawingPath(var filePath: String, val modDate: Long, var name: String) {
     @Transient
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0 // integer primary key for the DB

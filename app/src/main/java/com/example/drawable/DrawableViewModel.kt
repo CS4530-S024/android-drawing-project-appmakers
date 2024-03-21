@@ -47,6 +47,10 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     private val saveColor =  MutableLiveData<Int>()
     var currColor = saveColor as LiveData<out Int>
 
+    fun getAllDrawings(){
+
+    }
+
 
     /**
      * Adds drawing to list
