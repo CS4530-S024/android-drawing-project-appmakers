@@ -19,7 +19,6 @@ class DrawableApplication  : Application() {
             .build()
     }
 
-
     //create our repository singleton, using lazy to access the DB when we need it
     val drawingRepository by lazy {DrawingRepository(scope, db.drawingDao(), applicationContext)}
 }

@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment
 import com.example.drawable.databinding.FragmentDrawingsListBinding
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -35,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -48,14 +46,8 @@ import java.util.Locale
 class DrawingsList : Fragment() {
     private var _binding: FragmentDrawingsListBinding? = null
     private val binding by lazy { _binding!! }
-
-    private lateinit var swipe: Swiper
-    private lateinit var touchy: ItemTouchHelper
     private var currentCount: Int = 0
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-
-
-
 
     /**
      * Creates the view
@@ -71,6 +63,15 @@ class DrawingsList : Fragment() {
             val application = requireActivity().application as DrawableApplication
             DrawableViewModel.Factory(application.drawingRepository)
         }
+        val onClicked: (DrawingPath) -> Unit = { dpath ->
+            myViewModel.setCurrBitmap(dpath)
+            findNavController().navigate(
+                R.id.action_drawingsList_to_drawingCanvas,
+                Bundle().apply {
+                    putString("Title", dpath.name)
+                }
+            )
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             myViewModel.count.collect { countValue ->
@@ -79,11 +80,9 @@ class DrawingsList : Fragment() {
         }
 
         binding.composeView1.setContent {
-            DrawingsListContent(Modifier.padding(16.dp), viewModel = myViewModel)
+            val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
+            DrawingsListContent(Modifier.padding(16.dp), drawings, onClicked)
         }
-// {
-//                findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas)
-//            }
         return binding.root
     }
 
@@ -103,14 +102,10 @@ class DrawingsList : Fragment() {
      * The DrawingsList as a Composable item.
      */
     @Composable
-    fun DrawingsListContent(modifier: Modifier = Modifier,
-                     viewModel: DrawableViewModel = viewModel(
-                         viewModelStoreOwner = LocalContext.current.findActivity()))
+    fun DrawingsListContent(modifier: Modifier = Modifier, drawings: List<Drawing>, onClick: (DrawingPath) -> Unit)
     {
         Column()
         {
-            val drawings by viewModel.drawings.collectAsState(initial = emptyList())
-
             LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = modifier
                     .fillMaxSize()
@@ -118,13 +113,15 @@ class DrawingsList : Fragment() {
             )
             {
                 items(items = drawings){ drawing ->
-                    DrawingListItem(drawing, onClick = { onClicked(viewModel, drawing.dPath) })
+                    DrawingListItem(drawing, onClick = { onClick(drawing.dPath) })
                 }
             }
         }
     }
 
-
+    /**
+     *
+     */
     @Composable
     fun DrawingListItem(
         drawing: Drawing,
@@ -167,20 +164,8 @@ class DrawingsList : Fragment() {
                     )
                     )
                 }
-
             }
-
         }
-    }
-
-    private fun onClicked(viewModel: DrawableViewModel, dpath: DrawingPath){
-        viewModel.setCurrBitmap(dpath)
-        findNavController().navigate(
-            R.id.action_drawingsList_to_drawingCanvas,
-            Bundle().apply {
-                putString("Title", dpath.name)
-            }
-        )
     }
 
     /**

@@ -8,14 +8,11 @@ import android.graphics.Bitmap
 import android.view.ViewGroup
 
 
-
 class CanvasView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
-
-
     private var myBitmap : Bitmap? = null
     private var lParams: ViewGroup.LayoutParams? = null
 
@@ -43,5 +40,4 @@ class CanvasView @JvmOverloads constructor(
             canvas.drawBitmap(it, 0f, 0f, null)
         }
     }
-
 }

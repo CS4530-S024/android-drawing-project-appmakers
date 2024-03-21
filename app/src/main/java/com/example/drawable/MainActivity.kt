@@ -22,18 +22,10 @@ internal fun Context.findActivity(): ComponentActivity {
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         Thread.sleep(3000)
         installSplashScreen()
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            // Apply the insets as padding for the top, left, and right, but NOT for the bottom
-            view.setPadding(0, systemBars.top, 0, systemBars.bottom)
-            insets
-        }
     }
 }

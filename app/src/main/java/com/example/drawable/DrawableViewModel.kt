@@ -16,7 +16,6 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     //new implementation
     val drawings: Flow<List<Drawing>> = repository.drawings
     val count: Flow<Int> = repository.count
-
     class Factory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(DrawableViewModel::class.java)) {
@@ -67,7 +66,6 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         bitmapLiveData.value = bitmapLiveData.value
     }
 
-    // index dependent things
     /**
      * Sets the current bitmap
      * @param dpath The drawing path of file to set as current bitmap
@@ -80,27 +78,9 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
 
     /**
      * Removes drawing from list
-     * @param filename The name of the file to delete
+     * @param dpath The drawing path of the file to delete
      */
-    fun removeDrawing(filename: String){
-        repository.deleteDrawing(filename)
-    }
-
-//    /**
-//     * Gets the title of the drawing
-//     * @param filename The name of the file to get title of
-//     */
-//    fun getDrawingTitle(filename: String): String {
-//        val drawing = repository.loadDrawing(filename)
-//        return drawing.dPath.name
-//    }
-
-    //fun onDrawingClicked(fileName: String) {
-    fun loadDrawing(filename:String){
-        //repository.drawings.collect()
-    }
-    fun onDrawingClicked(path: DrawingPath) {
-
-
+    fun removeDrawing(dpath: DrawingPath){
+        repository.deleteDrawing(dpath)
     }
 }

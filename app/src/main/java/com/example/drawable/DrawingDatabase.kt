@@ -15,7 +15,6 @@ abstract class  DrawingDatabase  : RoomDatabase(){
     abstract fun drawingDao(): DrawingDAO
 }
 
-
 @Dao
 interface DrawingDAO {
     //Gets a list of drawing paths from the repo
