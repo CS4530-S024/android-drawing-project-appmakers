@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,8 +20,19 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 class DrawingsList : Fragment() {
@@ -86,16 +98,53 @@ class DrawingsList : Fragment() {
             {
                 for (drawing in drawings) {
                     item {
-                        DrawingItem(drawing, onClick = onClick)
+                        DrawingListItem(drawing, onClick = onClick)
                     }
                 }
             }
         }
     }
 
-    @Composable
-    fun DrawingItem(drawing: Drawing, onClick: () -> Unit) {
 
+    @Composable
+    fun DrawingListItem(
+        drawing: Drawing,
+        onClick: () -> Unit)
+    {
+        ElevatedCard(
+            onClick = { /* Do something */ },
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
+            ),
+            modifier = Modifier
+                .size(width = 240.dp, height = 100.dp)
+        ) {
+            Row(modifier = Modifier.padding(all = 8.dp)){
+                // Add drawing preview
+                Image(
+                    bitmap = drawing.bitmap.asImageBitmap(),
+                    contentDescription = "Drawing Preview",
+                    modifier = Modifier
+                        .size(50.dp))
+
+
+                //Add horizontal spacer between drawing preview and title column
+                Spacer(modifier = Modifier.width(8.dp))
+
+                //Add column for title and the modification date
+                Column {
+                    // Add drawing title
+                    Text(text = "New Drawing",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    // Add a vertical space between the drawing title and the modified date
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(text = "Last modified: [Date]")
+                }
+            }
+
+        }
     }
 
     /**
