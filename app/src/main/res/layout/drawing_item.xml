@@ -3,11 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="100dp"
-    android:layout_margin="15dp"
     android:orientation="horizontal"
-    android:background="@drawable/card"
+    android:background="@drawable/label"
     android:id="@+id/drawingItem">
-
 
     <ImageView
         android:id="@+id/drawing"
@@ -30,9 +28,8 @@
             android:text="Drawing 1"
             android:layout_gravity="center_vertical"
             android:textSize="30sp"
-            android:textFontWeight="900"
             android:textColor="@color/black"
-            android:layout_margin="7dp"/>
+            android:layout_margin="10dp"/>
         <TextView
             android:id="@+id/dateView"
             android:layout_width="wrap_content"
@@ -41,7 +38,7 @@
             android:layout_gravity="center_vertical"
             android:textSize="15sp"
             android:textColor="@color/label_gray"
-            android:layout_margin="7dp"/>
+            android:layout_margin="10dp"/>
 
     </LinearLayout>
 </LinearLayout>

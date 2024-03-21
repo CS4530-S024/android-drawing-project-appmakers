@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,35 +16,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import com.example.drawable.databinding.FragmentDrawingsListBinding
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
@@ -51,42 +30,28 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.findNavController
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.unit.dp
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageBitmapConfig
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 
 class DrawingsList : Fragment() {
     private var _binding: FragmentDrawingsListBinding? = null
     private val binding by lazy { _binding!! }
-    private lateinit var recycler: RecyclerView
-    private lateinit var myAdapter: DrawingAdapter
+
 
     //    private  val myViewModel : DrawableViewModel by activityViewModels()
 //    private val myViewModel: DrawableViewModel by activityViewModels{
@@ -111,7 +76,7 @@ class DrawingsList : Fragment() {
         val binding = FragmentDrawingsListBinding.inflate(layoutInflater)
         //ComposeView gives us a `Composable` context to run functions in
         binding.composeView1.setContent {
-            DrawingsList()
+            DrawingsList(myViewModel)
         }
 
         return binding.root
@@ -139,19 +104,17 @@ class DrawingsList : Fragment() {
 //
 //        touchy.attachToRecyclerView(recycler)
 
-        recycler.layoutManager = LinearLayoutManager(context)
 
 //        myAdapter = DrawingAdapter(listOf(), sendClick = {
 //            sendClick(it)
 //        })
 
-        recycler.adapter = myAdapter
 
-        binding.add.setOnClickListener {
-            findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
-                putString("New", "Drawing " + (myAdapter.itemCount + 1))
-            })
-        }
+//        binding.add.setOnClickListener {
+//            findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
+//                putString("New", "Drawing " + (myAdapter.itemCount + 1))
+//            })
+//        }
     }
 
     @SuppressLint("NotConstructor")
@@ -195,13 +158,119 @@ class DrawingsList : Fragment() {
     }
 
 
-    @Composable
-    fun DrawingItem(
-//        drawing: Drawing,
-//        onItemClicked: (String) -> Unit,
-//        modifier: Modifier = Modifier
-        ball : String
+//    @Composable
+//    fun DrawingItem(
+////        drawing: Drawing,
+////        onItemClicked: (String) -> Unit,
+////        modifier: Modifier = Modifier
+//        ball : String
+//    ) {
+////        Column(
+////            modifier = modifier
+////                .padding(16.dp)
+////                .clickable { onItemClicked(drawing.dPath.filePath) }
+////        ) {
+////            Image(
+////                bitmap = drawing.bitmap.asImageBitmap(),
+////                contentDescription = "Drawing image",
+////                modifier = modifier.padding(bottom = 8.dp)
+////            )
+////        }
+//        val expanded = remember { mutableStateOf(false) }
+//
+//
+//        Surface(
+//            color = MaterialTheme.colorScheme.primary,
+//            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+//        ) {
+//
+//            Column(
+//                modifier = Modifier
+//                    .padding(24.dp)
+//                    .fillMaxWidth()
+//            ) {
+//
+//                Row {
+//
+//                    Column(
+//                        modifier = Modifier
+//                            .weight(1f)
+//                    ) {
+//                        Text(
+//                            text = ball, style = MaterialTheme.typography.bodySmall.copy(
+//                                fontWeight = FontWeight.ExtraBold
+//                            )
+//                        )
+//                    }
+//
+//                    OutlinedButton(onClick = { expanded.value = !expanded.value }) {
+//                        Text(if (expanded.value) "Show less" else "Show more")
+//                    }
+//                }
+//
+////                if (expanded.value) {
+////
+////                    Column(
+////                        modifier = Modifier.padding(
+////                            bottom = extraPadding.coerceAtLeast(0.dp)
+////                        )
+////                    ) {
+////                        Text(text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
+////                    }
+////
+////                }
+//            }
+//
+//        }
+//
+//    }
+@Composable
+fun DrawingListItem(
+    drawing: Drawing)
+{
+    ElevatedCard(
+        onClick = { /* Do something */ },
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        ),
+        modifier = Modifier
+            .size(width = 240.dp, height = 100.dp)
     ) {
+        Row(modifier = Modifier.padding(all = 8.dp)){
+            // Add drawing preview
+            Image(
+                bitmap = drawing.bitmap.asImageBitmap(),
+                contentDescription = "Drawing Preview",
+                modifier = Modifier
+                    .size(50.dp))
+
+
+            //Add horizontal spacer between drawing preview and title column
+            Spacer(modifier = Modifier.width(8.dp))
+
+            //Add column for title and the modification date
+            Column {
+                // Add drawing title
+                Text(text = "New Drawing",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                // Add a vertical space between the drawing title and the modified date
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = "Last modified: [Date]")
+            }
+        }
+
+    }
+}
+
+
+@Composable
+fun DrawingItem(
+        drawing: Drawing,
+        onItemClicked: (String) -> Unit,
+        modifier: Modifier = Modifier,
+     ball: String) {
 //        Column(
 //            modifier = modifier
 //                .padding(16.dp)
@@ -213,37 +282,49 @@ class DrawingsList : Fragment() {
 //                modifier = modifier.padding(bottom = 8.dp)
 //            )
 //        }
-        val expanded = remember { mutableStateOf(false) }
+    val expanded = remember { mutableStateOf(false) }
 
 
-        Surface(
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+    Surface(
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+    ) {
+
+        Column(
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth()
         ) {
 
-            Column(
-                modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth()
-            ) {
+            Row(modifier = Modifier.padding(all = 8.dp)) {
+                // Add drawing preview
+//                Image(
+//                    imageBitmap = drawing.bitmap,
+//                    contentDescription = "Drawing Preview",
+//                    modifier = Modifier
+//                        .size(50.dp)
+//                        .clip(CircleShape)
 
-                Row {
 
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                    ) {
-                        Text(
-                            text = ball, style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = FontWeight.ExtraBold
-                            )
-                        )
-                    }
+                //Add horizontal spacer between the drawing and the title column
+                
 
-                    OutlinedButton(onClick = { expanded.value = !expanded.value }) {
-                        Text(if (expanded.value) "Show less" else "Show more")
-                    }
-                }
+
+//                Column(
+//                    modifier = Modifier
+//                        .weight(1f)
+//                ) {
+//                    Text(
+//                        text = ball, style = MaterialTheme.typography.bodySmall.copy(
+//                            fontWeight = FontWeight.ExtraBold
+//                        )
+//                    )
+//                }
+
+//                OutlinedButton(onClick = { expanded.value = !expanded.value }) {
+//                    Text(if (expanded.value) "Show less" else "Show more")
+//                }
+            }
 
 //                if (expanded.value) {
 //
@@ -256,11 +337,11 @@ class DrawingsList : Fragment() {
 //                    }
 //
 //                }
-            }
-
         }
 
     }
+
+}
 
 
     //    /**
@@ -278,7 +359,15 @@ class DrawingsList : Fragment() {
     @Composable
     fun DrawablePreview() {
 //        DrawingsList()
-        DrawingItem("belo")
+        //DrawingItem("belo")
+    }
+    @PreviewLightDark
+    @Preview(showBackground = true)
+    @Composable
+    fun DrawPreview() {
+//        DrawingsList()
+
+       // DrawingListItem(Drawing())
     }
 
     /**
