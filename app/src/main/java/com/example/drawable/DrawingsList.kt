@@ -142,6 +142,7 @@ class DrawingsList : Fragment() {
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(text = "Last modified: [Date]")
                 }
+
             }
 
         }
