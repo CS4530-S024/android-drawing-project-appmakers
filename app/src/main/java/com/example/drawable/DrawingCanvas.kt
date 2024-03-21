@@ -72,9 +72,6 @@ class DrawingCanvas : Fragment() {
     private var width = 8F
     private var currentPath = Path()
 
-//    @SuppressLint("SimpleDateFormat")
-//    val dateFormat = SimpleDateFormat("MM-dd-yyyy")
-//    private var currentDate: Date? = null
 
 
     /**
@@ -128,7 +125,6 @@ class DrawingCanvas : Fragment() {
             myBitmap = bitmap // Assign it to fragment's bitmap variable
             binding.canvas.setBitmap(bitmap)
         }
-
 
 
         // displays pen size / shape popup
@@ -510,9 +506,7 @@ class DrawingCanvas : Fragment() {
     private fun onBackClicked() {
         if (pathList.size > 0) {
             val d = Drawing(myBitmap!!, DrawingPath(System.currentTimeMillis(), binding.Title.text.toString()))
-            if (state != null) {
-                myViewModel.add(d)
-            }
+            myViewModel.add(d)
         }
         findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
     }

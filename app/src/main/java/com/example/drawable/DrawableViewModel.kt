@@ -1,31 +1,19 @@
 package com.example.drawable
 
-import android.content.Context
-import android.app.Application
-
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-
-import androidx.lifecycle.asLiveData
+import android.graphics.Color
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-
-import java.io.File
-import java.util.Date
 
 data class Drawing(val bitmap: Bitmap, val dPath: DrawingPath)
 class DrawableViewModel(private val repository: DrawingRepository) : ViewModel(){
 
     //new implementation
-    val dPaths : Flow<List<DrawingPath>> = repository.paths
     val drawings: Flow<List<Drawing>> = repository.drawings
     val count: Flow<Int> = repository.count
 
@@ -45,7 +33,7 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
 //    private val _bitmapFlow = MutableStateFlow<Bitmap?>(null) // Assuming bitmap can be initially null
 //    val bitmapFlow: StateFlow<Bitmap?> = _bitmapFlow.asStateFlow()
 
-    private val saveColor =  MutableLiveData<Int>()
+    private val saveColor =  MutableLiveData<Int>(Color.BLACK)
     var currColor = saveColor as LiveData<out Int>
 
 
@@ -80,15 +68,15 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     }
 
     // index dependent things
-//    /**
-//     * Sets the current bitmap
-//     * @param filename The name of the file to set as current bitmap
-//     */
-//  fun setCurrBitmap(name: String){
-//        val drawing = repository.loadDrawing(name)
-//        bitmapLiveData.value = drawing.bitmap
-//        bitmapLiveData.value = bitmapLiveData.value
-//    }
+    /**
+     * Sets the current bitmap
+     * @param dpath The drawing path of file to set as current bitmap
+     */
+  fun setCurrBitmap(dpath: DrawingPath){
+        val drawing = repository.loadDrawing(dpath)
+        bitmapLiveData.value = drawing.bitmap
+        bitmapLiveData.value = bitmapLiveData.value
+    }
 
     /**
      * Removes drawing from list
