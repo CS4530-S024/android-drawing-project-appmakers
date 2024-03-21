@@ -27,28 +27,29 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
     //updated when the DB is modified
     val paths : Flow<List<DrawingPath>> = dao.getAllPaths()
     val drawings = paths.map { it.map { drawingPath ->
-        return@map loadDrawing(drawingPath.filePath)
+        return@map loadDrawing(drawingPath)
         }
     }
+    val count : Flow<Int> = dao.getDrawingCount()
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
 
     //should be strings for file paths to internal storage
     suspend fun saveDrawing(drawing: Drawing) {
-        val (filePath, date, name) = saveBitmapToFile(drawing.bitmap, drawing.dPath.filePath)
-        val imageEntity = DrawingPath(filePath = filePath, modDate = date, name = name)
+        val date = saveBitmapToFile(drawing.bitmap, drawing.dPath.name)
+        val imageEntity = DrawingPath(modDate = date, name = drawing.dPath.name)
         scope.launch {
             dao.insertImage(imageEntity)
         }
     }
 
-    fun loadDrawing(name: String): Drawing {
-        val file = File(context.filesDir, name)
+    fun loadDrawing(path: DrawingPath): Drawing {
+        val file = File(context.filesDir, path.name)
         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-        return Drawing(bitmap, DrawingPath(file.absolutePath, file.lastModified(), name))
+        return Drawing(bitmap, path)
     }
 
-    private fun saveBitmapToFile(bmp: Bitmap, name: String): Triple<String, Long, String>{
+    private fun saveBitmapToFile(bmp: Bitmap, name: String): Long{
         val file = File(context.filesDir, name)
         return try {
             context.openFileOutput(file.name, Context.MODE_PRIVATE).use { stream ->
@@ -56,7 +57,7 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
                     throw IOException("Couldn't save bitmap to file.")
                 }
             }
-            Triple(file.absolutePath, file.lastModified(), name)
+            file.lastModified()
         } catch (e: IOException) {
             e.printStackTrace()
             throw e // Re-throw the exception to be handled by the caller or return Result.failure(e)

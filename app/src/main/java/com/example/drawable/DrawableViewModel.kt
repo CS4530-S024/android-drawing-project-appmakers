@@ -27,6 +27,7 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     //new implementation
     val dPaths : Flow<List<DrawingPath>> = repository.paths
     val drawings: Flow<List<Drawing>> = repository.drawings
+    val count: Flow<Int> = repository.count
 
     class Factory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -47,9 +48,6 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     private val saveColor =  MutableLiveData<Int>()
     var currColor = saveColor as LiveData<out Int>
 
-    fun getAllDrawings(){
-
-    }
 
 
     /**
@@ -82,15 +80,15 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     }
 
     // index dependent things
-    /**
-     * Sets the current bitmap
-     * @param filename The name of the file to set as current bitmap
-     */
-  fun setCurrBitmap(filename: String){
-        val drawing = repository.loadDrawing(filename)
-        bitmapLiveData.value = drawing.bitmap
-        bitmapLiveData.value = bitmapLiveData.value
-    }
+//    /**
+//     * Sets the current bitmap
+//     * @param filename The name of the file to set as current bitmap
+//     */
+//  fun setCurrBitmap(name: String){
+//        val drawing = repository.loadDrawing(name)
+//        bitmapLiveData.value = drawing.bitmap
+//        bitmapLiveData.value = bitmapLiveData.value
+//    }
 
     /**
      * Removes drawing from list
@@ -100,14 +98,14 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         repository.deleteDrawing(filename)
     }
 
-    /**
-     * Gets the title of the drawing
-     * @param filename The name of the file to get title of
-     */
-    fun getDrawingTitle(filename: String): String {
-        val drawing = repository.loadDrawing(filename)
-        return drawing.dPath.filePath
-    }
+//    /**
+//     * Gets the title of the drawing
+//     * @param filename The name of the file to get title of
+//     */
+//    fun getDrawingTitle(filename: String): String {
+//        val drawing = repository.loadDrawing(filename)
+//        return drawing.dPath.name
+//    }
 
     fun onDrawingClicked(fileName: String) {
 

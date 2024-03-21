@@ -48,6 +48,7 @@ class DrawingCanvas : Fragment() {
 
     //bitmap drawing vars
     private var myBitmap: Bitmap? = null
+
     private var isDrag = false
     private var isSquare = false
     private var isFill = false
@@ -71,9 +72,9 @@ class DrawingCanvas : Fragment() {
     private var width = 8F
     private var currentPath = Path()
 
-    @SuppressLint("SimpleDateFormat")
-    val dateFormat = SimpleDateFormat("MM-dd-yyyy")
-    private var currentDate: Date? = null
+//    @SuppressLint("SimpleDateFormat")
+//    val dateFormat = SimpleDateFormat("MM-dd-yyyy")
+//    private var currentDate: Date? = null
 
 
     /**
@@ -85,7 +86,7 @@ class DrawingCanvas : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentDrawingCanvasBinding.inflate(inflater, container, false)
+        _binding = FragmentDrawingCanvasBinding.inflate(layoutInflater)
         return binding.root
     }
 
@@ -171,7 +172,7 @@ class DrawingCanvas : Fragment() {
         }
 
         //Moves back to list fragment and saves drawing
-//        binding.backButton.setOnClickListener { onBackClicked() }
+        binding.backButton.setOnClickListener { onBackClicked() }
         //Handles drawing on canvas
         canvasView!!.setOnTouchListener { _, event -> onCanvasTouch(event) }
 
@@ -506,19 +507,15 @@ class DrawingCanvas : Fragment() {
     /**
      * Saves the drawing when back is clicked, then goes back to the list of drawings
      */
-//    private fun onBackClicked() {
-//        if (pathList.size > 0) {
-//            currentDate = Date()
-//            val dateString = dateFormat.format(currentDate)
-//            val d = Drawing(binding.Title.text.toString(), myBitmap!!, dateString)
-//            if (state != null) {
-//                myViewModel.add(d)
-//            } else {
-////                myViewModel.fixOrder(d)
-//            }
-//        }
-//        findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
-//    }
+    private fun onBackClicked() {
+        if (pathList.size > 0) {
+            val d = Drawing(myBitmap!!, DrawingPath(System.currentTimeMillis(), binding.Title.text.toString()))
+            if (state != null) {
+                myViewModel.add(d)
+            }
+        }
+        findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
+    }
 
     fun getCircles(
         centerX: Float,
