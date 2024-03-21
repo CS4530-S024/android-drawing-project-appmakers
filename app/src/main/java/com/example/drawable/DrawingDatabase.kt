@@ -31,4 +31,5 @@ interface DrawingDAO {
 
     @Query("SELECT COUNT(*) FROM drawingpaths")
     fun getDrawingCount():  Flow<Int>
+
 }

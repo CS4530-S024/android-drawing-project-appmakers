@@ -107,7 +107,12 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
 //        return drawing.dPath.name
 //    }
 
-    fun onDrawingClicked(fileName: String) {
+    //fun onDrawingClicked(fileName: String) {
+    fun loadDrawing(filename:String){
+        //repository.drawings.collect()
+    }
+    fun onDrawingClicked(path: DrawingPath) {
+
 
     }
 }

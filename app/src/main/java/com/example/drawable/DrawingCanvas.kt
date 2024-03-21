@@ -114,6 +114,12 @@ class DrawingCanvas : Fragment() {
             title = requireArguments().getString("Title")
         }
 
+        state = requireArguments().getString("Existing")
+        if(state != null){
+            //myViewModel.updateBitmap(bitmap)
+            myViewModel.
+        }
+
         myBitmap = myViewModel.currBitmap.value
         currColor = myViewModel.currColor.value
         binding.Title.setText(title)
@@ -516,6 +522,15 @@ class DrawingCanvas : Fragment() {
         }
         findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
     }
+
+    /**********  Lissa's Attempt    ***********/
+    private fun onDrawingClicked() {
+        //myViewModel.
+
+        updateCanvasView()
+    }
+
+    /**********  Lissa's Attempt    ***********/
 
     fun getCircles(
         centerX: Float,

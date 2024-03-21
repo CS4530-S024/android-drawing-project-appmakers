@@ -46,7 +46,9 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
     fun loadDrawing(path: DrawingPath): Drawing {
         val file = File(context.filesDir, path.name)
         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+        //drawings.
         return Drawing(bitmap, path)
+        //return drawings.
     }
 
     private fun saveBitmapToFile(bmp: Bitmap, name: String): Long{
