@@ -2,7 +2,7 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="DrawablePreview - Dark">
+      <entry key="ExampleInstrumentedTest">
         <State />
       </entry>
       <entry key="app">
@@ -20,6 +20,18 @@
           </targetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2024-02-16T23:14:33.623191400Z" />
         </State>
+      </entry>
+      <entry key="test_add_item()">
+        <State />
+      </entry>
+      <entry key="test_add_lots_of_items()">
+        <State />
+      </entry>
+      <entry key="test_add_multiple_items()">
+        <State />
+      </entry>
+      <entry key="test_add_then_remove()">
+        <State />
       </entry>
     </value>
   </component>
