@@ -8,7 +8,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,7 +22,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,10 +31,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -44,13 +38,9 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -66,8 +56,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class DrawingsList : Fragment() {
-    private var _binding: FragmentDrawingsListBinding? = null
-    private val binding by lazy { _binding!! }
+    private lateinit var binding: FragmentDrawingsListBinding
     private var currentCount: Int = 0
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
@@ -79,12 +68,13 @@ class DrawingsList : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDrawingsListBinding.inflate(layoutInflater)
+        binding = FragmentDrawingsListBinding.inflate(layoutInflater)
 
         val myViewModel: DrawableViewModel by activityViewModels {
             val application = requireActivity().application as DrawableApplication
             DrawableViewModel.Factory(application.drawingRepository)
         }
+
         val onClicked: (DrawingPath) -> Unit = { dpath ->
             myViewModel.setCurrBitmap(dpath)
             findNavController().navigate(
@@ -97,7 +87,6 @@ class DrawingsList : Fragment() {
 
         val onDelete: (DrawingPath) -> Unit = { dPath ->
             myViewModel.removeDrawing(dPath)
-
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -108,7 +97,7 @@ class DrawingsList : Fragment() {
 
         binding.composeView1.setContent {
             val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
-            DrawingsListContent(Modifier.padding(16.dp), drawings, onClicked, onDelete)
+            DrawingsListContent(drawings, onClicked, onDelete)
         }
 
         return binding.root
@@ -127,43 +116,47 @@ class DrawingsList : Fragment() {
     }
 
     /**
-     * The DrawingsList as a Composable item.
+     *  Composable function used to draw the list
+     *  @param drawings The list of drawings to draw
+     *  @param onClick A callback passed to the list item
+     *  @param onDelete  A callback passed to the list item
      */
     @Composable
     fun DrawingsListContent(
-        modifier: Modifier = Modifier,
         drawings: List<Drawing>,
         onClick: (DrawingPath) -> Unit,
-        onDeleteClicked: (DrawingPath) -> Unit
+        onDelete: (DrawingPath) -> Unit
     ) {
-
         Column()
         {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
-                //  .border(border = BorderStroke(width = 2.dp, color = Color.Black))
+                    .padding(16.dp)
             )
             {
                 items(items = drawings) { drawing ->
                     DrawingListItem(
                         drawing,
                         onClick = { onClick(drawing.dPath) },
-                        onDeleteClicked = { onDeleteClicked(drawing.dPath) })
+                        onDelete = { onDelete(drawing.dPath) })
                 }
             }
         }
     }
 
     /**
-     *
+     * Composable function used to draw the list item
+     *  @param drawing The drawing to represent as a list item
+     *  @param onClick Handles what happens when the item is clicked
+     *  @param onDelete Handles what happens when the item is deleted
      */
     @Composable
     fun DrawingListItem(
         drawing: Drawing,
         onClick: () -> Unit,
-        onDeleteClicked: () -> Unit,
+        onDelete: () -> Unit,
     ) {
         var showMenu by remember { mutableStateOf(false) }
         ElevatedCard(
@@ -193,7 +186,6 @@ class DrawingsList : Fragment() {
 
                 //Add horizontal spacer between drawing preview and title column
                 Spacer(modifier = Modifier.width(10.dp))
-
                 //Add column for title and the modification date
                 Column {
                     // Add drawing title
@@ -207,27 +199,22 @@ class DrawingsList : Fragment() {
                     Text(
                         text = dateFormat.format(drawing.dPath.modDate),
                         style = TextStyle(
-                            color = Color.Gray, // Change the color as needed
-                            fontSize = 20.sp    // Change the size as needed
+                            color = Color.Gray,
+                            fontSize = 20.sp
                         )
                     )
                 }
-
                 // Add container for the more options button
                 Box(
                     contentAlignment = Alignment.TopEnd, // Aligns the IconButton to the end (right)
                     modifier = Modifier
-                        .padding(end = 4.dp)
-                        .width(100.dp)
-                        .height(100.dp),
+                        .fillMaxWidth() // Ensures the Box takes up the full width
+                        .padding(end = 4.dp),
 
                 ) {
-
                     FloatingActionButton(
                         onClick = { showMenu = !showMenu },
-                        modifier = Modifier
-                            .width(40.dp)
-                            .height(40.dp),
+                        modifier = Modifier.size(40.dp),
                         shape = CircleShape,
                         containerColor = Color.White
                     ) {
@@ -249,10 +236,9 @@ class DrawingsList : Fragment() {
                                     fontSize = 18.sp
                                 )
                             },
-                            
                             onClick = {
                                 showMenu = false
-                                onDeleteClicked()
+                                onDelete()
                             },
                             trailingIcon = {
                                 Icon(
@@ -264,16 +250,6 @@ class DrawingsList : Fragment() {
                     }
                 }
             }
-
         }
-    }
-
-
-    /**
-     * Destroys the view
-     */
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
