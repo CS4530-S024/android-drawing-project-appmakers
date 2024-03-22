@@ -9,9 +9,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.drawable.ColorDrawable
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -26,7 +24,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.drawable.databinding.FragmentDrawingCanvasBinding
 import yuku.ambilwarna.AmbilWarnaDialog
-import java.util.Date
 import java.util.LinkedList
 import kotlin.math.cos
 import kotlin.math.sin
@@ -71,9 +68,11 @@ class DrawingCanvas : Fragment() {
     private var currentPath = Path()
 
 
-
     /**
      * Creates the view
+     *  @param inflater
+     *  @param container
+     *  @param savedInstanceState
      */
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -87,6 +86,8 @@ class DrawingCanvas : Fragment() {
 
     /**
      * Attaches listeners and restores saved items such as the bitmap or color
+     *  @param view
+     *  @param savedInstanceState
      */
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -110,9 +111,6 @@ class DrawingCanvas : Fragment() {
         }
 
         state = requireArguments().getString("Existing")
-        if(state != null){
-            //myViewModel.updateBitmap(bitmap)
-        }
 
         myBitmap = myViewModel.currBitmap.value
         currColor = myViewModel.currColor.value
@@ -223,6 +221,7 @@ class DrawingCanvas : Fragment() {
 
     /**
      * Handles touch events on the canvas
+     *  @param event
      */
     private fun onCanvasTouch(event: MotionEvent): Boolean {
         val (bX, bY) = translatecoords(event.x, event.y)
@@ -315,6 +314,10 @@ class DrawingCanvas : Fragment() {
 
     /**
      * Applies fill to the canvas
+     *  @param startX
+     *  @param startY
+     *  @param targetColor
+     *  @param replacementColor
      */
     private fun applyFloodFill(startX: Int, startY: Int, targetColor: Int, replacementColor: Int) {
         val queue = LinkedList<Pair<Int, Int>>()
@@ -508,21 +511,20 @@ class DrawingCanvas : Fragment() {
             val d = Drawing(myBitmap!!, DrawingPath(System.currentTimeMillis(), binding.Title.text.toString()))
             myViewModel.add(d)
         }
-        var res = findNavController().popBackStack()
-        Log.d("Drawable", "Here's a debug message with a variable: " + res);
-//        findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
+        findNavController().popBackStack()
     }
 
-    /**********  Lissa's Attempt    ***********/
-    private fun onDrawingClicked() {
-        //myViewModel.
-
-        updateCanvasView()
-    }
-
-    /**********  Lissa's Attempt    ***********/
-
-    fun getCircles(
+    /**
+     * Used to draw paintcan effect
+     *  @param centerX
+     *  @param centerY
+     *  @param brushColor
+     *  @param brushWidth
+     *  @param airBrushDensity
+     *  @param spreadMultiplier
+     *  @param dotSize
+     */
+    private fun getCircles(
         centerX: Float,
         centerY: Float,
         brushColor: Int,
