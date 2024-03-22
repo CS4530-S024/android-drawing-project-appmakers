@@ -34,8 +34,9 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
 
 
     /**
-     *
-      */
+     * Method that handles adding a drawing to the database.
+     * @param: drawing: Drawing object to save to the database.
+     */
     suspend fun saveDrawing(drawing: Drawing) {
         val date = saveBitmapToFile(drawing.bitmap, drawing.dPath.name)
         val imageEntity = DrawingPath(modDate = date, name = drawing.dPath.name)
@@ -43,7 +44,18 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
     }
 
     /**
-     *
+     * Method that handles deleting a drawing from the database.
+     * @param path: DrawingPath object representing the unique drawing's attributes.
+     */
+    suspend fun deleteDrawing(path: DrawingPath) {
+        dao.deleteDrawing(path)
+        context.deleteFile(path.name)
+    }
+
+    /**
+     * Method that handles loading a drawing from the database, and returning it.
+     * @param path: DrawingPath object representing the file and its' unique data.
+     * @return Drawing object representing the drawing being returned.
      */
     fun loadDrawing(path: DrawingPath): Drawing {
         val file = File(context.filesDir, path.name)
@@ -54,9 +66,12 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
     }
 
     /**
-     *
+     * Method that handles saving a drawing's bitmap to some file location.
+     * @param bmp: Bitmap object containing the user's drawing.
+     * @param name: String object representing the file's new name.
+     * @return Long object representing the file's last modified date.
      */
-    private fun saveBitmapToFile(bmp: Bitmap, name: String): Long{
+    private fun saveBitmapToFile(bmp: Bitmap, name: String): Long {
         var fos: FileOutputStream? = null
         try {
             fos = context.openFileOutput(name, Context.MODE_PRIVATE)
@@ -72,20 +87,5 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
         }
         val file = File(context.filesDir, name)
         return file.lastModified()
-    }
-
-    /**
-     *
-     */
-    fun deleteDrawing(path: DrawingPath): Boolean {
-        return try {
-            scope.launch{
-                dao.deleteDrawing(path)
-            }
-            context.deleteFile(path.name)
-        }catch (e: Exception){
-            e.printStackTrace()
-            false
-        }
     }
 }

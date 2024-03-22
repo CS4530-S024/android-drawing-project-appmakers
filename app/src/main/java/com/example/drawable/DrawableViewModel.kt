@@ -28,38 +28,41 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
 
     private val bitmapLiveData = MutableLiveData<Bitmap>()
     var currBitmap = bitmapLiveData as LiveData<out Bitmap>
-
-//    private val _bitmapFlow = MutableStateFlow<Bitmap?>(null) // Assuming bitmap can be initially null
-//    val bitmapFlow: StateFlow<Bitmap?> = _bitmapFlow.asStateFlow()
-
     private val saveColor =  MutableLiveData<Int>(Color.BLACK)
     var currColor = saveColor as LiveData<out Int>
 
-
-
     /**
      * Adds drawing to list
-     * @param drawing The drawing we are inserting into the List
+     * @param drawing: The drawing we are inserting into the List
      */
-    fun add(drawing: Drawing){
+    fun add(drawing: Drawing) {
         viewModelScope.launch {
-            // This is now within a coroutine scope, and you can call suspend functions
             repository.saveDrawing(drawing)
         }
     }
 
     /**
-     * Updates the color when its changed
-     * @param color the new color
+     * Removes drawing from list
+     * @param dpath: The drawing path of the file to delete
      */
-    fun updateColor(color: Int){
+    fun removeDrawing(dpath: DrawingPath) {
+        viewModelScope.launch {
+            repository.deleteDrawing(dpath)
+        }
+    }
+
+    /**
+     * Updates the color when its changed
+     * @param color: the new color
+     */
+    fun updateColor(color: Int) {
         saveColor.value = color
         saveColor.value = saveColor.value
     }
 
     /**
      * Updates the current bitmap when changes happen
-     * @param bitmap the changed bitmap
+     * @param bitmap: the changed bitmap
      */
     fun updateBitmap(bitmap: Bitmap) {
         bitmapLiveData.value = bitmap
@@ -68,19 +71,11 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
 
     /**
      * Sets the current bitmap
-     * @param dpath The drawing path of file to set as current bitmap
+     * @param dpath: The drawing path of file to set as current bitmap
      */
-  fun setCurrBitmap(dpath: DrawingPath){
+  fun setCurrBitmap(dpath: DrawingPath) {
         val drawing = repository.loadDrawing(dpath)
         bitmapLiveData.value = drawing.bitmap
         bitmapLiveData.value = bitmapLiveData.value
-    }
-
-    /**
-     * Removes drawing from list
-     * @param dpath The drawing path of the file to delete
-     */
-    fun removeDrawing(dpath: DrawingPath): Boolean {
-        return repository.deleteDrawing(dpath)
     }
 }

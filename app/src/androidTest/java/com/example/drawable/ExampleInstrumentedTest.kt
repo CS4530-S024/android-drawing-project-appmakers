@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
@@ -70,7 +71,7 @@ class ExampleInstrumentedTest {
 
     @Test
     fun test_add_then_remove() = runBlocking {
-        val dPath = DrawingPath(System.currentTimeMillis(), "Riley Test2")
+        val dPath = DrawingPath(System.currentTimeMillis(), "Riley Test")
         var result: Int = drawingDao.getDrawingCount().first()
         assertEquals(0, result)
         drawingDao.insertImage(dPath)
@@ -81,11 +82,22 @@ class ExampleInstrumentedTest {
         assertEquals(0, result)
     }
 
+    @Test
+    fun test_add_then_remove_lots() = runBlocking {
+        for (i in 1..100) {
+            val dPath = DrawingPath(System.currentTimeMillis(), "test " + i)
+            drawingDao.insertImage(dPath)
+            drawingDao.deleteDrawing(dPath)
+            // Wait for the deletion operation to complete before proceeding
+            val result = drawingDao.getDrawingCount().first()
+            assertEquals(0, result)
+        }
+    }
+
     @After
     fun tearDown() {
         drawingDatabase.close()
     }
-
 
     @Test
     fun useAppContext() {
