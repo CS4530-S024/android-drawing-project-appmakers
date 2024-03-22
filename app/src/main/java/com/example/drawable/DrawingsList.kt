@@ -8,6 +8,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,6 +46,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -127,19 +129,27 @@ class DrawingsList : Fragment() {
      * The DrawingsList as a Composable item.
      */
     @Composable
-    fun DrawingsListContent(modifier: Modifier = Modifier, drawings: List<Drawing>, onClick: (DrawingPath) -> Unit, onDeleteClicked: (DrawingPath) -> Unit)
-    {
+    fun DrawingsListContent(
+        modifier: Modifier = Modifier,
+        drawings: List<Drawing>,
+        onClick: (DrawingPath) -> Unit,
+        onDeleteClicked: (DrawingPath) -> Unit
+    ) {
 
         Column()
         {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp),
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = modifier
                     .fillMaxSize()
-                  //  .border(border = BorderStroke(width = 2.dp, color = Color.Black))
+                //  .border(border = BorderStroke(width = 2.dp, color = Color.Black))
             )
             {
-                items(items = drawings){ drawing ->
-                    DrawingListItem(drawing, onClick = { onClick(drawing.dPath) }, onDeleteClicked = {onDeleteClicked(drawing.dPath)})
+                items(items = drawings) { drawing ->
+                    DrawingListItem(
+                        drawing,
+                        onClick = { onClick(drawing.dPath) },
+                        onDeleteClicked = { onDeleteClicked(drawing.dPath) })
                 }
             }
         }
@@ -153,21 +163,23 @@ class DrawingsList : Fragment() {
         drawing: Drawing,
         onClick: () -> Unit,
         onDeleteClicked: () -> Unit,
-        )
-    {
+    ) {
         var showMenu by remember { mutableStateOf(false) }
         ElevatedCard(
-            onClick = { onClick()},
+            onClick = { onClick() },
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp
             ),
             modifier = Modifier
                 .fillMaxWidth() // This makes the width fill the maximum available space
                 .height(dimensionResource(id = R.dimen.card_item_height)),
-            colors =  CardDefaults.elevatedCardColors(containerColor = Color.White))
+            colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
+        )
         {
-            Row(modifier = Modifier.padding(all = 12.dp),
-                verticalAlignment = Alignment.CenterVertically){
+            Row(
+                modifier = Modifier.padding(all = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 // Add drawing preview
                 Image(
                     bitmap = drawing.bitmap.asImageBitmap(),
@@ -175,7 +187,8 @@ class DrawingsList : Fragment() {
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .size(50.dp)
-                        .border(border = BorderStroke(.5.dp, Color.LightGray)))
+                        .border(border = BorderStroke(.5.dp, Color.LightGray))
+                )
 
                 //Add horizontal spacer between drawing preview and title column
                 Spacer(modifier = Modifier.width(10.dp))
@@ -183,17 +196,19 @@ class DrawingsList : Fragment() {
                 //Add column for title and the modification date
                 Column {
                     // Add drawing title
-                    Text(text = drawing.dPath.name,
+                    Text(
+                        text = drawing.dPath.name,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                     )
                     // Add a vertical space between the drawing title and the modified date
                     Spacer(modifier = Modifier.height(20.dp))
-                    Text(text = dateFormat.format(drawing.dPath.modDate),
+                    Text(
+                        text = dateFormat.format(drawing.dPath.modDate),
                         style = TextStyle(
-                        color = Color.Gray, // Change the color as needed
-                        fontSize = 20.sp    // Change the size as needed
-                    )
+                            color = Color.Gray, // Change the color as needed
+                            fontSize = 20.sp    // Change the size as needed
+                        )
                     )
                 }
 
@@ -203,16 +218,23 @@ class DrawingsList : Fragment() {
                     modifier = Modifier
                         .padding(end = 4.dp)
                         .width(100.dp)
-                        .height(100.dp)
-                ){
+                        .height(100.dp),
 
-                    FloatingActionButton(onClick = { showMenu = !showMenu },
+                ) {
+
+                    FloatingActionButton(
+                        onClick = { showMenu = !showMenu },
                         modifier = Modifier
                             .width(40.dp)
                             .height(40.dp),
-                        shape = CircleShape
+                        shape = CircleShape,
+                        containerColor = Color.White
                     ) {
-                        Icon( painter = painterResource(id = R.drawable.more_options_default), contentDescription = "More Options")
+                        Icon(
+                            painter = painterResource(id = R.drawable.more_options_default),
+                            contentDescription = "More Options",
+                            tint = Color.Black
+                        )
                     }
                     DropdownMenu(
                         expanded = showMenu,
@@ -222,7 +244,9 @@ class DrawingsList : Fragment() {
                             text = {
                                 Text(
                                     text = "Delete",
-                                    fontSize = 18.sp)},
+                                    fontSize = 18.sp
+                                )
+                            },
                             onClick = {
                                 showMenu = false
                                 onDeleteClicked()
@@ -236,10 +260,10 @@ class DrawingsList : Fragment() {
                         )
                     }
                 }
-                }
-
             }
+
         }
+    }
 
 
     /**
