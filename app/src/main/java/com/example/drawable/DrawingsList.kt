@@ -76,6 +76,11 @@ class DrawingsList : Fragment() {
             )
         }
 
+        val onDeleteButtonClicked: (DrawingPath) -> Unit = { dPath ->
+            myViewModel.removeDrawing(dPath)
+
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             myViewModel.count.collect { countValue ->
                 currentCount = countValue
@@ -84,7 +89,7 @@ class DrawingsList : Fragment() {
 
         binding.composeView1.setContent {
             val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
-            DrawingsListContent(Modifier.padding(16.dp), drawings, onClicked)
+            DrawingsListContent(Modifier.padding(16.dp), drawings, onClicked, onDeleteButtonClicked)
         }
 
         return binding.root
@@ -106,7 +111,7 @@ class DrawingsList : Fragment() {
      * The DrawingsList as a Composable item.
      */
     @Composable
-    fun DrawingsListContent(modifier: Modifier = Modifier, drawings: List<Drawing>, onClick: (DrawingPath) -> Unit)
+    fun DrawingsListContent(modifier: Modifier = Modifier, drawings: List<Drawing>, onClick: (DrawingPath) -> Unit, onDeleteClicked: (DrawingPath) -> Unit)
     {
 
         Column()
@@ -118,7 +123,7 @@ class DrawingsList : Fragment() {
             )
             {
                 items(items = drawings){ drawing ->
-                    DrawingListItem(drawing, onClick = { onClick(drawing.dPath) })
+                    DrawingListItem(drawing, onClick = { onClick(drawing.dPath) }, onDeleteClicked = {onDeleteClicked(drawing.dPath)})
                 }
             }
         }
@@ -130,7 +135,8 @@ class DrawingsList : Fragment() {
     @Composable
     fun DrawingListItem(
         drawing: Drawing,
-        onClick: () -> Unit)
+        onClick: () -> Unit,
+        onDeleteClicked: () -> Unit)
     {
         ElevatedCard(
             onClick = { onClick()},
@@ -174,7 +180,7 @@ class DrawingsList : Fragment() {
                 Spacer(modifier = Modifier.width(45.dp))
                 Column(){
                     // Delete button
-                    FloatingActionButton(onClick = { /*TODO: Add Delete Functionality*/ },
+                    FloatingActionButton(onClick = { onDeleteClicked() },
                         modifier = Modifier
                             .width(40.dp)
                             .height(40.dp),
@@ -190,6 +196,7 @@ class DrawingsList : Fragment() {
 
             }
         }
+
 
     /**
      * Destroys the view
