@@ -40,6 +40,31 @@ class DrawingsList : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentDrawingsListBinding.inflate(layoutInflater)
+        _binding = FragmentDrawingsListBinding.inflate(layoutInflater)
+
+        val myViewModel: DrawableViewModel by activityViewModels {
+            val application = requireActivity().application as DrawableApplication
+            DrawableViewModel.Factory(application.drawingRepository)
+        }
+        val onClicked: (DrawingPath) -> Unit = { dpath ->
+            myViewModel.setCurrBitmap(dpath)
+            findNavController().navigate(
+                R.id.action_drawingsList_to_drawingCanvas,
+                Bundle().apply {
+                    putString("Title", dpath.name)
+                }
+            )
+        }
+
+        val onDeleteButtonClicked: (DrawingPath) -> Unit = { dPath ->
+            myViewModel.removeDrawing(dPath)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            myViewModel.count.collect { countValue ->
+                currentCount = countValue
+            }
+        }
 
         binding.composeView1.setContent {
             DrawingsList(Modifier.padding(16.dp)) {
