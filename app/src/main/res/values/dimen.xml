@@ -10,4 +10,7 @@
     <!-- Icon Button Dimensions -->
     <dimen name="icon_width">60dp</dimen>
     <dimen name="icon_height">60dp</dimen>
+
+    <!-- Drawing List Dimensions -->
+    <dimen name = "card_item_height">100dp</dimen>
 </resources>

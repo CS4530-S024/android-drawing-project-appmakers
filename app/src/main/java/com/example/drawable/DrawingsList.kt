@@ -19,6 +19,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,17 +28,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -136,8 +149,10 @@ class DrawingsList : Fragment() {
     fun DrawingListItem(
         drawing: Drawing,
         onClick: () -> Unit,
-        onDeleteClicked: () -> Unit)
+        onDeleteClicked: () -> Unit,
+        )
     {
+        var showMenu by remember { mutableStateOf(false) }
         ElevatedCard(
             onClick = { onClick()},
             elevation = CardDefaults.cardElevation(
@@ -145,10 +160,10 @@ class DrawingsList : Fragment() {
             ),
             modifier = Modifier
                 .fillMaxWidth() // This makes the width fill the maximum available space
-                .height(100.dp)
+                .height(dimensionResource(id = R.dimen.card_item_height))
                 .background(MaterialTheme.colorScheme.surface)
         ) {
-            Row(modifier = Modifier.padding(all = 8.dp),
+            Row(modifier = Modifier.padding(all = 12.dp),
                 verticalAlignment = Alignment.CenterVertically){
                 // Add drawing preview
                 Image(
@@ -176,21 +191,45 @@ class DrawingsList : Fragment() {
                     )
                 }
 
-                // Add spacers for delete button
-                Spacer(modifier = Modifier.width(45.dp))
-                Column(){
+                // Add container for the more options button
+                Box(
+                    contentAlignment = Alignment.TopEnd, // Aligns the IconButton to the end (right)
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .width(100.dp)
+                        .height(100.dp)
+                ){
                     // Delete button
-                    FloatingActionButton(onClick = { onDeleteClicked() },
+                    // FloatingActionButton(onClick = { onDeleteClicked() },
+                    FloatingActionButton(onClick = { showMenu = !showMenu },
                         modifier = Modifier
                             .width(40.dp)
                             .height(40.dp),
-                        shape = RoundedCornerShape(8)
+                        shape = CircleShape
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.trash_default), "Floating action button.")
+                        Icon( painter = painterResource(id = R.drawable.more_options_default), contentDescription = "More Options")
                     }
-                    Spacer(modifier = Modifier.height(40.dp)
-                        .fillMaxWidth())
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = "Delete",
+                                    fontSize = 18.sp)},
+                            onClick = {
+                                showMenu = false
+                                onDeleteClicked()
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.trash_default), // Use the Material Icons Delete icon
+                                    contentDescription = "Delete"
+                                )
+                            }
+                        )
+                    }
                 }
                 }
 
