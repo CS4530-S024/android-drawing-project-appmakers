@@ -45,6 +45,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
@@ -238,7 +239,8 @@ class DrawingsList : Fragment() {
                     }
                     DropdownMenu(
                         expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
+                        onDismissRequest = { showMenu = false },
+                        modifier = Modifier.background(Color.White)
                     ) {
                         DropdownMenuItem(
                             text = {
@@ -247,6 +249,7 @@ class DrawingsList : Fragment() {
                                     fontSize = 18.sp
                                 )
                             },
+                            
                             onClick = {
                                 showMenu = false
                                 onDeleteClicked()
