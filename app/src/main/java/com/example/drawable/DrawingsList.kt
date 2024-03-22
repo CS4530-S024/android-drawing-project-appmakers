@@ -19,7 +19,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -170,6 +169,7 @@ class DrawingsList : Fragment() {
                     )
                     )
                 }
+
                 // Add spacers for delete button
                 Spacer(modifier = Modifier.width(45.dp))
                 Column(){
