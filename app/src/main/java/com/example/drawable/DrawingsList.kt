@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +28,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -89,7 +92,7 @@ class DrawingsList : Fragment() {
             )
         }
 
-        val onDeleteButtonClicked: (DrawingPath) -> Unit = { dPath ->
+        val onDelete: (DrawingPath) -> Unit = { dPath ->
             myViewModel.removeDrawing(dPath)
 
         }
@@ -102,7 +105,7 @@ class DrawingsList : Fragment() {
 
         binding.composeView1.setContent {
             val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
-            DrawingsListContent(Modifier.padding(16.dp), drawings, onClicked, onDeleteButtonClicked)
+            DrawingsListContent(Modifier.padding(16.dp), drawings, onClicked, onDelete)
         }
 
         return binding.root
@@ -160,16 +163,19 @@ class DrawingsList : Fragment() {
             ),
             modifier = Modifier
                 .fillMaxWidth() // This makes the width fill the maximum available space
-                .height(dimensionResource(id = R.dimen.card_item_height))
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
+                .height(dimensionResource(id = R.dimen.card_item_height)),
+            colors =  CardDefaults.elevatedCardColors(containerColor = Color.White))
+        {
             Row(modifier = Modifier.padding(all = 12.dp),
                 verticalAlignment = Alignment.CenterVertically){
                 // Add drawing preview
                 Image(
                     bitmap = drawing.bitmap.asImageBitmap(),
                     contentDescription = "Drawing Preview",
-                    contentScale = ContentScale.Fit)
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .border(border = BorderStroke(.5.dp, Color.LightGray)))
 
                 //Add horizontal spacer between drawing preview and title column
                 Spacer(modifier = Modifier.width(10.dp))
@@ -199,8 +205,7 @@ class DrawingsList : Fragment() {
                         .width(100.dp)
                         .height(100.dp)
                 ){
-                    // Delete button
-                    // FloatingActionButton(onClick = { onDeleteClicked() },
+
                     FloatingActionButton(onClick = { showMenu = !showMenu },
                         modifier = Modifier
                             .width(40.dp)
