@@ -80,7 +80,7 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
      * Removes drawing from list
      * @param dpath The drawing path of the file to delete
      */
-    fun removeDrawing(dpath: DrawingPath){
-        repository.deleteDrawing(dpath)
+    fun removeDrawing(dpath: DrawingPath): Boolean {
+        return repository.deleteDrawing(dpath)
     }
 }

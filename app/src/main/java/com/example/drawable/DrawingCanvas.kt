@@ -11,6 +11,7 @@ import android.graphics.Path
 import android.graphics.drawable.ColorDrawable
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -507,7 +508,9 @@ class DrawingCanvas : Fragment() {
             val d = Drawing(myBitmap!!, DrawingPath(System.currentTimeMillis(), binding.Title.text.toString()))
             myViewModel.add(d)
         }
-        findNavController().popBackStack()
+        var res = findNavController().popBackStack()
+        Log.d("Drawable", "Here's a debug message with a variable: " + res);
+//        findNavController().navigate(R.id.action_drawingCanvas_to_drawingsList)
     }
 
     /**********  Lissa's Attempt    ***********/

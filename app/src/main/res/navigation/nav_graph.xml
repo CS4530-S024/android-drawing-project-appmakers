@@ -19,8 +19,5 @@
         android:name="com.example.drawable.DrawingCanvas"
         android:label="fragment_drawing_canvas"
         tools:layout="@layout/fragment_drawing_canvas" >
-        <action
-            android:id="@+id/action_drawingCanvas_to_drawingsList"
-            app:destination="@id/drawingsList" />
     </fragment>
 </navigation>
