@@ -18,19 +18,22 @@
           <timeTargetWasSelectedWithDropDown value="2024-02-16T23:14:33.623191400Z" />
         </State>
       </entry>
-      <entry key="test_add_item()">
+      <entry key="mainScreen()">
         <State />
       </entry>
-      <entry key="test_add_lots_of_items()">
+      <entry key="testBackButton()">
         <State />
       </entry>
-      <entry key="test_add_multiple_items()">
+      <entry key="testClickDrawing()">
         <State />
       </entry>
-      <entry key="test_add_then_remove()">
+      <entry key="testColorPicker()">
         <State />
       </entry>
-      <entry key="test_add_then_remove_lots()">
+      <entry key="testPaintBrushButton()">
+        <State />
+      </entry>
+      <entry key="ui-tests">
         <State />
       </entry>
     </value>

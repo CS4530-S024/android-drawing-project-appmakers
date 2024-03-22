@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory
 import android.graphics.DiscretePathEffect
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext

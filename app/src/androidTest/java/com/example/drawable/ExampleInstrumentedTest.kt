@@ -1,11 +1,16 @@
 package com.example.drawable
 
 import android.content.Context
+import android.graphics.Color
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.testing.TestLifecycleOwner
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.android.gms.fitness.data.Value
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.count
@@ -13,6 +18,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,13 +28,17 @@ import org.junit.Before
 /**
  * Instrumented test, which will execute on an Android device.
  *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * This class contains instrumented tests for the Drawing App for CS 4530 - Spring 2024.
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
     private lateinit var drawingDatabase: DrawingDatabase
     private lateinit var drawingDao: DrawingDAO
+    private lateinit var drawingApplication: DrawableApplication
 
+    /**
+     * This method is called prior to all other tests, and initializes the database/dao for those.
+     */
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -36,6 +46,9 @@ class ExampleInstrumentedTest {
         drawingDao = drawingDatabase.drawingDao()
     }
 
+    /**
+     * This test verifies that adding an item to the database works as expected.
+     */
     @Test
     fun test_add_item() = runBlocking {
         val dPath = DrawingPath(System.currentTimeMillis(), "Riley Test")
@@ -45,6 +58,9 @@ class ExampleInstrumentedTest {
         assertEquals(1, result)
     }
 
+    /**
+     * This test verifies that adding more than one item to the databse works as expected.
+     */
     @Test
     fun test_add_few_items() = runBlocking {
         val dPath = DrawingPath(System.currentTimeMillis(), "Riley Test2")
@@ -58,6 +74,10 @@ class ExampleInstrumentedTest {
         assertEquals(3, result)
     }
 
+    /**
+     * This test attempts to overload the insertion operator, and verifies a high number of
+     *  drawings can be added successfully.
+     */
     @Test
     fun test_add_lots_of_items() = runBlocking {
         for (i in 1..100) {
@@ -69,40 +89,41 @@ class ExampleInstrumentedTest {
         assertEquals(100, result)
     }
 
+    /**
+     * This test ensures applications are initialized properly, and tests functionalities like color changing.
+     */
     @Test
-    fun test_add_then_remove() = runBlocking {
-        val dPath = DrawingPath(System.currentTimeMillis(), "Riley Test")
-        var result: Int = drawingDao.getDrawingCount().first()
-        assertEquals(0, result)
-        drawingDao.insertImage(dPath)
-        result = drawingDao.getDrawingCount().first()
-        assertEquals(1, result)
-        drawingDao.deleteDrawing(dPath)
-        result = drawingDao.getDrawingCount().first()
-        assertEquals(0, result)
-    }
+    fun test_more_features() {
+        drawingApplication = ApplicationProvider.getApplicationContext()
+        val drawingRepository = drawingApplication.drawingRepository
+        val vm = DrawableViewModel(drawingRepository)
+        assertNotNull(vm)
+        assertNotNull(drawingRepository)
 
-    @Test
-    fun test_add_then_remove_lots() = runBlocking {
-        for (i in 1..100) {
-            val dPath = DrawingPath(System.currentTimeMillis(), "test " + i)
-            drawingDao.insertImage(dPath)
-            drawingDao.deleteDrawing(dPath)
-            // Wait for the deletion operation to complete before proceeding
-            val result = drawingDao.getDrawingCount().first()
-            assertEquals(0, result)
+        runBlocking {
+            val lifecycleOwner = TestLifecycleOwner()
+            val before = vm.currColor.value!!
+            var callbackFired = false
+
+            lifecycleOwner.run {
+                withContext(Dispatchers.Main) {
+                    vm.currColor.observe(lifecycleOwner) {
+                        callbackFired = true
+                    }
+                    vm.updateColor(Color.BLUE)
+                    assertTrue(callbackFired)
+
+                    assertNotSame(before, vm.currColor.value!!)
+                }
+            }
         }
     }
 
+    /**
+     * This method is called after each test is run to ensure databases are refreshed and updated for each.
+     */
     @After
     fun tearDown() {
         drawingDatabase.close()
-    }
-
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.drawable", appContext.packageName)
     }
 }

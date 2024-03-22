@@ -29,14 +29,24 @@ class EspressoTests {
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
 
     /**
+     * This basic test ensures that the main page (of previous drawings) is rendered properly.
+     */
+    @Test
+    fun mainScreen() {
+        onView(withId(R.id.add)).check(matches(isDisplayed()))
+        onView(withId(R.id.composeView1)).check(matches(isDisplayed()))
+    }
+
+    /**
      * This test ensures that the Drawing Page's back button navigates as expected.
      */
     @Test
     fun testBackButton() {
         onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.canvas)).check(matches(isDisplayed()))
         onView(withId(R.id.back_button)).check(matches(isDisplayed()))
         onView(withId(R.id.back_button)).perform(click())
-        onView(withId(R.id.add)).check(matches(isDisplayed()))
+        onView(withId(R.id.composeView1)).check(matches(isDisplayed()))
     }
 
     /**
@@ -49,7 +59,6 @@ class EspressoTests {
         onView(withId(R.id.pallete)).perform(click())
         onView(withId(yuku.ambilwarna.R.id.ambilwarna_dialogView)).check(matches(isDisplayed()))
         onView(withId(yuku.ambilwarna.R.id.ambilwarna_dialogView)).perform(click())
-        // how test that you can press the 'ok' button and close the popup?
     }
 
     /**
@@ -97,6 +106,9 @@ class EspressoTests {
 //  tests for the drawings list page //
     @Test
     fun testClickDrawing() {
-    // on the view with the id item of each recycler item ... [to do for phase 2]
+        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.canvas)).perform(longClick(), swipeDown())
+        onView(withId(R.id.back_button)).perform(click())
+        onView(withId(R.id.composeView1)).check(matches(isDisplayed()))
     }
 }
