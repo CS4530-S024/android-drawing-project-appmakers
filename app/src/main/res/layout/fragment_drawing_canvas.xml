@@ -81,6 +81,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:background="@drawable/label"
         android:orientation="horizontal"
+
         android:gravity="center">
         <ImageButton
             android:id="@+id/paintBrush"
@@ -88,7 +89,7 @@
             android:layout_height="60dp"
             android:background="@android:color/transparent"
             android:src="@drawable/paintbrush_default"
-            android:layout_margin="10dp"
+            android:layout_margin="15dp"
             android:contentDescription="@string/paint_brush" />
         <ImageButton
             android:id="@+id/paintBucket"
@@ -106,7 +107,6 @@
             android:background="@android:color/transparent"
             android:src="@drawable/spraycan_default"
             android:layout_margin="10dp"
-            android:scaleX="-1"
             android:contentDescription="@string/spray_can" />
 
         <ImageButton

@@ -111,7 +111,6 @@ class DrawingCanvas : Fragment() {
         state = requireArguments().getString("Existing")
         if(state != null){
             //myViewModel.updateBitmap(bitmap)
-            myViewModel.
         }
 
         myBitmap = myViewModel.currBitmap.value

@@ -4,9 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,25 +19,30 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -83,6 +87,7 @@ class DrawingsList : Fragment() {
             val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
             DrawingsListContent(Modifier.padding(16.dp), drawings, onClicked)
         }
+
         return binding.root
     }
 
@@ -104,12 +109,13 @@ class DrawingsList : Fragment() {
     @Composable
     fun DrawingsListContent(modifier: Modifier = Modifier, drawings: List<Drawing>, onClick: (DrawingPath) -> Unit)
     {
+
         Column()
         {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp),
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = modifier
                     .fillMaxSize()
-                    .border(border = BorderStroke(width = 2.dp, color = Color.Black))
+                  //  .border(border = BorderStroke(width = 2.dp, color = Color.Black))
             )
             {
                 items(items = drawings){ drawing ->
@@ -135,24 +141,24 @@ class DrawingsList : Fragment() {
             modifier = Modifier
                 .fillMaxWidth() // This makes the width fill the maximum available space
                 .height(100.dp)
+                .background(MaterialTheme.colorScheme.surface)
         ) {
-            Row(modifier = Modifier.padding(all = 8.dp)){
+            Row(modifier = Modifier.padding(all = 8.dp),
+                verticalAlignment = Alignment.CenterVertically){
                 // Add drawing preview
                 Image(
                     bitmap = drawing.bitmap.asImageBitmap(),
                     contentDescription = "Drawing Preview",
-                    modifier = Modifier
-                        .size(50.dp),
                     contentScale = ContentScale.Fit)
 
                 //Add horizontal spacer between drawing preview and title column
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(10.dp))
 
                 //Add column for title and the modification date
                 Column {
                     // Add drawing title
                     Text(text = drawing.dPath.name,
-                        fontSize = 20.sp,
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                     )
                     // Add a vertical space between the drawing title and the modified date
@@ -164,9 +170,26 @@ class DrawingsList : Fragment() {
                     )
                     )
                 }
+                // Add spacers for delete button
+                Spacer(modifier = Modifier.width(45.dp))
+                Column(){
+                    // Delete button
+                    FloatingActionButton(onClick = { /*TODO: Add Delete Functionality*/ },
+                        modifier = Modifier
+                            .width(40.dp)
+                            .height(40.dp),
+                        shape = RoundedCornerShape(8)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.trash_default), "Floating action button.")
+                    }
+                    Spacer(modifier = Modifier.height(40.dp)
+                        .fillMaxWidth())
+                }
+                }
+
             }
         }
-    }
 
     /**
      * Destroys the view
