@@ -25,6 +25,7 @@ class CanvasView @JvmOverloads constructor(
 
     /**
      * Sets the new bitmap, and triggers a redraw
+     * @param bitmap The bitmap to display
      */
     fun setBitmap(bitmap: Bitmap) {
         myBitmap = bitmap
@@ -33,6 +34,7 @@ class CanvasView @JvmOverloads constructor(
 
     /**
      * Redraws the bitmap when invalidate is called
+     * @param canvas The canvas used to draw the bitmap
      */
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)

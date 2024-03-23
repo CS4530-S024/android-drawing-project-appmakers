@@ -23,15 +23,20 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class DrawingRepository(private val scope: CoroutineScope, private val dao: DrawingDAO, private val context: Context) {
+class DrawingRepository(
+    private val scope: CoroutineScope,
+    private val dao: DrawingDAO,
+    private val context: Context
+) {
 
     //updated when the DB is modified
-    val paths : Flow<List<DrawingPath>> = dao.getAllPaths()
-    val drawings = paths.map { it.map { drawingPath ->
-        return@map loadDrawing(drawingPath)
+    val paths: Flow<List<DrawingPath>> = dao.getAllPaths()
+    val drawings = paths.map {
+        it.map { drawingPath ->
+            return@map loadDrawing(drawingPath)
         }
     }
-    val count : Flow<Int> = dao.getDrawingCount()
+    val count: Flow<Int> = dao.getDrawingCount()
 
 
     /**
@@ -41,7 +46,9 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
     suspend fun saveDrawing(drawing: Drawing) {
         val date = saveBitmapToFile(drawing.bitmap, drawing.dPath.name)
         val imageEntity = DrawingPath(modDate = date, name = drawing.dPath.name)
-        dao.insertImage(imageEntity)
+        scope.launch {
+            dao.insertImage(imageEntity)
+        }
     }
 
     /**
@@ -49,7 +56,9 @@ class DrawingRepository(private val scope: CoroutineScope, private val dao: Draw
      * @param path: DrawingPath object representing the unique drawing's attributes.
      */
     suspend fun deleteDrawing(path: DrawingPath) {
-        dao.deleteDrawing(path)
+        scope.launch {
+            dao.deleteDrawing(path)
+        }
         context.deleteFile(path.name)
     }
 
