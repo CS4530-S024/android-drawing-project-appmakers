@@ -80,6 +80,16 @@ class ExampleInstrumentedTest {
         assertEquals(100, result)
     }
 
+//    @Test
+//    fun test_add_then_remove() = runBlocking {
+//        val dPath = DrawingPath(System.currentTimeMillis(), "Riley Test2")
+//        drawingDao.insertImage(dPath)
+//        assertEquals(1, drawingDao.getDrawingCount().first())
+//
+//        drawingDao.deleteDrawing(dPath)
+//        assertEquals(0, drawingDao.getDrawingCount().first())
+//    }
+
     /**
      * This test ensures applications are initialized properly, and tests functionalities like color changing.
      */
