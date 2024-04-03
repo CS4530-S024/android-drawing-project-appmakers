@@ -2,8 +2,35 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="ExampleInstrumentedTest">
+        <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\GYEAG\.android\avd\Pixel_7_Pro_API_30.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-04-03T22:34:31.686292100Z" />
+        </State>
+      </entry>
       <entry key="app">
         <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\GYEAG\.android\avd\Pixel_7_Pro_API_30.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
           <targetSelectedWithDropDown>
             <Target>
               <type value="QUICK_BOOT_TARGET" />
@@ -15,25 +42,10 @@
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-02-16T23:14:33.623191400Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-04-03T22:30:07.528159500Z" />
         </State>
       </entry>
-      <entry key="mainScreen()">
-        <State />
-      </entry>
-      <entry key="testBackButton()">
-        <State />
-      </entry>
-      <entry key="testClickDrawing()">
-        <State />
-      </entry>
-      <entry key="testColorPicker()">
-        <State />
-      </entry>
-      <entry key="testPaintBrushButton()">
-        <State />
-      </entry>
-      <entry key="ui-tests">
+      <entry key="test_add_then_delete()">
         <State />
       </entry>
     </value>

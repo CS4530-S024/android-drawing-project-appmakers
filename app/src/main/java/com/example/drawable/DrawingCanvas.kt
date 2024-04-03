@@ -337,6 +337,8 @@ class DrawingCanvas : Fragment() {
         }
     }
 
+
+
     /**
      * Creates a new white bitmap
      */

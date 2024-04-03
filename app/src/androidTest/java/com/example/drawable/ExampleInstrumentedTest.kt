@@ -111,6 +111,46 @@ class ExampleInstrumentedTest {
     }
 
     /**
+     * This test verifies that adding then deleting from the databse works as expected.
+     */
+    @Test
+    fun test_add_then_delete() = runBlocking {
+        for (i in 1..100) {
+            val dPath = DrawingPath(System.currentTimeMillis(), "test " + i)
+            drawingDao.insertImage(dPath)
+        }
+        var result = drawingDao.getDrawingCount().first()
+        assertEquals(100, result)
+
+        val allPaths = drawingDao.getAllPaths().first()
+        allPaths.forEach { path ->
+            drawingDao.deleteDrawing(path)
+        }
+
+        result = drawingDao.getDrawingCount().first()
+        assertEquals(0, result)
+    }
+
+    /**
+     * This test verifies that adding then deleting a lot from the databse works as expected.
+     */
+    @Test
+    fun test_add_a_lot_then_delete() = runBlocking {
+        val dPath = DrawingPath(System.currentTimeMillis(), "Riley Test2")
+        drawingDao.insertImage(dPath)
+        var result = drawingDao.getDrawingCount().first()
+        assertEquals(1, result)
+
+        val allPaths = drawingDao.getAllPaths().first()
+        allPaths.forEach { path ->
+            drawingDao.deleteDrawing(path)
+        }
+
+        result = drawingDao.getDrawingCount().first()
+        assertEquals(0, result)
+    }
+
+    /**
      * This method is called after each test is run to ensure databases are refreshed and updated for each.
      */
     @After
