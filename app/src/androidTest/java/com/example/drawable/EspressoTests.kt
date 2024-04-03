@@ -45,6 +45,84 @@ class EspressoTests {
         onView(withId(R.id.composeView1)).check(matches(isDisplayed()))
     }
 
+    @Test
+    fun testTrianglePenShapeButton() {
+        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.canvas)).check(matches(isDisplayed()))
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).perform(click())
+        onView(withId(R.id.trianglePen)).check(matches(isDisplayed()))
+        onView(withId(R.id.trianglePen)).perform(click())
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun testSquarePenShapeButton() {
+        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.canvas)).check(matches(isDisplayed()))
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).perform(click())
+        onView(withId(R.id.squarePen)).check(matches(isDisplayed()))
+        onView(withId(R.id.squarePen)).perform(click())
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun testRoundPenShapeButton() {
+        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.canvas)).check(matches(isDisplayed()))
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).perform(click())
+        onView(withId(R.id.roundPen)).check(matches(isDisplayed()))
+        onView(withId(R.id.roundPen)).perform(click())
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun testThinPenSizeButton() {
+        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.canvas)).check(matches(isDisplayed()))
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).perform(click())
+        onView(withId(R.id.thinPen)).check(matches(isDisplayed()))
+        onView(withId(R.id.thinPen)).perform(click())
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun testMedPenSizeButton() {
+        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.canvas)).check(matches(isDisplayed()))
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).perform(click())
+        onView(withId(R.id.medPen)).check(matches(isDisplayed()))
+        onView(withId(R.id.medPen)).perform(click())
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun testThickPenSizeButton() {
+        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.canvas)).check(matches(isDisplayed()))
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).check(matches(isDisplayed()))
+        onView(withId(R.id.paintBrush)).perform(click())
+        onView(withId(R.id.thickPen)).check(matches(isDisplayed()))
+        onView(withId(R.id.thickPen)).perform(click())
+        onView(withId(R.id.back_button)).check(matches(isDisplayed()))
+    }
+
     /**
      * This test ensures that the Drawing Page's color palette displays as expected.
      */
