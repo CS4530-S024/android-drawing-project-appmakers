@@ -18,9 +18,6 @@
           <timeTargetWasSelectedWithDropDown value="2024-02-16T23:14:33.623191400Z" />
         </State>
       </entry>
-      <entry key="mainScreen()">
-        <State />
-      </entry>
       <entry key="testBackButton()">
         <State />
       </entry>
@@ -31,6 +28,9 @@
         <State />
       </entry>
       <entry key="testPaintBrushButton()">
+        <State />
+      </entry>
+      <entry key="test_add_then_remove()">
         <State />
       </entry>
       <entry key="ui-tests">
