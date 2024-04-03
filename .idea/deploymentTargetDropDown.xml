@@ -2,37 +2,6 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="app">
-        <State>
-          <targetSelectedWithDropDown>
-            <Target>
-              <type value="QUICK_BOOT_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\GYEAG\.android\avd\Pixel_7_Pro_API_30.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-02-16T23:14:33.623191400Z" />
-        </State>
-      </entry>
-      <entry key="testClickDrawing()">
-        <State />
-      </entry>
-      <entry key="testColorPicker()">
-        <State />
-      </entry>
-      <entry key="testPaintBrushButton()">
-        <State />
-      </entry>
-      <entry key="testPenShapeButton()">
-        <State />
-      </entry>
-      <entry key="test_add_then_remove()">
-        <State />
-      </entry>
       <entry key="ui-tests">
         <State />
       </entry>
