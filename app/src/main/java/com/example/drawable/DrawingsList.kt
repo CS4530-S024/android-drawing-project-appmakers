@@ -104,7 +104,6 @@ class DrawingsList : Fragment() {
             val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
             DrawingsListContent(drawings, onClicked, onDelete)
         }
-
         return binding.root
     }
 
