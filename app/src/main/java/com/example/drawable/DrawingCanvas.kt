@@ -8,6 +8,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.GestureDetector
@@ -28,6 +30,7 @@ import java.util.LinkedList
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
+
 
 class DrawingCanvas : Fragment() {
 
@@ -66,6 +69,8 @@ class DrawingCanvas : Fragment() {
     private var viewHeight: Float? = null
     private var width = 8F
     private var currentPath = Path()
+    private var defaultIconColor = 0xffff00
+    private var pressedIconColor = 0x325AFF
 
 
     /**
@@ -325,9 +330,11 @@ class DrawingCanvas : Fragment() {
 
         while (queue.isNotEmpty()) {
             val (x, y) = queue.poll()!!
-            if (x < 0 || x >= myBitmap!!.width || y < 0 || y >= myBitmap!!.height) continue
+            //if (x < 0 || x >= myBitmap!!.width || y < 0 || y >= myBitmap!!.height) continue
+            if(!(x >=0 && x <= myBitmap!!.width && y >=0 && y <= myBitmap!!.height)) continue
             if (myBitmap!!.getPixel(x, y) != targetColor) continue
             if (myBitmap!!.getPixel(x, y) == replacementColor) continue
+
 
             myBitmap!!.setPixel(x, y, replacementColor)
             queue.add(Pair(x + 1, y))

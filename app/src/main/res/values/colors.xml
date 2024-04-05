@@ -25,6 +25,14 @@
     <color name="icon_pressed">#1E57CE</color>
     <color name="button_pressed">#BFD5F6</color>
 
+    <!--   New Light Theme Colors   -->
+    <color name="PosiBlack">#1E1E1E</color>
+    <color name="UltramarineBlue">#325AFF</color>
+    <color name="MeadowGreen">#00BE82</color>
+    <color name="FlatOrange">#FF7832</color>
+    <color name="CoronationPink">#FFAAC8</color>
+    <color name="LightGrey">#F3F3F3</color>
+
     <!--   Palette Colors   -->
     <color name="row0_col0">#8D0000</color>
     <color name="row0_col1">#C50000</color>

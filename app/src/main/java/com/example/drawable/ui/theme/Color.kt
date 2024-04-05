@@ -1,11 +1,12 @@
 package com.example.drawable.ui.theme
 import androidx.compose.ui.graphics.Color
 
+/**********  Original Color Theme  **********/
 val md_theme_light_primary = Color(0xFF974900)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
 val md_theme_light_primaryContainer = Color(0xFFFFDBC7)
 val md_theme_light_onPrimaryContainer = Color(0xFF311300)
-val md_theme_light_secondary = Color(0xFFEBECEE)
+val md_theme_light_secondary = Color(0xFFF3F3F3)
 val md_theme_light_onSecondary = Color(0xFFFFFFFF)
 val md_theme_light_secondaryContainer = Color(0xFFFFD9E2)
 val md_theme_light_onSecondaryContainer = Color(0xFF3E001D)
@@ -63,5 +64,7 @@ val md_theme_dark_surfaceTint = Color(0xFFFFB688)
 val md_theme_dark_outlineVariant = Color(0xFF52443C)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-
 val seed = Color(0xFFFF8006)
+
+val eerie_black = Color(0xFF1E1E1E)
+

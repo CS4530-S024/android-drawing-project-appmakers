@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="ColorPickerPreview">
+        <State />
+      </entry>
       <entry key="app">
         <State>
           <targetSelectedWithDropDown>
@@ -17,24 +20,6 @@
           </targetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2024-02-16T23:14:33.623191400Z" />
         </State>
-      </entry>
-      <entry key="mainScreen()">
-        <State />
-      </entry>
-      <entry key="testBackButton()">
-        <State />
-      </entry>
-      <entry key="testClickDrawing()">
-        <State />
-      </entry>
-      <entry key="testColorPicker()">
-        <State />
-      </entry>
-      <entry key="testPaintBrushButton()">
-        <State />
-      </entry>
-      <entry key="ui-tests">
-        <State />
       </entry>
     </value>
   </component>

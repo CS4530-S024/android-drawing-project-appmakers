@@ -8,30 +8,20 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
-import com.example.drawable.databinding.FragmentDrawingsListBinding
-import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
-import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.runtime.setValue
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -39,9 +29,14 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -49,8 +44,13 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.example.drawable.databinding.FragmentDrawingsListBinding
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -58,7 +58,12 @@ import java.util.Locale
 class DrawingsList : Fragment() {
     private lateinit var binding: FragmentDrawingsListBinding
     private var currentCount: Int = 0
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+   // private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+   private val dateFormat = SimpleDateFormat("dd.LLL.yyyy HH:mm:ss aaa z", Locale.getDefault())
+    var MMMddFormat = SimpleDateFormat("MMM dd", Locale.US) // Aug 31
+    var hhmmampmFormat = SimpleDateFormat("hh:mm a", Locale.US) // 01:55 PM
+    var yearFormat = SimpleDateFormat("yyyy", Locale.US) // 01:55 PM
+
 
     /**
      * Creates the view
@@ -185,7 +190,7 @@ class DrawingsList : Fragment() {
                 )
 
                 //Add horizontal spacer between drawing preview and title column
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(15.dp))
                 //Add column for title and the modification date
                 Column {
                     // Add drawing title
@@ -195,9 +200,10 @@ class DrawingsList : Fragment() {
                         fontWeight = FontWeight.Bold,
                     )
                     // Add a vertical space between the drawing title and the modified date
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(15.dp))
                     Text(
-                        text = dateFormat.format(drawing.dPath.modDate),
+                        //text = dateFormat.format(drawing.dPath.modDate),
+                        text = hhmmampmFormat.format(drawing.dPath.modDate) + "  " + MMMddFormat.format(drawing.dPath.modDate) + ", " + yearFormat.format(drawing.dPath.modDate) ,
                         style = TextStyle(
                             color = Color.Gray,
                             fontSize = 20.sp
@@ -221,7 +227,7 @@ class DrawingsList : Fragment() {
                         Icon(
                             painter = painterResource(id = R.drawable.more_options_default),
                             contentDescription = "More Options",
-                            tint = Color.Black
+                            //tint = Color.Black
                         )
                     }
                     DropdownMenu(
