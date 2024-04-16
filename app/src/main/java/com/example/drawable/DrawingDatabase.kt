@@ -47,4 +47,7 @@ interface DrawingDAO {
     @Query("SELECT COUNT(*) FROM drawingpaths")
     fun getDrawingCount():  Flow<Int>
 
+    @Query("SELECT EXISTS(SELECT * FROM drawingpaths WHERE name = :name)")
+    suspend fun doesDrawingExist(name: String): Boolean
+
 }

@@ -1,8 +1,10 @@
 package com.example.drawable
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -19,15 +21,19 @@ import android.view.Window
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.drawable.databinding.FragmentDrawingCanvasBinding
+import kotlinx.coroutines.launch
 import yuku.ambilwarna.AmbilWarnaDialog
 import java.util.LinkedList
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
+
 
 class DrawingCanvas : Fragment() {
 
@@ -509,11 +515,41 @@ class DrawingCanvas : Fragment() {
      * Saves the drawing when back is clicked, then goes back to the list of drawings
      */
     private fun onBackClicked() {
+        //If the user has drawn on the canvas
         if (pathList.size > 0) {
-            val d = Drawing(myBitmap!!, DrawingPath(System.currentTimeMillis(), binding.Title.text.toString()))
-            myViewModel.add(d)
+            var result: Boolean
+            lifecycleScope.launch {
+            //If the name already exists, the user should name the drawing something else
+            if (myViewModel.checkForDrawing(binding.Title.text.toString())) {
+                showAlertDialog()
+            } else {
+                val d = Drawing(
+                    myBitmap!!,
+                    DrawingPath(System.currentTimeMillis(), binding.Title.text.toString())
+                )
+                myViewModel.add(d)
+                findNavController().popBackStack()
+            }
         }
-        findNavController().popBackStack()
+        }else{
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun showAlertDialog() {
+        if (context != null) {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+            builder.setTitle("Let the User know!!");
+            builder.setMessage("This name already exists.\n Pick another one :P")
+            builder.setPositiveButton("OK",
+                DialogInterface.OnClickListener { dialog, _ -> // Code to execute when the OK button is clicked
+                    dialog.dismiss()
+                })
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
+        } else {
+            Toast.makeText(activity, "Context is not available.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     /**

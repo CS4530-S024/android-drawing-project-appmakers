@@ -98,4 +98,8 @@ class DrawingRepository(
         val file = File(context.filesDir, name)
         return file.lastModified()
     }
+
+    suspend fun nameCheck(name: String): Boolean{
+        return dao.doesDrawingExist(name)
+    }
 }
