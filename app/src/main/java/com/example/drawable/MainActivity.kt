@@ -23,7 +23,7 @@ internal fun Context.findActivity(): ComponentActivity {
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Thread.sleep(3000)
+        Thread.sleep(1000)
         installSplashScreen()
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()

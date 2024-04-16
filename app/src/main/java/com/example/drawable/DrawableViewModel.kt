@@ -57,6 +57,10 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         }
     }
 
+    suspend fun checkForDrawing(name: String): Boolean{
+        return repository.nameCheck(name)
+    }
+
     /**
      * Updates the color when its changed
      * @param color: the new color
