@@ -68,6 +68,7 @@ import android.graphics.Color as AndroidColor
 
 class ColorSelector : Fragment() {
 
+
     var huePanelSize = 275;
     @Composable
     fun HueBar(
