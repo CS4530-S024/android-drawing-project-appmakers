@@ -81,6 +81,22 @@ class ExampleInstrumentedTest {
     }
 
 //    @Test
+//    fun test_add_drawings_with_same_name() = runBlocking{
+//        var prev: DrawingPath = DrawingPath(System.currentTimeMillis(), "Drawing " + drawingDao.getDrawingCount())
+//        for(i in 1..10){
+//            if(i % 3 == 0){
+//                drawingDao.deleteDrawing(prev)
+//            }
+//            val dPath = DrawingPath(System.currentTimeMillis(), "Drawing " + drawingDao.getDrawingCount()+1)
+//            prev = dPath
+//            if
+//            drawingDao.insertImage(dPath)
+//        }
+//        val result: Int = drawingDao.getDrawingCount().first()
+//        assertEquals(10, result)
+//    }
+
+//    @Test
 //    fun test_add_then_remove() = runBlocking {
 //        val dPath = DrawingPath(System.currentTimeMillis(), "Riley Test2")
 //        drawingDao.insertImage(dPath)

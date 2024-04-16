@@ -83,40 +83,50 @@
         android:orientation="horizontal"
 
         android:gravity="center">
+
         <ImageButton
             android:id="@+id/paintBrush"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/paintbrush_default"
             android:layout_margin="15dp"
-            android:contentDescription="@string/paint_brush" />
-        <ImageButton
-            android:id="@+id/paintBucket"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/bucket_fill_default"
-            android:layout_margin="10dp"
-            android:contentDescription="@string/paint_can" />
+            android:contentDescription="@string/paint_brush"
+            android:src="@drawable/paintbrush_default" />
 
         <ImageButton
             android:id="@+id/spraycan"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/spraycan_default"
             android:layout_margin="10dp"
-            android:contentDescription="@string/spray_can" />
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/spray_can"
+            android:src="@drawable/spraycan_default" />
 
         <ImageButton
             android:id="@+id/eraser"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/eraser_default"
             android:layout_margin="10dp"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/eraser"
-            />
+            android:src="@drawable/eraser_default" />
+
+        <ImageButton
+            android:id="@+id/paintBucket"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/paint_can"
+            android:src="@drawable/bucket_fill_default" />
+        <ImageButton
+            android:id="@+id/blur"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/paint_can"
+            android:src="@drawable/baseline_blur_on_24" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

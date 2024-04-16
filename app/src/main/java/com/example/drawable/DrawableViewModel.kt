@@ -1,18 +1,24 @@
 package com.example.drawable
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import android.graphics.Color
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
+
+external fun brightness(bmp: Bitmap?, brightness: Float)
 data class Drawing(val bitmap: Bitmap, val dPath: DrawingPath)
 class DrawableViewModel(private val repository: DrawingRepository) : ViewModel(){
-
+    companion object {
+        init {
+            System.loadLibrary("drawable")
+        }
+    }
     //new implementation
     val drawings: Flow<List<Drawing>> = repository.drawings
     val count: Flow<Int> = repository.count
@@ -77,5 +83,13 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         val drawing = repository.loadDrawing(dpath)
         bitmapLiveData.value = drawing.bitmap
         bitmapLiveData.value = bitmapLiveData.value
+    }
+
+    fun blurImage(){
+        var bitm = bitmapLiveData.value!!.copy(Bitmap.Config.ARGB_8888, true)
+        brightness(bitm, 25f)
+        bitmapLiveData.value = bitm
+        bitmapLiveData.value = bitmapLiveData.value
+        updateBitmap(bitm)
     }
 }

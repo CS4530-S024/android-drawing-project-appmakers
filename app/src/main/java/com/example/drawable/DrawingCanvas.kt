@@ -194,6 +194,9 @@ class DrawingCanvas : Fragment() {
             isErase = false
             isFill = false
         }
+        binding.blur?.setOnClickListener {
+            myViewModel.blurImage()
+        }
 
         //Initializes things to draw
         initBrush()
@@ -574,4 +577,6 @@ class DrawingCanvas : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
 }
