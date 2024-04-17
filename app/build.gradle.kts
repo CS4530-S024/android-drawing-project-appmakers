@@ -117,4 +117,5 @@ dependencies {
 // FireBase Stuff
     implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth:22.3.1")
 }
