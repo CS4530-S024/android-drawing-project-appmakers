@@ -199,10 +199,12 @@ class DrawingCanvas : Fragment() {
 
         binding.blur?.setOnClickListener {
             myViewModel.brightenImage()
+            pathList.clear()
         }
 
         binding.inverter?.setOnClickListener {
             myViewModel.invertColors()
+            pathList.clear()
         }
 
         //Initializes things to draw
@@ -316,7 +318,6 @@ class DrawingCanvas : Fragment() {
                             )
                         )
                     }
-
                     currentPath.reset()
                 } else {
                     drawDot(bX, bY)
@@ -374,7 +375,7 @@ class DrawingCanvas : Fragment() {
             tempBrush.strokeCap = path.shape
             canvas.drawPath(path.path, tempBrush)
         }
-        for(c in circles){
+        for (c in circles){
             canvas.drawCircle(c.x.toFloat(), c.y.toFloat(), c.radius, c.paint)
         }
 

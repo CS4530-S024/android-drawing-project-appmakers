@@ -105,6 +105,7 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         if (currentBitmap != null) {
             invertColors(currentBitmap)
             updateBitmap(currentBitmap)
+
         }
     }
 }
