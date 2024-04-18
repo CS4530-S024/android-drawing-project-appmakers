@@ -11,18 +11,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 external fun brightness(bmp: Bitmap?, brightness: Float)
-external fun invertColors(bmp: Bitmap?)
+external fun invertColors(bmp: Bitmap?): Bitmap
 
 data class Drawing(val bitmap: Bitmap, val dPath: DrawingPath)
-class DrawableViewModel(private val repository: DrawingRepository) : ViewModel(){
+class DrawableViewModel(private val repository: DrawingRepository) : ViewModel() {
     companion object {
         init {
             System.loadLibrary("drawable")
         }
     }
+
     //new implementation
     val drawings: Flow<List<Drawing>> = repository.drawings
     val count: Flow<Int> = repository.count
+
     class Factory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(DrawableViewModel::class.java)) {
@@ -35,7 +37,7 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
 
     private val bitmapLiveData = MutableLiveData<Bitmap>()
     var currBitmap = bitmapLiveData as LiveData<out Bitmap>
-    private val saveColor =  MutableLiveData<Int>(Color.BLACK)
+    private val saveColor = MutableLiveData<Int>(Color.BLACK)
     var currColor = saveColor as LiveData<out Int>
 
     /**
@@ -58,7 +60,7 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         }
     }
 
-    suspend fun checkForDrawing(name: String): Boolean{
+    suspend fun checkForDrawing(name: String): Boolean {
         return repository.nameCheck(name)
     }
 
@@ -84,29 +86,25 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
      * Sets the current bitmap
      * @param dpath: The drawing path of file to set as current bitmap
      */
-  fun setCurrBitmap(dpath: DrawingPath) {
+    fun setCurrBitmap(dpath: DrawingPath) {
         val drawing = repository.loadDrawing(dpath)
         bitmapLiveData.value = drawing.bitmap
         bitmapLiveData.value = bitmapLiveData.value
     }
 
-    fun blurImage() {
+    fun brightenImage() {
         val currentBitmap = bitmapLiveData.value
         if (currentBitmap != null) {
-            val modifiedBitmap = currentBitmap.copy(Bitmap.Config.ARGB_8888, true)
-            brightness(modifiedBitmap, 25F)
-            bitmapLiveData.value = modifiedBitmap
-            updateBitmap(modifiedBitmap)
+            brightness(currentBitmap, .25F)
+            updateBitmap(currentBitmap)
         }
     }
 
     fun invertColors() {
         val currentBitmap = bitmapLiveData.value
         if (currentBitmap != null) {
-            val modifiedBitmap = currentBitmap.copy(Bitmap.Config.ARGB_8888, true)
-            invertColors(modifiedBitmap)
-            bitmapLiveData.value = modifiedBitmap
-            updateBitmap(modifiedBitmap)
+            invertColors(currentBitmap)
+            updateBitmap(currentBitmap)
         }
     }
 }

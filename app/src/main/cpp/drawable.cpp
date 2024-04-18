@@ -91,7 +91,7 @@ static void brightness(AndroidBitmapInfo* info, void* pixels, float brightnessVa
                     ((red << 16) & 0x00FF0000) |
                     ((green << 8) & 0x0000FF00) |
                     (blue & 0x000000FF) |
-                    0xFF000000;
+                     0xFF000000;
         }
 
         pixels = (char*)pixels + info->stride;
@@ -106,21 +106,24 @@ static void invertColors(AndroidBitmapInfo* info, void* pixels) {
         line = (uint32_t*)pixels;
         for(xx =0; xx < info->width; xx++){
 
-            //extract the RGB values from the pixel
-            red = (int) ((line[xx] & 0xFF) >> 16);
-            green = (int)((line[xx] & 0xFF) >> 8);
+            red = (int) ((line[xx] >> 16) & 0xFF);
+            green = (int) ((line[xx] >> 8) & 0xFF);
             blue = (int) (line[xx] & 0xFF);
 
-            red = 255 - red;
-            green = 255 - green;
-            blue = 255 - blue;
+            // Check if the pixel is not fully transparent (alpha channel not 0)
+            if ((line[xx] >> 24) != 0) {
+                // Invert the colors
+                red = 255 - red;
+                green = 255 - green;
+                blue = 255 - blue;
+            }
 
-            // set the new pixel back in
+            // Set the new pixel back in
             line[xx] =
                     ((red << 16) & 0x00FF0000) |
                     ((green << 8) & 0x0000FF00) |
                     (blue & 0x000000FF) |
-                    (line[xx] & 0xFF000000);
+                    (line[xx] & 0xFF000000); // Preserve alpha channel
         }
 
         pixels = (char*)pixels + info->stride;
@@ -132,7 +135,6 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_drawable_DrawableViewModelKt_brightness(JNIEnv *env, jclass clazz, jobject bmp,
                                                          jfloat brightnessValue) {
-
     AndroidBitmapInfo  info;
     int ret;
     void* pixels;

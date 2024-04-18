@@ -10,8 +10,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.GestureDetector
@@ -200,7 +198,7 @@ class DrawingCanvas : Fragment() {
         }
 
         binding.blur?.setOnClickListener {
-            myViewModel.blurImage()
+            myViewModel.brightenImage()
         }
 
         binding.inverter?.setOnClickListener {
@@ -355,8 +353,6 @@ class DrawingCanvas : Fragment() {
             queue.add(Pair(x, y - 1))
         }
     }
-
-
 
     /**
      * Creates a new white bitmap
