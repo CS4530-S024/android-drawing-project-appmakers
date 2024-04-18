@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_drawingsList_to_drawingCanvas"
             app:destination="@id/drawingCanvas" />
+        <action
+            android:id="@+id/action_drawingsList_to_drawingLoginNRegister"
+            app:destination="@id/drawingLoginNRegister" />
     </fragment>
     <fragment
         android:id="@+id/drawingCanvas"
@@ -20,4 +23,8 @@
         android:label="fragment_drawing_canvas"
         tools:layout="@layout/fragment_drawing_canvas" >
     </fragment>
+    <fragment
+        android:id="@+id/drawingLoginNRegister"
+        android:name="com.example.drawable.DrawingLoginNRegister"
+        android:label="DrawingLoginNRegister" />
 </navigation>

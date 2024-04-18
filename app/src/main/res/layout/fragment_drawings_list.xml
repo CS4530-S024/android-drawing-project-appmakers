@@ -15,7 +15,7 @@
         android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent">
         <ImageButton
-            android:id="@+id/add"
+            android:id="@+id/add_drawing"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_margin="10dp"
@@ -35,6 +35,17 @@
             android:textSize="28sp">
 
         </TextView>
+        <ImageButton
+            android:id="@+id/add_user"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:src="@drawable/user3"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
 
     <androidx.compose.ui.platform.ComposeView

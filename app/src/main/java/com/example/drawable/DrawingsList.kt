@@ -112,10 +112,13 @@ class DrawingsList : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.add.setOnClickListener {
+        binding.addDrawing.setOnClickListener {
             findNavController().navigate(R.id.action_drawingsList_to_drawingCanvas, Bundle().apply {
                 putString("New", "Drawing " + (currentCount + 1))
             })
+        }
+       binding.addUser.setOnClickListener {
+           findNavController().navigate(R.id.action_drawingsList_to_drawingLoginNRegister)
         }
     }
 

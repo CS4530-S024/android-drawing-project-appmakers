@@ -29,7 +29,7 @@ class EspressoTests {
      */
     @Test
     fun mainScreen() {
-        onView(withId(R.id.add)).check(matches(isDisplayed()))
+        onView(withId(R.id.add_drawing)).check(matches(isDisplayed()))
         onView(withId(R.id.composeView1)).check(matches(isDisplayed()))
     }
 
@@ -38,7 +38,7 @@ class EspressoTests {
      */
     @Test
     fun testBackButton() {
-        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.add_drawing)).perform(click())
         onView(withId(R.id.canvas)).check(matches(isDisplayed()))
         onView(withId(R.id.back_button)).check(matches(isDisplayed()))
         onView(withId(R.id.back_button)).perform(click())
@@ -47,7 +47,7 @@ class EspressoTests {
 
     @Test
     fun testTrianglePenShapeButton() {
-        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.add_drawing)).perform(click())
         onView(withId(R.id.canvas)).check(matches(isDisplayed()))
         onView(withId(R.id.back_button)).check(matches(isDisplayed()))
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
@@ -60,7 +60,7 @@ class EspressoTests {
 
     @Test
     fun testSquarePenShapeButton() {
-        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.add_drawing)).perform(click())
         onView(withId(R.id.canvas)).check(matches(isDisplayed()))
         onView(withId(R.id.back_button)).check(matches(isDisplayed()))
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
@@ -73,7 +73,7 @@ class EspressoTests {
 
     @Test
     fun testRoundPenShapeButton() {
-        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.add_drawing)).perform(click())
         onView(withId(R.id.canvas)).check(matches(isDisplayed()))
         onView(withId(R.id.back_button)).check(matches(isDisplayed()))
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
@@ -86,7 +86,7 @@ class EspressoTests {
 
     @Test
     fun testThinPenSizeButton() {
-        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.add_drawing)).perform(click())
         onView(withId(R.id.canvas)).check(matches(isDisplayed()))
         onView(withId(R.id.back_button)).check(matches(isDisplayed()))
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
@@ -99,7 +99,7 @@ class EspressoTests {
 
     @Test
     fun testMedPenSizeButton() {
-        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.add_drawing)).perform(click())
         onView(withId(R.id.canvas)).check(matches(isDisplayed()))
         onView(withId(R.id.back_button)).check(matches(isDisplayed()))
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
@@ -112,7 +112,7 @@ class EspressoTests {
 
     @Test
     fun testThickPenSizeButton() {
-        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.add_drawing)).perform(click())
         onView(withId(R.id.canvas)).check(matches(isDisplayed()))
         onView(withId(R.id.back_button)).check(matches(isDisplayed()))
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
@@ -128,7 +128,7 @@ class EspressoTests {
      */
     @Test
     fun testColorPicker() {
-        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.add_drawing)).perform(click())
         onView(withId(R.id.pallete)).check(matches(isDisplayed()))
         onView(withId(R.id.pallete)).perform(click())
         onView(withId(yuku.ambilwarna.R.id.ambilwarna_dialogView)).check(matches(isDisplayed()))
@@ -141,7 +141,7 @@ class EspressoTests {
      */
     @Test
     fun testPaintBrushButton() {
-        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.add_drawing)).perform(click())
         onView(withId(R.id.paintBrush)).check(matches(isDisplayed()))
         onView(withId(R.id.paintBrush)).perform(click())
         onView(withId(R.id.medPen)).check(matches(isDisplayed()))
@@ -169,7 +169,7 @@ class EspressoTests {
      */
     @Test
     fun testPaintBrushFunctionality() {
-        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.add_drawing)).perform(click())
         onView(withId(R.id.paintBrush)).check(matches(isDisplayed()))
         onView(withId(R.id.canvas)).perform(longClick(), swipeDown())
         onView(withId(R.id.canvas)).perform(longClick(), swipeLeft())
@@ -180,7 +180,7 @@ class EspressoTests {
 //  tests for the drawings list page //
     @Test
     fun testClickDrawing() {
-        onView(withId(R.id.add)).perform(click())
+        onView(withId(R.id.add_drawing)).perform(click())
         onView(withId(R.id.canvas)).perform(longClick(), swipeDown())
         onView(withId(R.id.back_button)).perform(click())
         onView(withId(R.id.composeView1)).check(matches(isDisplayed()))
