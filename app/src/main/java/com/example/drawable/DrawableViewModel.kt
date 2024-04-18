@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 external fun brightness(bmp: Bitmap?, brightness: Float)
-external fun invertColors(bmp: Bitmap?): Bitmap
+external fun invertColors(bmp: Bitmap?)
 
 data class Drawing(val bitmap: Bitmap, val dPath: DrawingPath)
 class DrawableViewModel(private val repository: DrawingRepository) : ViewModel() {
