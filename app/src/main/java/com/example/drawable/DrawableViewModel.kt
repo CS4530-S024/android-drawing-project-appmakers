@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-
 external fun brightness(bmp: Bitmap?, brightness: Float)
 data class Drawing(val bitmap: Bitmap, val dPath: DrawingPath)
 class DrawableViewModel(private val repository: DrawingRepository) : ViewModel(){
@@ -89,11 +88,13 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         bitmapLiveData.value = bitmapLiveData.value
     }
 
-    fun blurImage(){
-        var bitm = bitmapLiveData.value!!.copy(Bitmap.Config.ARGB_8888, true)
-        brightness(bitm, 25f)
-        bitmapLiveData.value = bitm
-        bitmapLiveData.value = bitmapLiveData.value
-        updateBitmap(bitm)
+    fun blurImage() {
+        val currentBitmap = bitmapLiveData.value
+        if (currentBitmap != null) {
+            val modifiedBitmap = currentBitmap.copy(Bitmap.Config.ARGB_8888, true)
+            brightness(modifiedBitmap, 25F)
+            bitmapLiveData.value = modifiedBitmap
+            updateBitmap(modifiedBitmap)
+        }
     }
 }

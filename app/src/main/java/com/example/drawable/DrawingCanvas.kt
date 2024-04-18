@@ -137,7 +137,6 @@ class DrawingCanvas : Fragment() {
             binding.canvas.setBitmap(bitmap)
         }
 
-
         // displays pen size / shape popup
         binding.paintBrush.setOnClickListener {
             isSpray = false
@@ -199,6 +198,7 @@ class DrawingCanvas : Fragment() {
             isErase = false
             isFill = false
         }
+
         binding.blur?.setOnClickListener {
             myViewModel.blurImage()
         }
@@ -612,6 +612,4 @@ class DrawingCanvas : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
-
 }
