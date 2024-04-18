@@ -162,6 +162,8 @@ class LoginPage : Fragment() {
     @Composable
     fun Register(){
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
+            Logo()
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = "Sign Up",
                 style = TextStyle(
