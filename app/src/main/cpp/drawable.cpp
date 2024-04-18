@@ -177,7 +177,7 @@ Java_com_example_drawable_DrawableViewModelKt_invertColors(JNIEnv *env, jclass c
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
     }
 
-]    invertColors(&info, pixels);
+    invertColors(&info, pixels);
 
     AndroidBitmap_unlockPixels(env, bmp);
 }
