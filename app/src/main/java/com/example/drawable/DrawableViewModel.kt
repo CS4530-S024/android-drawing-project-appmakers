@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 external fun brightness(bmp: Bitmap?, brightness: Float)
+external fun invertColors(bmp: Bitmap?)
+
 data class Drawing(val bitmap: Bitmap, val dPath: DrawingPath)
 class DrawableViewModel(private val repository: DrawingRepository) : ViewModel(){
     companion object {
@@ -93,6 +95,16 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         if (currentBitmap != null) {
             val modifiedBitmap = currentBitmap.copy(Bitmap.Config.ARGB_8888, true)
             brightness(modifiedBitmap, 25F)
+            bitmapLiveData.value = modifiedBitmap
+            updateBitmap(modifiedBitmap)
+        }
+    }
+
+    fun invertColors() {
+        val currentBitmap = bitmapLiveData.value
+        if (currentBitmap != null) {
+            val modifiedBitmap = currentBitmap.copy(Bitmap.Config.ARGB_8888, true)
+            invertColors(modifiedBitmap)
             bitmapLiveData.value = modifiedBitmap
             updateBitmap(modifiedBitmap)
         }

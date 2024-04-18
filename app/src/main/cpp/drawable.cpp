@@ -98,6 +98,35 @@ static void brightness(AndroidBitmapInfo* info, void* pixels, float brightnessVa
     }
 }
 
+static void invertColors(AndroidBitmapInfo* info, void* pixels) {
+    int xx, yy, red, green, blue;
+    uint32_t* line;
+
+    for(yy = 0; yy < info->height; yy++){
+        line = (uint32_t*)pixels;
+        for(xx =0; xx < info->width; xx++){
+
+            //extract the RGB values from the pixel
+            red = (int) ((line[xx] & 0xFF) >> 16);
+            green = (int)((line[xx] & 0xFF) >> 8);
+            blue = (int) (line[xx] & 0xFF);
+
+            red = 255 - red;
+            green = 255 - green;
+            blue = 255 - blue;
+
+            // set the new pixel back in
+            line[xx] =
+                    ((red << 16) & 0x00FF0000) |
+                    ((green << 8) & 0x0000FF00) |
+                    (blue & 0x000000FF) |
+                    (line[xx] & 0xFF000000);
+        }
+
+        pixels = (char*)pixels + info->stride;
+    }
+}
+
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -123,6 +152,32 @@ Java_com_example_drawable_DrawableViewModelKt_brightness(JNIEnv *env, jclass cla
 
     // blur(&info,pixels);
     brightness(&info, pixels, brightnessValue);
+
+    AndroidBitmap_unlockPixels(env, bmp);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_drawable_DrawableViewModelKt_invertColors(JNIEnv *env, jclass clazz, jobject bmp) {
+
+    AndroidBitmapInfo  info;
+    int ret;
+    void* pixels;
+
+    if ((ret = AndroidBitmap_getInfo(env, bmp, &info)) < 0) {
+        LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
+        return;
+    }
+    if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+        LOGE("Bitmap format is not RGBA_8888 !");
+        return;
+    }
+
+    if ((ret = AndroidBitmap_lockPixels(env, bmp, &pixels)) < 0) {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+    }
+
+]    invertColors(&info, pixels);
 
     AndroidBitmap_unlockPixels(env, bmp);
 }

@@ -203,6 +203,10 @@ class DrawingCanvas : Fragment() {
             myViewModel.blurImage()
         }
 
+        binding.inverter?.setOnClickListener {
+            myViewModel.invertColors()
+        }
+
         //Initializes things to draw
         initBrush()
         initVars()

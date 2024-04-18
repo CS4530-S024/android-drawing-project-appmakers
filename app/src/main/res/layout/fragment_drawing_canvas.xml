@@ -86,47 +86,57 @@
 
         <ImageButton
             android:id="@+id/paintBrush"
-            android:layout_width="60dp"
+            android:layout_width="55dp"
             android:layout_height="60dp"
-            android:layout_margin="15dp"
+            android:layout_margin="5dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/paint_brush"
             android:src="@drawable/paintbrush_default" />
 
         <ImageButton
             android:id="@+id/spraycan"
-            android:layout_width="60dp"
+            android:layout_width="55dp"
             android:layout_height="60dp"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/spray_can"
             android:src="@drawable/spraycan_default" />
 
         <ImageButton
             android:id="@+id/eraser"
-            android:layout_width="60dp"
+            android:layout_width="55dp"
             android:layout_height="60dp"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/eraser"
             android:src="@drawable/eraser_default" />
 
         <ImageButton
             android:id="@+id/paintBucket"
-            android:layout_width="60dp"
+            android:layout_width="55dp"
             android:layout_height="60dp"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/paint_can"
             android:src="@drawable/bucket_fill_default" />
+
         <ImageButton
             android:id="@+id/blur"
-            android:layout_width="60dp"
+            android:layout_width="55dp"
             android:layout_height="60dp"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/paint_can"
+            android:contentDescription="@string/blur"
             android:src="@drawable/baseline_blur_on_24" />
+
+        <ImageButton
+            android:id="@+id/inverter"
+            android:layout_width="55dp"
+            android:layout_height="60dp"
+            android:layout_margin="5dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/inverter"
+            android:src="@drawable/inverter" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
