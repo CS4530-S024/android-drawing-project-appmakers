@@ -67,34 +67,35 @@ class DrawingLoginNRegister : Fragment() {
         val view = ComposeView(requireContext())
         view.apply {
             setContent {
-                Login()
+                MainScreen()
             }
         }
 
         return view
     }
 
-//    /**
-//     * Main Composable that decides which screen to show based on a boolean flag.
-//     */
-//    @Composable
-//    fun MainScreen() {
-//        val showLogin = remember { mutableStateOf(true) } // Initial state can be true or false
-//
-//        if (showLogin.value) {
-//            Login {
-//                showLogin.value = false // Switch to 'something else' when login is done or on some action
-//            }
-//        } else {
+    /**
+     * Main Composable that decides which screen to show based on a boolean flag.
+     */
+    @Composable
+    fun MainScreen() {
+        val showLogin = remember { mutableStateOf(true) } // Initial state can be true or false
+
+        if (showLogin.value) {
+            Login {
+                showLogin.value = false // Switch to 'something else' when login is done or on some action
+            }
+        } else {
+            Register()
 //            SomethingElse {
 //                showLogin.value = true // Switch back to login on some action
 //            }
-//        }
-//    }
+        }
+    }
 
 
     @Composable
-    fun Login(){
+    fun Login(onRegisterClicked: () -> Unit){
         var username by rememberSaveable { mutableStateOf("") }
         var password by rememberSaveable { mutableStateOf("") }
         val context = LocalContext.current
@@ -137,7 +138,7 @@ class DrawingLoginNRegister : Fragment() {
             Row(verticalAlignment = Alignment.CenterVertically){
                 Text("Don't have an account? ")
                 Spacer(modifier = Modifier.width(10.dp))
-                Button(onClick = { },
+                Button(onClick = {onRegisterClicked() },
                     modifier = Modifier.background(Color.Transparent),
                     colors = ButtonDefaults.buttonColors(Color(0xFF6C80E8))){
                     Text("Sign up")
@@ -323,12 +324,13 @@ class DrawingLoginNRegister : Fragment() {
 
         }
     }
-
-    @Preview(showBackground = true,  widthDp = 412, heightDp = 892)
-    @Composable
-    fun LoginPreview() {
-            Login()
-    }
+    
+//
+//    @Preview(showBackground = true,  widthDp = 412, heightDp = 892)
+//    @Composable
+//    fun LoginPreview() {
+//            Login()
+//    }
 
     @Preview(showBackground = true,  widthDp = 412, heightDp = 892)
     @Composable
