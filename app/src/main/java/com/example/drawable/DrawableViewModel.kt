@@ -50,6 +50,7 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     var currColor = saveColor as LiveData<out Int>
     private val _state = MutableStateFlow<LoginState>(LoginState.NotLogged)
     val state: StateFlow<LoginState> = _state
+
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val _currentUser = MutableStateFlow<FirebaseUser?>(auth.currentUser)
     val currentUser: StateFlow<FirebaseUser?> = _currentUser.asStateFlow()
@@ -177,6 +178,14 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
             null -> LoginState.NotLogged
             else -> LoginState.LoggedIn
         }
+    }
+
+    fun log_in(email:String, password:String){
+
+    }
+
+    fun sign_out(email:String, password:String){
+
     }
 
 }

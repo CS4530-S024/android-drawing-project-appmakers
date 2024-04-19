@@ -81,6 +81,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.StorageReference
 import java.io.File
 import java.util.regex.Pattern
@@ -88,8 +89,8 @@ import java.util.regex.Pattern
 
 class DrawingLoginNRegister : Fragment() {
 
-    private lateinit var mAuth: FirebaseAuth
-    private lateinit var mStore: FirebaseFirestore
+//    private lateinit var FirebaseAuth: FirebaseAuth
+//    private lateinit var Firebase.firestore: FirebaseFirestore
     private val myViewModel: DrawableViewModel by activityViewModels {
         val application = requireActivity().application as DrawableApplication
         DrawableViewModel.Factory(application.drawingRepository)
@@ -127,9 +128,9 @@ class DrawingLoginNRegister : Fragment() {
             }
         }
 
-
-        mAuth = FirebaseAuth.getInstance()
-        mStore = FirebaseFirestore.getInstance()
+//
+//        Firebase.auth = FirebaseAuth.getInstance()
+//        Firebase.firestore = FirebaseFirestore.getInstance()
         return view
     }
 
@@ -230,13 +231,13 @@ class DrawingLoginNRegister : Fragment() {
                         } else {
                             isLoggingIn.value = true
                             // Proceed with login
-                            mAuth.signInWithEmailAndPassword(email, password)
+                            Firebase.auth.signInWithEmailAndPassword(email, password)
                                 .addOnSuccessListener {
                                     // need to load drawings from firebase storage into room
                                     currUser = Firebase.auth.currentUser
                                     val userId =
                                         currUser!!.uid  // Ensure this is non-null or handle the null case appropriately
-                                    val userRef = mStore.collection("Usernames").document(userId)
+                                    val userRef = Firebase.firestore.collection("Usernames").document(userId)
 //                                    var username: String? = null
 
                                     userRef.get()
@@ -570,12 +571,12 @@ class DrawingLoginNRegister : Fragment() {
                         } else {
                             isRegistering.value = true
                             coroutineScope.launch {
-                                mAuth.createUserWithEmailAndPassword(email, password)
+                                Firebase.auth.createUserWithEmailAndPassword(email, password)
                                     .addOnSuccessListener { _ ->
 
                                         currUser = Firebase.auth.currentUser
 
-                                        mStore.collection("Usernames")
+                                        Firebase.firestore.collection("Usernames")
                                             .document(currUser!!.uid)
                                             .set(DrawableUser(username))
 
@@ -681,7 +682,7 @@ class DrawingLoginNRegister : Fragment() {
                                 val userUpdates = mapOf(
                                     "username" to username
                                 )
-                                mStore.collection("Usernames")
+                                Firebase.firestore.collection("Usernames")
                                     .document(currUser!!.uid)
                                     .update(userUpdates)
                                     .addOnSuccessListener {
@@ -739,7 +740,7 @@ class DrawingLoginNRegister : Fragment() {
                             }
                             myViewModel.clear()
                             currUser = null
-                            mAuth.signOut()
+                            Firebase.auth.signOut()
                             myViewModel.setTheUsername(null)
                             onSignOutClicked()
                             isSigningOut.value = false
