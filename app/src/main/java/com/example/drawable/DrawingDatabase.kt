@@ -50,4 +50,7 @@ interface DrawingDAO {
     @Query("SELECT EXISTS(SELECT * FROM drawingpaths WHERE name = :name)")
     suspend fun doesDrawingExist(name: String): Boolean
 
+    @Query("DELETE FROM drawingpaths")
+    suspend fun deleteAllDrawingPaths()
+
 }

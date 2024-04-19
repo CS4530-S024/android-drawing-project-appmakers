@@ -27,14 +27,17 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="255dp"
             android:layout_height="match_parent"
             android:paddingTop="20dp"
             android:text="Drawing Gallery"
             android:textAlignment="center"
-            android:textSize="28sp">
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="12sp"
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeStepGranularity="1sp" />
 
-        </TextView>
         <ImageButton
             android:id="@+id/add_user"
             android:layout_width="60dp"

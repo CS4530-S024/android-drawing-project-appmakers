@@ -102,4 +102,10 @@ class DrawingRepository(
     suspend fun nameCheck(name: String): Boolean{
         return dao.doesDrawingExist(name)
     }
+
+    suspend fun clearDatabase(){
+        dao.deleteAllDrawingPaths()
+    }
+
+
 }

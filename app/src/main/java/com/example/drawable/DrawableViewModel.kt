@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 external fun brightness(bmp: Bitmap?, brightness: Float)
@@ -24,7 +25,7 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     //new implementation
     val drawings: Flow<List<Drawing>> = repository.drawings
     val count: Flow<Int> = repository.count
-    var username: String? = null
+    val usernameFlow = MutableStateFlow<String?>(null)
 
     class Factory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -122,7 +123,13 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     /**
      *
      */
-    fun setUsername(name: String){
-        username = name
+    fun setTheUsername(name: String){
+        usernameFlow.value = name
+    }
+
+    fun clear(){
+        viewModelScope.launch {
+            repository.clearDatabase()
+        }
     }
 }

@@ -62,6 +62,7 @@ class DrawingsList : Fragment() {
     var MMMddFormat = SimpleDateFormat("MMM dd", Locale.US) // Aug 31
     var hhmmampmFormat = SimpleDateFormat("hh:mm a", Locale.US) // 01:55 PM
     var yearFormat = SimpleDateFormat("yyyy", Locale.US) // 01:55 PM
+    private var user: String? = null
 
 
     /**
@@ -99,10 +100,17 @@ class DrawingsList : Fragment() {
             }
         }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            myViewModel.usernameFlow.collect { updatedUsername ->
+                user = updatedUsername ?: "Guest"
+            }
+        }
+
         binding.composeView1.setContent {
             val drawings by myViewModel.drawings.collectAsState(initial = emptyList())
             DrawingsListContent(drawings, onClicked, onDelete)
         }
+
         return binding.root
     }
 
@@ -118,6 +126,14 @@ class DrawingsList : Fragment() {
         }
        binding.addUser.setOnClickListener {
            findNavController().navigate(R.id.action_drawingsList_to_drawingLoginNRegister)
+        }
+
+        if(user != "Guest"){
+            val text = user + "'s Drawing Gallery"
+            binding.title.setText(text)
+        }else{
+            val text = user + "'s Drawing Gallery"
+            binding.title.setText(text)
         }
     }
 
