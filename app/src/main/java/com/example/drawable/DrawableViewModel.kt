@@ -7,12 +7,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 external fun brightness(bmp: Bitmap?, brightness: Float)
 external fun invertColors(bmp: Bitmap?)
+enum class LoginState {
+    NotLogged, SigningUp, LoggedIn
+}
 
 data class Drawing(val bitmap: Bitmap, val dPath: DrawingPath)
 class DrawableViewModel(private val repository: DrawingRepository) : ViewModel() {
@@ -41,6 +48,32 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     var currBitmap = bitmapLiveData as LiveData<out Bitmap>
     private val saveColor = MutableLiveData<Int>(Color.BLACK)
     var currColor = saveColor as LiveData<out Int>
+    private val _state = MutableStateFlow<LoginState>(LoginState.NotLogged)
+    val state: StateFlow<LoginState> = _state
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val _currentUser = MutableStateFlow<FirebaseUser?>(auth.currentUser)
+    val currentUser: StateFlow<FirebaseUser?> = _currentUser.asStateFlow()
+    private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+        _currentUser.value = firebaseAuth.currentUser
+        updateLoginState(firebaseAuth.currentUser)
+    }
+    init {
+        auth.addAuthStateListener(authStateListener)
+    }
+
+
+
+    fun login() {
+        _state.value = LoginState.LoggedIn // Update state when logged in
+    }
+
+    fun startSignUp() {
+        _state.value = LoginState.SigningUp // Update state when starting sign up
+    }
+
+    fun signOut() {
+        _state.value = LoginState.NotLogged // Update state when signed out
+    }
 
     /**
      * Adds drawing to list
@@ -123,8 +156,9 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     /**
      *
      */
-    fun setTheUsername(name: String){
+    fun setTheUsername(name: String?){
         usernameFlow.value = name
+        usernameFlow.value = usernameFlow.value
     }
 
     fun clear(){
@@ -132,4 +166,17 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
             repository.clearDatabase()
         }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        auth.removeAuthStateListener(authStateListener)
+    }
+
+    private fun updateLoginState(user: FirebaseUser?) {
+        _state.value = when (user) {
+            null -> LoginState.NotLogged
+            else -> LoginState.LoggedIn
+        }
+    }
+
 }

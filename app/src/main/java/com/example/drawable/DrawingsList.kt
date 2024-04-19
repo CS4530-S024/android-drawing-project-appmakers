@@ -102,7 +102,7 @@ class DrawingsList : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             myViewModel.usernameFlow.collect { updatedUsername ->
-                user = updatedUsername ?: "Guest"
+                user = updatedUsername
             }
         }
 
@@ -128,11 +128,11 @@ class DrawingsList : Fragment() {
            findNavController().navigate(R.id.action_drawingsList_to_drawingLoginNRegister)
         }
 
-        if(user != "Guest"){
+        if(user !=  null){
             val text = user + "'s Drawing Gallery"
             binding.title.setText(text)
         }else{
-            val text = user + "'s Drawing Gallery"
+            val text = "Drawing Gallery"
             binding.title.setText(text)
         }
     }

@@ -2,7 +2,6 @@ package com.example.drawable
 
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,8 +75,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.StorageReference
@@ -94,6 +95,7 @@ class DrawingLoginNRegister : Fragment() {
         DrawableViewModel.Factory(application.drawingRepository)
     }
     private var currUser: FirebaseUser? = null
+    private var currUsername: String? = null
 
 
     /**
@@ -108,7 +110,20 @@ class DrawingLoginNRegister : Fragment() {
 
         view.apply {
             setContent {
-                MainScreen()
+                MainScreen(myViewModel)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            myViewModel.usernameFlow.collect { updatedUsername ->
+                currUsername = updatedUsername ?: "Guest"
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            myViewModel.currentUser.collect{ user->
+                currUser = user
+
             }
         }
 
@@ -122,10 +137,10 @@ class DrawingLoginNRegister : Fragment() {
      * Main Composable that decides which screen to show based on a boolean flag.
      */
     @Composable
-    fun MainScreen() {
-        val notLogged = remember { mutableStateOf(true) }
-        val signingUp = remember { mutableStateOf(false) }
-        val loggedIn = remember { mutableStateOf(false) }
+    fun MainScreen(viewModel: DrawableViewModel) {
+        val state by viewModel.state.collectAsState()
+        val currentUser by viewModel.currentUser.collectAsState()
+
         val focusManager = LocalFocusManager.current
         val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -138,27 +153,22 @@ class DrawingLoginNRegister : Fragment() {
                 }
             )
 
-        // If user is not logged in
-        if (notLogged.value) {
-            Login(modifier) {
-                notLogged.value = false
-                signingUp.value = true
+
+        when (state) {
+        // If user is logging in
+            LoginState.NotLogged -> Login(modifier) {
+                myViewModel.startSignUp()
+            }
+         //If user is signing up
+            LoginState.SigningUp -> Register(modifier) {
+                myViewModel.login()
+            }
+         //If user is signed in
+            LoginState.LoggedIn -> UserPage(modifier) {
+                myViewModel.signOut()
             }
         }
-        // If user is signing up
-        else if (signingUp.value) {
-            Register(modifier)  {
-                signingUp.value = false
-                loggedIn.value = true
-            }
-        }
-        // If user is logged in
-        else if (currUser != null && loggedIn.value) {
-            UserPage(modifier)  {
-                loggedIn.value = false
-                notLogged.value = true
-            }
-        }
+
     }
 
     /**
@@ -227,22 +237,22 @@ class DrawingLoginNRegister : Fragment() {
                                     val userId =
                                         currUser!!.uid  // Ensure this is non-null or handle the null case appropriately
                                     val userRef = mStore.collection("Usernames").document(userId)
-                                    var username: String? = null
+//                                    var username: String? = null
 
                                     userRef.get()
                                         .addOnSuccessListener { documentSnapshot ->
                                             if (documentSnapshot.exists()) {
                                                 val user =
                                                     documentSnapshot.toObject(DrawableUser::class.java)
-                                                username = user?.username
+                                                myViewModel.setTheUsername(user!!.username)
                                                 // Use the username as needed
 //                                                println("Retrieved username: $username")
                                                 Toast.makeText(
                                                     context,
-                                                    "Retrieved username: $username",
+                                                    "Retrieved username: $currUsername",
                                                     Toast.LENGTH_SHORT
                                                 ).show()
-                                                myViewModel.setTheUsername(username!!)
+//                                                myViewModel.setTheUsername(username!!)
                                             } else {
                                                 println("No such document!")
                                             }
@@ -251,10 +261,9 @@ class DrawingLoginNRegister : Fragment() {
                                             println("Error getting document: ${exception.message}")
                                         }
 
-
                                     val storageRef =
                                         Firebase.storage.reference
-                                    val imagesRef = storageRef.child("${username}/drawings/")
+                                    val imagesRef = storageRef.child("${currUsername}/drawings/")
 
                                     imagesRef.listAll()
                                         .addOnSuccessListener { listResult ->
@@ -600,8 +609,8 @@ class DrawingLoginNRegister : Fragment() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun UserPage(modifier: Modifier, onSignOutClicked: () -> Unit) {
-        var email by rememberSaveable { mutableStateOf("users email") }
-        var username by rememberSaveable { mutableStateOf("username") }
+        var email by rememberSaveable { mutableStateOf(currUser!!.email) }
+        var username by rememberSaveable { mutableStateOf(currUsername) }
         val isSigningOut = remember { mutableStateOf(false) }
         val unChanged = remember { mutableStateOf(false) }
         val emChanged = remember { mutableStateOf(false) }
@@ -632,12 +641,12 @@ class DrawingLoginNRegister : Fragment() {
                 Logo()
 
                 Spacer(modifier = Modifier.height(100.dp))
-                UsernameTextField(username) {
+                UsernameTextField(username!!) {
                     username = it
                     unChanged.value = true
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-                EmailTextField(email) {
+                EmailTextField(email!!) {
                     email = it
                     emChanged.value = true
                 }
@@ -649,8 +658,8 @@ class DrawingLoginNRegister : Fragment() {
                     Button(
                         onClick = {
                             if (emChanged.value) {
-                                if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                                    currUser!!.verifyBeforeUpdateEmail(email)
+                                if (Patterns.EMAIL_ADDRESS.matcher(email!!).matches()) {
+                                    currUser!!.verifyBeforeUpdateEmail(email!!)
                                         .addOnSuccessListener { _ ->
                                             Toast.makeText(
                                                 context,
@@ -731,6 +740,7 @@ class DrawingLoginNRegister : Fragment() {
                             myViewModel.clear()
                             currUser = null
                             mAuth.signOut()
+                            myViewModel.setTheUsername(null)
                             onSignOutClicked()
                             isSigningOut.value = false
                             findNavController().popBackStack()
