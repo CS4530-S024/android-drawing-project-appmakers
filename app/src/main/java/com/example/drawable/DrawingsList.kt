@@ -58,7 +58,6 @@ import java.util.Locale
 class DrawingsList : Fragment() {
     private lateinit var binding: FragmentDrawingsListBinding
     private var currentCount: Int = 0
-   // private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
    private val dateFormat = SimpleDateFormat("dd.LLL.yyyy HH:mm:ss aaa z", Locale.getDefault())
     var MMMddFormat = SimpleDateFormat("MMM dd", Locale.US) // Aug 31
     var hhmmampmFormat = SimpleDateFormat("hh:mm a", Locale.US) // 01:55 PM
