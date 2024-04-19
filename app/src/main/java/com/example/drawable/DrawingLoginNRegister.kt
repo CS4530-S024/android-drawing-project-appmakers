@@ -65,7 +65,16 @@ import kotlinx.coroutines.launch
 import com.google.firebase.storage.storage
 import java.io.ByteArrayOutputStream
 import android.graphics.Bitmap
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseUser
 
 
 class DrawingLoginNRegister : Fragment() {
@@ -76,6 +85,7 @@ class DrawingLoginNRegister : Fragment() {
         val application = requireActivity().application as DrawableApplication
         DrawableViewModel.Factory(application.drawingRepository)
     }
+    private var currUser: FirebaseUser? = null
 
 
 
@@ -86,10 +96,8 @@ class DrawingLoginNRegister : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = ComposeView(requireContext())
-
-
 
         view.apply {
             setContent {
@@ -108,74 +116,124 @@ class DrawingLoginNRegister : Fragment() {
      */
     @Composable
     fun MainScreen() {
-        val showLogin = remember { mutableStateOf(true) } // Initial state can be true or false
+        val notLogged = remember { mutableStateOf(true) }
+        val signingUp = remember { mutableStateOf(false) }
+        val loggedIn = remember { mutableStateOf(false) }
 
-        if (showLogin.value) {
-            Login {
-                showLogin.value = false // Switch to 'something else' when login is done or on some action
+        // If user is not logged in
+        if (notLogged.value) {
+            Login { notLogged.value = false
+            signingUp.value = true}
+        }
+        // If user is signing up
+        else if(signingUp.value){
+            Register { signingUp.value = false
+                loggedIn.value = true
             }
-        } else {
-            Register()
-
+        }
+        // If user is logged in
+        else if(currUser != null && loggedIn.value){
+            UserPage()
         }
     }
 
-
+    /**
+     *
+     */
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun Login(onRegisterClicked: () -> Unit){
+    fun Login(onRegisterClicked: () -> Unit) {
         var email by rememberSaveable { mutableStateOf("") }
         var password by rememberSaveable { mutableStateOf("") }
         val context = LocalContext.current
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
-            Logo()
-
-            Spacer(modifier = Modifier.height(25.dp))
-
-            Text(
-                text = "Log in",
-                style = TextStyle(
-                    color = Color.Black,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("") },
+                    navigationIcon = {
+                        IconButton(onClick = { findNavController().popBackStack() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    }
                 )
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            EmailTextField(email) { email = it }
-            Spacer(modifier = Modifier.height(20.dp))
-            PasswordTextField(password) { password = it }
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button(onClick = {
-                if (email.isEmpty() || password.isEmpty()) {
-
-                    val toast = Toast.makeText(context, "Username or password cannot be empty", Toast.LENGTH_SHORT)
-                    toast.setGravity(Gravity.TOP or Gravity.FILL_HORIZONTAL, 0, 100)
-                    toast.show()
-                } else {
-                    // Proceed with login
-
-
-                }
-            },
-                colors = ButtonDefaults.buttonColors(Color(0xFF6C80E8))){
-                Text("Login")
             }
+        ) { innerPadding ->
 
-            Spacer(modifier = Modifier.height(75.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically){
-                Text("Don't have an account? ")
-                Spacer(modifier = Modifier.width(10.dp))
-                Button(onClick = {onRegisterClicked() },
-                    modifier = Modifier.background(Color.Transparent),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF6C80E8))){
-                    Text("Sign up")
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxWidth()
+            ) {
+                Logo()
+
+                Spacer(modifier = Modifier.height(25.dp))
+
+                Text(
+                    text = "Log in",
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                EmailTextField(email) { email = it }
+                Spacer(modifier = Modifier.height(20.dp))
+                PasswordTextField(password) { password = it }
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = {
+                        if (email.isEmpty() || password.isEmpty()) {
+
+                            val toast = Toast.makeText(
+                                context,
+                                "Username or password cannot be empty",
+                                Toast.LENGTH_SHORT
+                            )
+                            toast.setGravity(Gravity.TOP or Gravity.FILL_HORIZONTAL, 0, 100)
+                            toast.show()
+                        } else {
+                            // Proceed with login
+//                            Firebase.auth.signInWithEmailAndPassword(email, password)
+//                                .addOnCompleteListener(this@MainActivity) { task ->
+//                                    if (task.isSuccessful) {
+//                                        user = Firebase.auth.currentUser
+//                                    } else {
+//                                        email = "login failed, try again"
+//                                    }
+
+
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(Color(0xFF6C80E8))
+                ) {
+                    Text("Login")
+                }
+
+                Spacer(modifier = Modifier.height(75.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Don't have an account? ")
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Button(
+                        onClick = { onRegisterClicked() },
+                        modifier = Modifier.background(Color.Transparent),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF6C80E8))
+                    ) {
+                        Text("Sign up")
+                    }
                 }
             }
         }
     }
 
+    /**
+     *
+     */
     @Composable
     fun Logo(){
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -195,8 +253,9 @@ class DrawingLoginNRegister : Fragment() {
         }
     }
 
-
-
+    /**
+     *
+     */
     @Composable
     fun EmailTextField(email: String, onEmailChange: (String) -> Unit) {
 
@@ -208,7 +267,10 @@ class DrawingLoginNRegister : Fragment() {
                 label = { Text("Email") },
                 modifier = Modifier
                     .width(350.dp)
-                    .border(border = BorderStroke(1.dp, Color(0xFFC1C7D6)), shape = RoundedCornerShape(50.dp)),
+                    .border(
+                        border = BorderStroke(1.dp, Color(0xFFC1C7D6)),
+                        shape = RoundedCornerShape(50.dp)
+                    ),
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -226,6 +288,9 @@ class DrawingLoginNRegister : Fragment() {
         }
     }
 
+    /**
+     *
+     */
     @Composable
     fun PasswordTextField(password: String, onPasswordChange: (String) -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -236,7 +301,10 @@ class DrawingLoginNRegister : Fragment() {
                 label = { Text("Password") },
                 modifier = Modifier
                     .width(350.dp)
-                    .border(border = BorderStroke(1.dp, Color(0xFFC1C7D6)), shape = RoundedCornerShape(50.dp)),
+                    .border(
+                        border = BorderStroke(1.dp, Color(0xFFC1C7D6)),
+                        shape = RoundedCornerShape(50.dp)
+                    ),
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -255,6 +323,9 @@ class DrawingLoginNRegister : Fragment() {
         }
     }
 
+    /**
+     *
+     */
     @Composable
     fun UsernameTextField(nickName: String, onNameChange: (String) -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -264,7 +335,10 @@ class DrawingLoginNRegister : Fragment() {
                 label = { Text("Username") },
                 modifier = Modifier
                     .width(350.dp)
-                    .border(border = BorderStroke(1.dp, Color(0xFFC1C7D6)), shape = RoundedCornerShape(50.dp)),
+                    .border(
+                        border = BorderStroke(1.dp, Color(0xFFC1C7D6)),
+                        shape = RoundedCornerShape(50.dp)
+                    ),
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -281,8 +355,11 @@ class DrawingLoginNRegister : Fragment() {
         }
     }
 
+    /**
+     *
+     */
     @Composable
-    fun Register(){
+    fun Register(onSignUpClicked: () -> Unit){
         var email by rememberSaveable { mutableStateOf("") }
         var password by rememberSaveable { mutableStateOf("") }
         var username by rememberSaveable { mutableStateOf("") }
@@ -320,49 +397,18 @@ class DrawingLoginNRegister : Fragment() {
                 } else {
                     isRegistering.value = true
                     coroutineScope.launch {
-                        val drawings = myViewModel.drawings.first()
                         mAuth.createUserWithEmailAndPassword(email, password)
                             .addOnSuccessListener { _ ->
 
+                                currUser = Firebase.auth.currentUser
+
                                 mStore.collection("Usernames")
-                                    .document(FirebaseAuth.getInstance().uid!!)
+                                    .document(currUser!!.uid)
                                     .set(DrawableUser(username))
 
-                                val user = Firebase.auth.currentUser  // Make sure the user is not null
-                                // Get a reference to Firebase Storage
-                                val storageRef = Firebase.storage.reference
-
-
-                                // Upload each drawing to Firebase Storage
-                                drawings.forEachIndexed { index, drawing ->
-                                    // Convert the bitmap to a byte array as before
-                                    val baos = ByteArrayOutputStream()
-                                    val bitmap = drawing.bitmap
-
-                                    bitmap.compress(Bitmap.CompressFormat.PNG, 0, baos)
-                                    val data = baos.toByteArray()
-
-                                    // Create a unique file name or path for each image
-                                    val fileName = drawing.dPath.name
-                                    val fileRef = storageRef.child("${user!!.uid}/pictures/$fileName")
-
-                                    // Upload the byte array to Firebase Storage
-                                    val uploadTask = fileRef.putBytes(data)
-
-                                    // Handle the upload task's response
-                                    uploadTask
-                                        .addOnFailureListener { e ->
-//                                            Log.e("PICUPLOAD", "Failed to upload image $fileName: ${e.message}")
-                                        }
-                                        .addOnSuccessListener {
-//                                            Log.d("PICUPLOAD", "Successfully uploaded image $fileName")
-                                        }
-                                }
-
-
                                 isRegistering.value = false // Stop showing the progress indicator
+                                onSignUpClicked()
                                 findNavController().popBackStack()
-
                             }
                             .addOnFailureListener { _ ->
                                 // Handle failure, exception contains the Exception object
@@ -386,22 +432,71 @@ class DrawingLoginNRegister : Fragment() {
                     }
                 }
             }
-
-
         }
     }
 
-//
-//    @Preview(showBackground = true,  widthDp = 412, heightDp = 892)
-//    @Composable
-//    fun LoginPreview() {
-//            Login()
-//    }
+    /**
+     *
+     */
+    @Composable
+    fun UserPage(){
+
+        // Move drawing from room to firebase storage
+
+        /*coroutineScope.launch {
+            val drawings = myViewModel.drawings.first()
+
+                    // All should be moved to sign out
+                    // Get a reference to Firebase Storage
+                    val storageRef = Firebase.storage.reference
+
+                    // Upload each drawing to Firebase Storage
+                    drawings.forEachIndexed { _, drawing ->
+                        // Convert the bitmap to a byte array as before
+                        val baos = ByteArrayOutputStream()
+                        val bitmap = drawing.bitmap
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 0, baos)
+                        val data = baos.toByteArray()
+                        // Delete picture from room
+                        // Create a unique file name or path for each image
+                        val fileName = drawing.dPath.name
+                        val fileRef = storageRef.child("${username}/pictures/$fileName")
+                        // Upload the byte array to Firebase Storage
+                        val uploadTask = fileRef.putBytes(data)
+                        // Handle the upload task's response
+                        uploadTask
+                            .addOnFailureListener {
+//                                            Log.e("PICUPLOAD", "Failed to upload image $fileName: ${e.message}")
+                            }
+                            .addOnSuccessListener {
+//                                            Log.d("PICUPLOAD", "Successfully uploaded image $fileName")
+                            }
+                    }
+
+
+                    isRegistering.value = false // Stop showing the progress indicator
+                    findNavController().popBackStack()
+
+                }*/
+    }
+
+
+    @Preview(showBackground = true,  widthDp = 412, heightDp = 892)
+    @Composable
+    fun LoginPreview() {
+            Login {}
+    }
 
     @Preview(showBackground = true,  widthDp = 412, heightDp = 892)
     @Composable
     fun RegisterPreview() {
-        Register()
+        Register{}
     }
+
+//    @Preview(showBackground = true,  widthDp = 412, heightDp = 892)
+//    @Composable
+//    fun UserPagePreview() {
+//        UserPage {}
+//    }
 
 }

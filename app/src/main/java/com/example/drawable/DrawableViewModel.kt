@@ -24,6 +24,7 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     //new implementation
     val drawings: Flow<List<Drawing>> = repository.drawings
     val count: Flow<Int> = repository.count
+    var username: String? = null
 
     class Factory(private val repository: DrawingRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -60,6 +61,9 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         }
     }
 
+    /**
+     *
+     */
     suspend fun checkForDrawing(name: String): Boolean {
         return repository.nameCheck(name)
     }
@@ -92,6 +96,9 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         bitmapLiveData.value = bitmapLiveData.value
     }
 
+    /**
+     *
+     */
     fun brightenImage() {
         val currentBitmap = bitmapLiveData.value
         if (currentBitmap != null) {
@@ -100,6 +107,9 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         }
     }
 
+    /**
+     *
+     */
     fun invertColors() {
         val currentBitmap = bitmapLiveData.value
         if (currentBitmap != null) {
@@ -107,5 +117,12 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
             updateBitmap(currentBitmap)
 
         }
+    }
+
+    /**
+     *
+     */
+    fun setUsername(name: String){
+        username = name
     }
 }
