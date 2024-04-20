@@ -463,9 +463,7 @@ class DrawingLoginNRegister : Fragment() {
         val email = currentUser!!.email
         val username by myViewModel.usernameFlow.collectAsState()
         val isSigningOut = remember { mutableStateOf(false) }
-
         val drawing by myViewModel.drawings.collectAsState(initial = listOf()) //use to draw drawing in a grid, and get the number of drawings
-
         val unChanged = remember { mutableStateOf(false) }
         val emChanged = remember { mutableStateOf(false) }
 
@@ -540,8 +538,6 @@ class DrawingLoginNRegister : Fragment() {
                                 onSignOutClicked()
                             }
                             isSigningOut.value = false
-
-                            findNavController().popBackStack()
                         },
                         colors = ButtonDefaults.buttonColors(Color(0xFF6C80E8))
                     ) {

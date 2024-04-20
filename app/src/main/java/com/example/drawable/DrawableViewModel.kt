@@ -5,7 +5,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.util.Patterns
-import android.widget.Toast
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,6 +28,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.tasks.await
 
 external fun brightness(bmp: Bitmap?, brightness: Float)
 external fun invertColors(bmp: Bitmap?)
@@ -194,79 +201,77 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         }
     }
 
+
+
     fun log_in(email: String, password: String, letEmKnow: (String) -> Unit, context: Context, onSignIn: () -> Unit) {
-        Firebase.auth.signInWithEmailAndPassword(email, password)
-            .addOnSuccessListener {
-
+        viewModelScope.launch {
+            try {
+                // Sign in and wait for completion
+                Firebase.auth.signInWithEmailAndPassword(email, password).await()
                 _currentUser.value = Firebase.auth.currentUser
-                val userId = currentUser.value!!.uid
+                val userId = _currentUser.value?.uid ?: throw IllegalStateException("User ID is null")
                 val userRef = Firebase.firestore.collection("Usernames").document(userId)
-                userRef.get()
-                    .addOnSuccessListener { documentSnapshot ->
-                        if (documentSnapshot.exists()) {
-                            val user =
-                                documentSnapshot.toObject(DrawableUser::class.java)
-                            usernameFlow.value = user!!.username
-                        }
-                    }
-                    .addOnFailureListener { e ->
-                        letEmKnow("Error getting document: ${e.message}")
-                    }
 
-                val storageRef =
-                    Firebase.storage.reference
-                val imagesRef = storageRef.child("${usernameFlow}/drawings/")
-                get_drawings_from_firebase(imagesRef, letEmKnow, context)
-                onSignIn()
+                // Get the username
+                val documentSnapshot = userRef.get().await()
+                if (documentSnapshot.exists()) {
+                    val user = documentSnapshot.toObject(DrawableUser::class.java) ?: throw IllegalStateException("User data is null")
+                    usernameFlow.value = user.username
+
+                    // Proceed only if the username is not null
+                    val username = usernameFlow.value ?: throw IllegalStateException("Username is not available.")
+                    val storageRef = Firebase.storage.reference
+                    val imagesRef = storageRef.child("$username/drawings/")
+                    getDrawingsFromFirebase(imagesRef, letEmKnow, onSignIn)
+                } else {
+                    letEmKnow("Document does not exist.")
+                }
+
+            } catch (e: Exception) {
+                letEmKnow("Failed to login or fetch user data: ${e.message}")
             }
-            .addOnFailureListener { e ->
-                letEmKnow("Failed to login: ${e.message}")
-            }
+        }
     }
 
-    private fun get_drawings_from_firebase(
-        imagesRef: StorageReference,
-        letEmKnow: (String) -> Unit,
-        context: Context
-    ) {
-        imagesRef.listAll()
-            .addOnSuccessListener { listResult ->
-                listResult.items.forEach { fileRef ->
+    private fun getDrawingsFromFirebase(imagesRef: StorageReference, letEmKnow: (String) -> Unit, onSignIn: () -> Unit) {
+        viewModelScope.launch {
 
-                    fileRef.metadata.addOnSuccessListener { metadata ->
-                        val lastModified = metadata.updatedTimeMillis
-                        val localFile =
-                            File(
-                                context.filesDir,
-                                fileRef.name
-                            ) // dont know if this is the right way
+            val options = BitmapFactory.Options().apply {
+                inMutable = true
+            }
+            imagesRef.listAll().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val listResult = task.result
+                    listResult?.items?.forEach { fileRef ->
+                        async {
 
-                        fileRef.getFile(localFile)
-                            .addOnSuccessListener {
-                                processBitmap(
-                                    localFile,
-                                    lastModified,
-                                    fileRef.name
-                                )
+                            var downloadedBitmap: Bitmap? = null
+                            fileRef.getBytes(10 * 1024 * 1024).addOnSuccessListener { bytes ->
+                                downloadedBitmap =
+                                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+
+                                fileRef.metadata.addOnSuccessListener { metadata ->
+                                    val lastModified = metadata.updatedTimeMillis
+                                    val drawing = Drawing(
+                                        downloadedBitmap!!,
+                                        DrawingPath(lastModified, fileRef.name)
+                                    )
+                                    add(drawing)
+                                }.addOnFailureListener { e ->
+                                    letEmKnow("Failed to get metadata: ${e.message}")
+                                }
+                            }.addOnFailureListener { e ->
+                                letEmKnow("Failed to download image: ${e.message}")
                             }
-                            .addOnFailureListener {
-                                letEmKnow("Failed to download file.")
-                            }
-                    }
-                        .addOnFailureListener {
-                            letEmKnow("Failed to retrieve file metadata.")
                         }
+                    }
+//                    onSignIn()
                 }
             }
+//                .addOnFailureListener { onSignIn() }
+        }
     }
 
-    private fun processBitmap(localFile: File, lastModified: Long, fileName: String) {
-        val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
-        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-        bitmap.recycle()  // Clean up the original bitmap immediately
-        val drawing = Drawing(mutableBitmap, DrawingPath(lastModified, fileName))
-        add(drawing)
-    }
 
     fun register(
         username: String,
@@ -328,40 +333,46 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
         }
     }
 
-
-    fun sign_out(letEmKnow: (String) -> Unit, onSignOut: () -> Unit,){
-        // Move drawing from room to firebase storage
+    fun sign_out(letEmKnow: (String) -> Unit, onSignOut: () -> Unit) {
         viewModelScope.launch {
-            val drawings = drawings.first()
-            val storageRef =
-                Firebase.storage.reference  // Get a reference to Firebase Storage
-            // Upload each drawing to Firebase Storage
-            drawings.forEachIndexed { _, drawing ->
-                val baos =
-                    ByteArrayOutputStream() // Convert the bitmap to a byte array as before
-                val bitmap = drawing.bitmap
-                bitmap.compress(Bitmap.CompressFormat.PNG, 0, baos)
-                val data = baos.toByteArray()
-                // Delete picture from room
-                val fileName = drawing.dPath.name
-                val fileRef =
-                    storageRef.child("${usernameFlow}/pictures/$fileName")
-                val uploadTask =
-                    fileRef.putBytes(data)  // Upload the byte array to Firebase Storage
-                // Handle the upload task's response
-                uploadTask
-                    .addOnFailureListener { e ->
-                        letEmKnow("Upload failed because: ${e.message}")
+            try {
+                // First, get the drawings
+                val drawings = repository.drawings.first()
+
+                // Initiate all upload tasks and wait for them to complete
+                val tasks = drawings.map { drawing ->
+                    async {
+                        val data = ByteArrayOutputStream().use { baos ->
+                            drawing.bitmap.compress(Bitmap.CompressFormat.PNG, 0, baos)
+                            baos.toByteArray()  // This creates the byte array you need to upload
+                        }
+                        val fileName = drawing.dPath.name
+                        val fileRef = Firebase.storage.reference.child("${usernameFlow.value}/pictures/$fileName")
+
+                        try {
+                            fileRef.putBytes(data).await()  // Upload the byte array and wait for it to complete
+                            letEmKnow("Upload successful for $fileName")
+                        } catch (e: Exception) {
+                            letEmKnow("Upload failed for $fileName: ${e.message}")
+                            throw e  // Rethrow to handle in the overarching catch
+                        }
                     }
-                    .addOnSuccessListener {
-                        letEmKnow("Upload Successful")
-                    }
+                }
+
+                tasks.awaitAll()  // Wait for all the upload tasks to complete
+
+                // All uploads have completed here, now clear and sign out
+                clear()  // Assuming this method clears some local data
+                Firebase.auth.signOut()  // Sign out the user
+                usernameFlow.value = null  // Clear the username state
+                _currentUser.value = Firebase.auth.currentUser
+                onSignOut()  // Notify that sign-out has completed
+
+            } catch (e: Exception) {
+                // Handle any errors from uploads or other operations
+                letEmKnow("An error occurred: ${e.message}")
             }
         }
-        clear()
-        Firebase.auth.signOut()
-        usernameFlow.value = null
-        onSignOut()
     }
 
 }
