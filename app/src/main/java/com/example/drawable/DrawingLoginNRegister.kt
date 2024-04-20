@@ -494,12 +494,14 @@ class DrawingLoginNRegister : Fragment() {
                 val usernameText = remember { mutableStateOf(username) }
 
                 Spacer(modifier = Modifier.height(100.dp))
-                UsernameTextField(usernameText.value!!) {
+
+                UsernameTextField(usernameText.value ?: "") { // If usernameText.value is null, use empty string ""
                     usernameText.value = it
                     unChanged.value = true
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-                EmailTextField(emailText.value!!) {
+
+                EmailTextField(emailText.value ?: "") { // If emailText.value is null, use empty string ""
                     emailText.value = it
                     emChanged.value = true
                 }

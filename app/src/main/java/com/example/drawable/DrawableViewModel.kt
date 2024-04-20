@@ -206,69 +206,49 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
     fun log_in(email: String, password: String, letEmKnow: (String) -> Unit, context: Context, onSignIn: () -> Unit) {
         viewModelScope.launch {
             try {
-                // Sign in and wait for completion
-                Firebase.auth.signInWithEmailAndPassword(email, password).await()
-                _currentUser.value = Firebase.auth.currentUser
-                val userId = _currentUser.value?.uid ?: throw IllegalStateException("User ID is null")
-                val userRef = Firebase.firestore.collection("Usernames").document(userId)
+                val authResult = Firebase.auth.signInWithEmailAndPassword(email, password).await()
+                val user = authResult.user ?: throw IllegalStateException("Authentication failed, no user found.")
 
-                // Get the username
-                val documentSnapshot = userRef.get().await()
-                if (documentSnapshot.exists()) {
-                    val user = documentSnapshot.toObject(DrawableUser::class.java) ?: throw IllegalStateException("User data is null")
-                    usernameFlow.value = user.username
+                // Fetch user-specific data from Firestore
+                val userId = user.uid
+                val userSnapshot = Firebase.firestore.collection("Usernames")
+                    .document(userId)
+                    .get()
+                    .await()
 
-                    // Proceed only if the username is not null
-                    val username = usernameFlow.value ?: throw IllegalStateException("Username is not available.")
-                    val storageRef = Firebase.storage.reference
-                    val imagesRef = storageRef.child("$username/drawings/")
-                    getDrawingsFromFirebase(imagesRef, letEmKnow, onSignIn)
-                } else {
-                    letEmKnow("Document does not exist.")
-                }
+                val username = userSnapshot.data?.get("username") as? String
+                    ?: throw IllegalStateException("Username is not available.")
 
+                val imagesRef = Firebase.storage.reference.child("$username/drawings/")
+                getDrawingsFromFirebase(imagesRef, letEmKnow, onSignIn)
             } catch (e: Exception) {
-                letEmKnow("Failed to login or fetch user data: ${e.message}")
+                letEmKnow("Login failed: ${e.message}")
             }
         }
     }
 
     private fun getDrawingsFromFirebase(imagesRef: StorageReference, letEmKnow: (String) -> Unit, onSignIn: () -> Unit) {
         viewModelScope.launch {
-
-            val options = BitmapFactory.Options().apply {
-                inMutable = true
-            }
-            imagesRef.listAll().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val listResult = task.result
-                    listResult?.items?.forEach { fileRef ->
-                        async {
-
-                            var downloadedBitmap: Bitmap? = null
-                            fileRef.getBytes(10 * 1024 * 1024).addOnSuccessListener { bytes ->
-                                downloadedBitmap =
-                                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-
-                                fileRef.metadata.addOnSuccessListener { metadata ->
-                                    val lastModified = metadata.updatedTimeMillis
-                                    val drawing = Drawing(
-                                        downloadedBitmap!!,
-                                        DrawingPath(lastModified, fileRef.name)
-                                    )
-                                    add(drawing)
-                                }.addOnFailureListener { e ->
-                                    letEmKnow("Failed to get metadata: ${e.message}")
-                                }
-                            }.addOnFailureListener { e ->
-                                letEmKnow("Failed to download image: ${e.message}")
-                            }
-                        }
+            val options = BitmapFactory.Options().apply { inMutable = true }
+            try {
+                val listResult = imagesRef.listAll().await()
+                listResult.items.forEach { fileRef ->
+                    try {
+                        val bytes = fileRef.getBytes(10 * 1024 * 1024).await() // Get up to 10 MB per image
+                        val downloadedBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                        val metadata = fileRef.metadata.await()
+                        val lastModified = metadata.updatedTimeMillis
+                        val drawing = Drawing(downloadedBitmap, DrawingPath(lastModified, fileRef.name))
+                        add(drawing)
+                    } catch (e: Exception) {
+                        letEmKnow("Failed to download or process image: ${e.message}")
                     }
-//                    onSignIn()
                 }
+                onSignIn()
+            } catch (e: Exception) {
+                letEmKnow("Failed to list drawings: ${e.message}")
+                onSignIn()
             }
-//                .addOnFailureListener { onSignIn() }
         }
     }
 
@@ -347,11 +327,31 @@ class DrawableViewModel(private val repository: DrawingRepository) : ViewModel()
                             baos.toByteArray()  // This creates the byte array you need to upload
                         }
                         val fileName = drawing.dPath.name
-                        val fileRef = Firebase.storage.reference.child("${usernameFlow.value}/pictures/$fileName")
+                        val filepath = "${usernameFlow.value}/pictures/$fileName"
+                        val fileRef = Firebase.storage.reference.child(filepath)
 
                         try {
-                            fileRef.putBytes(data).await()  // Upload the byte array and wait for it to complete
-                            letEmKnow("Upload successful for $fileName")
+                            // Upload the byte array and wait for it to complete
+                            fileRef.putBytes(data).addOnSuccessListener {
+                                // After the upload is successful, save the reference to Firestore
+                                val firestoreRef = Firebase.firestore
+                                    .collection("userDrawings")
+                                    .document(_currentUser.value!!.uid)
+                                    .collection("drawings")
+                                    .document()
+
+                                val drawingInfo = hashMapOf(
+                                    "fileName" to fileName,
+                                    "filePath" to filepath,
+                                    "timestamp" to System.currentTimeMillis()
+                                )
+
+                                firestoreRef.set(drawingInfo)
+                                    .addOnSuccessListener {
+                                        letEmKnow("Upload successful for $fileName")
+                                    }
+                            }
+
                         } catch (e: Exception) {
                             letEmKnow("Upload failed for $fileName: ${e.message}")
                             throw e  // Rethrow to handle in the overarching catch
