@@ -66,16 +66,23 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Patterns
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseUser
@@ -508,7 +515,7 @@ class DrawingLoginNRegister : Fragment() {
                     emChanged.value = true
                 }
 
-                Spacer(modifier = Modifier.height(100.dp))
+                Spacer(modifier = Modifier.height(75.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Allows the user to change their username and email
@@ -533,7 +540,7 @@ class DrawingLoginNRegister : Fragment() {
                     ) {
                         Text("Update User")
                     }
-                    Spacer(modifier = Modifier.width(30.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
 
                     Button(
                         onClick = {
@@ -548,8 +555,36 @@ class DrawingLoginNRegister : Fragment() {
                         Text("Sign Out")
                     }
                 }
+                Spacer(modifier = Modifier.height(25.dp))
+
+                Images_Grid(drawing)
+
                 if (isSigningOut.value) {
                     Loading()
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun Images_Grid(drawings: List<Drawing>) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(drawings) { drawing ->
+                Column(modifier = Modifier.padding(4.dp)) {
+                    Text(
+                        text = drawing.dPath.name, // Assuming each drawing has a title property
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Image(
+                        bitmap = drawing.bitmap.asImageBitmap(),
+                        contentDescription = "Displayed image",
+                        modifier = Modifier.aspectRatio(1f),
+                        contentScale = ContentScale.Fit,
+                    )
                 }
             }
         }
