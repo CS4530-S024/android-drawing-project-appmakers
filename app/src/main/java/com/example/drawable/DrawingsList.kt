@@ -128,12 +128,12 @@ class DrawingsList : Fragment() {
            findNavController().navigate(R.id.action_drawingsList_to_drawingLoginNRegister)
         }
 
-        if(user !=  null){
-            val text = user + "'s Drawing Gallery"
-            binding.title.setText(text)
+        if(user !=  ""){
+            val text = "$user's Drawing Gallery"
+            binding.title.text = text
         }else{
             val text = "Drawing Gallery"
-            binding.title.setText(text)
+            binding.title.text = text
         }
     }
 
